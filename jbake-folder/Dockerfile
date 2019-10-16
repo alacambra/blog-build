@@ -36,3 +36,5 @@ RUN cd ~ && wget https://dl.bintray.com/jbake/binary/jbake-${JBAKE_VERSION}-bin.
 RUN cd /opt
 
 USER ${JBAKE_USER}
+
+CMD jbake -b /opt/jbake-structure

@@ -2,14 +2,24 @@ def applicationName = "blog";
 
 pipeline{
     agent {
-        docker { image 'alacambra/jbake' }
+        label 'maven'
     }
 
     stages{
-            stage('build-site') {
-                    steps{
-                         sh 'jbake -h'
-                    }
+        stage('clear-all-build') {
+            steps{
+                sh script: "rm -rf /opt/jbake-structure/*"
             }
+        }
+        stage('copy-blog') {
+            steps{
+                sh script: "cp -Rf jbake-structure/* /opt/jbake-structure/"
+            }
+        }
+        stage('build-blog') {
+            steps{
+                sh script: "jbake -b /opt/jbake-structure/"
+            }
+        }
     }
 }
