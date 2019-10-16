@@ -1,0 +1,1 @@
+docker run --rm -ti -v ~/git/lacambra.tech/blog-build/jbake-structure:/opt/jbake-structure:rw alacambra/jbake jbake -b /opt/jbake-structure
