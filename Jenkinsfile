@@ -2,13 +2,13 @@ def applicationName = "blog";
 
 pipeline{
     agent {
-        label 'maven'
+        docker { image 'alacambra/jbake' }
     }
 
     stages{
             stage('build-site') {
                     steps{
-                         docker { image 'alacambra/jbake' }
+                         sh 'jbake -h'
                     }
             }
     }
