@@ -1,4 +1,4 @@
-def applicationName = "blog";
+def applicationName = "blog-test";
 
 pipeline{
     agent {
@@ -6,19 +6,28 @@ pipeline{
     }
 
     stages{
-        stage('clear-all-build') {
+        stage('build-blog') {
             steps{
-                sh script: "rm -rf /opt/jbake-structure/*"
+                sh script: "jbake -b jbake-blog/"
             }
         }
         stage('copy-blog') {
             steps{
-                sh script: "cp -Rf jbake-structure/* /opt/jbake-structure/"
+                sh script: "cp -Rf jbake-blog/output s2i-nginx/files/ "
             }
         }
-        stage('build-blog') {
+        stage('s2i build'){
             steps{
-                sh script: "jbake -b /opt/jbake-structure/"
+                script{
+                    openshift.withCluster(){
+                        openshift.withProject(){
+                            def build = openshift.selector("bc", applicationName);
+                            def startedBuild = build.startBuild("--from-file=\"./jbake-blog\"");
+                            startedBuild.logs('-f');
+                            echo "${applicationName} build status: ${startedBuild.object().status}";
+                        }
+                    }
+                }
             }
         }
     }
