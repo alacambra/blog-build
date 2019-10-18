@@ -2,7 +2,7 @@ def applicationName = "blog-test";
 
 pipeline{
     agent {
-        label 'maven'
+        label 'jbake'
     }
 
     stages{
