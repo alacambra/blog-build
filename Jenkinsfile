@@ -1,4 +1,4 @@
-def applicationName = "blog-test";
+def applicationName = "blog";
 
 pipeline{
     agent {

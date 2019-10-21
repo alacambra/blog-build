@@ -1,9 +1,9 @@
 
 = JMS basics 4 
-Albert Lacambra
-:jbake-type: post
+Albert Lacambra Basil
+:jbake-type: draft
 :jbake-status: published
-:jbake-tags: blog, asciidoc
+:jbake-tags: jms, java EE
 :idprefix:
 :description: A basic usage of jms
 
