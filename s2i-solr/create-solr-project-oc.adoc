@@ -72,3 +72,28 @@ docker push alacambra/openshift-solr:8.2.0 && \
 oc import-image s2i-solr --from="alacambra/openshift-solr:8.2.0" --confirm && \
 oc start-build --from-dir ./solr/ solr-blog
 --
+
+== Send a query request
+--
+curl http://solr-blog-blog.apps.oc.lacambra/solr/blog-solr/query?q=a
+--
+
+Response body:
+[source, json]
+--
+{
+    "responseHeader":{
+        "status":0,
+        "QTime":34,
+        "params":{
+            "q":"a"
+        }
+    },
+    "response":{
+        "numFound":0,
+        "start":0,
+        "docs":[
+        ]
+    }
+}
+--

@@ -4,11 +4,9 @@
 # For more information see the documentation:
 # https://docs.openshift.org/latest/creating_images/s2i.html#creating-images-s2i
 
-CORE_NAME=blog-index
-
 # Override this env variable to change the name of your core.
 if [ -z "${CORE_NAME}" ]; then
-  CORE_NAME=autocore
+  CORE_NAME=blog-solr
 fi
 
 if [ -z "${SOLR_CONF_DIR}" ]; then
@@ -26,8 +24,6 @@ else
 fi
 
 CORE_DIR="${CORES_DIR}/${CORE_NAME}"
-
-echo "Albert: corename = ${CORE_NAME}"
 
 # Use scripts from the official docker-solr image
 # https://github.com/docker-solr/docker-solr/tree/master/scripts

@@ -2,8 +2,6 @@
 
 # We aren't using a real S2I builder, so files will be in /tmp by default
 SOURCE_FILE_DIR=/tmp/src
-#SOLR_HOME=/opt/solr/server/solr
-echo "SOLR_HOME=${SOLR_HOME}"
 
 # Your configuration files need to be in a {corename}/conf directory.
 # The {corename}/conf structure ensures compatibility with the 
@@ -21,10 +19,9 @@ echo "Source Repo Files"
 echo "-----------------------------------------------------------"
 ls -al ${SOURCE_FILE_DIR}
 echo "==========================================================="
-echo "SOLR_CONF_DIR = ${SOLR_CONF_DIR}"
+echo
 
 echo "Copying SOLR conf files from ${SOURCE_FILE_DIR}/. to ${SOLR_CONF_DIR} ..."
-cp -Rf ${SOURCE_FILE_DIR}/* ${SOLR_CONF_DIR}
+cp -Rf ${SOURCE_FILE_DIR}/. ${SOLR_CONF_DIR}
 echo "Copied SOLR conf files."
-ls -al ${SOLR_CONF_DIR}
 echo
