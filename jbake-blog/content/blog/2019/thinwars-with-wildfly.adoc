@@ -25,7 +25,7 @@ mkdir -p $JBOSS_HOME/modules/my/module/name/main
 --
 
 * Create a module.xml file with including our depenedencies. Required jars can be directly downloaded form https://mvnrepository.com
-[source,bash]
+
 //.module configuration 
 --
 [source,xml]

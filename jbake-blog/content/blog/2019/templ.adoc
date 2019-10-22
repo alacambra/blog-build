@@ -6,4 +6,3 @@ Albert Lacambra Basil
 :jbake-type: post
 :jbake-status: draft
 :jbake-tags: blog, jms, java EE
-
