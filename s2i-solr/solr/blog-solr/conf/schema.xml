@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="post" version="1.1">
+    <uniqueKey>id</uniqueKey>
+
+    <fieldType name="string" class="solr.StrField"/>
+    <fieldType name="text" class="solr.TextField"/>
+
+    <field name="id" type="string" indexed="true" stored="true" multiValued="false" required="true"/>
+    <field name="url" type="string" indexed="true" stored="true"/>
+    <field name="title" type="text" indexed="true" stored="true"/>
+    <field name="description" type="text" indexed="true" stored="true"/>
+    <field name="reducedText" type="text" indexed="true" stored="true"/>
+    <field name="text" type="text" indexed="true" stored="true"/>
+
+</schema>
