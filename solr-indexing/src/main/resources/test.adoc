@@ -1,12 +1,12 @@
 = The JsonPointer. Json make easy
 Albert Lacambra Basil
+:doc-id: json_PointerJson_make_easy
 :jbake-title: The JsonPointer. Json make easy
 :jbake-date: 2019-05-19
 :jbake-type: post
 :jbake-status: published
 :jbake-tags: java EE, json
 
-	
 
 Since Java API for JSON Processing  (JSR 374) version 1.1, it is possible to use JosnPointer.
 
@@ -73,7 +73,7 @@ JsonNumber id = ((JsonNumber) Json.createPointer("/id").getValue(example));
 
 --
 [source,java]
-.Get an object from an object. 
+.Get an object from an object.
 JsonObject user = Json.createPointer("/user").getValue(example).asJsonObject();
 --
 
@@ -118,7 +118,7 @@ Assertions.assertEquals(30, ((JsonNumber) Json.createPointer("/user_mentions/0/i
 [source,java]
 .Replace elements
 example = Json.createPointer("/id").replace(example, Json.createValue(2));
-Assertions.assertEquals(2, example.getInt("id")); 
+Assertions.assertEquals(2, example.getInt("id"));
 example = Json.createPointer("/user_mentions/0/indices/1").replace(example, Json.createValue(9999));
 Assertions.assertEquals(9999, ((JsonNumber) Json.createPointer("/user_mentions/0/indices/1").getValue(example)).intValue());
 --
