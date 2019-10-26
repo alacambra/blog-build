@@ -1,11 +1,10 @@
 = Solr config
 Albert Lacambra Basil
-:jbake-title: solr
-//:description: A basic usage of jms
-:jbake-date: 2019-05-06
+:jbake-title: use s2i solr
+:jbake-date: 2019-10-26
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: java EE
+:jbake-tags: solr, indexing
 
 == Create docker file
 

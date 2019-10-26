@@ -1,0 +1,49 @@
+= S2i Nginx config
+Albert Lacambra Basil
+:jbake-title: use s2i nginx
+:jbake-date: 2019-10-26
+:jbake-type: post
+:jbake-status: published
+:jbake-tags: nginx
+
+== Configure reverse proxy
+Add the location blog into the server section
+[source]
+--
+location /search {
+    proxy_buffering off;
+    proxy_pass http(s)://{solr-service}:{port}/solr;
+}
+--
+
+Should look like:
+[source]
+--
+server {
+        listen       8080 default_server;
+        listen       [::]:8080 default_server;
+        server_name  _;
+        root         /usr/share/nginx/html;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+        
+        error_page 404 /404.html;
+            location = /40x.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+            location = /50x.html {
+        }
+
+        location /search {
+            proxy_buffering off;
+            proxy_pass http(s)://{solr-service}:{port}/solr;
+        }
+    }
+--
+
+== Update image:
+--
+oc start-build --from-dir ./files/ blog
+--
