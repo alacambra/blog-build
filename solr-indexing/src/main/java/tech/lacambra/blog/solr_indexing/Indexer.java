@@ -53,6 +53,7 @@ public class Indexer {
     doc.addField("description", parsedDocument.getHeaderValue("description").orElse(""));
     doc.addField("reducedText", parsedDocument.getTextResume());
     doc.addField("text", parsedDocument.getBodyText());
+    doc.addField("date", parsedDocument.getDisplayDate());
 
     String collection = "blog-solr";
 

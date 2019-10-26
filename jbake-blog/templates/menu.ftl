@@ -5,37 +5,27 @@
     <#else>
         <h2><a href="${config.site_host}">${config.site_title}</i></a></h2>
     </#if>
-
     <nav class="links">
         <ul>
         	<#list config.site_menus_main as menuItem1>
         		<#if (config.site_menus_main_showTagsDropdown?boolean)?? == true && menuItem1 == 'tags'>
         			<li>
 	                    <a href="<#if (config['site_menus_main_' + menuItem1 + '_url'] != "/")> ${content.rootpath}${config['site_menus_main_' + menuItem1 + '_url']}<#else> ${config.site_host}</#if>">
-	                    
-	                       
 	                       <i class="${config['site_menus_main_' + menuItem1 + '_icon']}">&nbsp;</i>${config['site_menus_main_' + menuItem1 + '_label']}
-	                        
 	                    </a>
 	                    <ul class="dropdown-menu">
 				            <#list alltags as tag>
 									<li><a class="plain" href="/${config.tag_path}/${tag}">${tag}</a></li>
 							</#list>
 			          	</ul>
-        		
                 	</li>
-        			
         		<#else>
         			<li>
 	                    <a href="<#if (config['site_menus_main_' + menuItem1 + '_url'] != "/")> ${content.rootpath}${config['site_menus_main_' + menuItem1 + '_url']}<#else> ${config.site_host}</#if>">
-	                       
 	                            <i class="${config['site_menus_main_' + menuItem1 + '_icon']}">&nbsp;</i>${config['site_menus_main_' + menuItem1 + '_label']}
-	                        
 	                    </a>
                 	</li>
-        		
         		</#if>
-        		 
 			</#list>
         </ul>
     </nav>
@@ -48,8 +38,8 @@
             </#if>
             <li class="search">
                 <a class="fa-search" href="#search">Search</a>
-                <form id="search" method="get" action="//google.com/search">
-                    <input type="text" name="q" placeholder="Search" />
+                <form id="search" onsubmit="return search();">
+                    <input id="search-query" type="text" name="q" placeholder="Search" />
                     <input type="hidden" name="q" value="site:${config.site_host}">
                 </form>
             </li>
@@ -110,3 +100,24 @@
         </section>
         -->
 </section>
+
+<template id="search-result">
+    <article class="post">
+        <header>
+            <div class="title">
+                <h2><a href="{{url}}">{{title}}</a></h2>
+                <p>{{description}}</p>
+            </div>
+            <div class="meta">
+                <time class="published"
+                    datetime='{{date}}'>
+                    {{date}}</time>
+                    <div class="published eta"></div>
+                <span class="author"/><span class="name">Albert Lacambra Basil</span><img src="../../img/main/avatar.png" alt="Albert Lacambra Basil" /></span>
+            </div>
+        </header>
+        <div id="content">
+        {{reducedText}}
+        </div>  
+    </article>
+</template>

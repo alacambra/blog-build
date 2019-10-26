@@ -75,10 +75,18 @@ public class ParsedDocument {
   }
 
   public String getUrl() {
-    return "/" + fileName;
+    return fileName.substring(fileName.indexOf("content") + "content".length());
   }
 
-  public boolean isPosted(){
+  public boolean isPosted() {
     return headers.getOrDefault("jbake-type", "").equals("post");
+  }
+
+  public String getDisplayDate() {
+    return headers.getOrDefault("jbake-date", "");
+  }
+
+  public String getFileName() {
+    return fileName;
   }
 }

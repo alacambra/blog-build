@@ -22,7 +22,7 @@ pipeline{
                     openshift.withCluster(){
                         openshift.withProject(){
                             def build = openshift.selector("bc", applicationName);
-                            def startedBuild = build.startBuild("--from-file=\"./jbake-blog\"");
+                            def startedBuild = build.startBuild("--from-file=\"./s2i-nginx/files\"");
                             startedBuild.logs('-f');
                             echo "${applicationName} build status: ${startedBuild.object().status}";
                         }

@@ -12,5 +12,6 @@
     <field name="description" type="text" indexed="true" stored="true"/>
     <field name="reducedText" type="text" indexed="true" stored="true"/>
     <field name="text" type="text" indexed="true" stored="true"/>
+    <field name="date" type="text" indexed="true" stored="true"/>
 
 </schema>

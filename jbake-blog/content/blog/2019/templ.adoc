@@ -1,6 +1,6 @@
 = Title
 Albert Lacambra Basil
-:jbake-title: new tile
+:jbake-title: new title
 :description: A basic usage of jms
 :jbake-date: 2019-02-01
 :jbake-type: post

@@ -1,12 +1,15 @@
 package tech.lacambra.blog.solr_indexing;
 
 
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class ParsedDocumentTest {
 
-  ParsedDocument cut = new ParsedDocument("test.adoc");
+  String filePath = "/../jbake-blog/content/blog/2019/create-solr-project-oc.html";
+
+  ParsedDocument cut = new ParsedDocument(filePath);
 
   @Test
   public void parseHeaders() {
@@ -15,8 +18,8 @@ public class ParsedDocumentTest {
     String headerName = cut.parseHeaderName(header);
     String headerValue = cut.parseHeaderValue(header);
 
-    Assert.assertEquals("my.header.name", headerName);
-    Assert.assertEquals("With some string value", headerValue);
+    assertEquals("my.header.name", headerName);
+    assertEquals("With some string value", headerValue);
 
   }
 
@@ -27,9 +30,15 @@ public class ParsedDocumentTest {
     String headerName = cut.parseHeaderName(header);
     String headerValue = cut.parseHeaderValue(header);
 
-    Assert.assertEquals("my.header.name", headerName);
-    Assert.assertEquals("With some string value", headerValue);
+    assertEquals("my.header.name", headerName);
+    assertEquals("With some string value", headerValue);
 
+  }
+
+  @Test
+  public void parseUrl() {
+    assertEquals(filePath, cut.getFileName());
+    assertEquals("/blog/2019/create-solr-project-oc.html", cut.getUrl());
   }
 
 }

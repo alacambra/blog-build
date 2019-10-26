@@ -11,6 +11,8 @@
 		<script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/skel.min.js"></script>
 		<script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/util.js"></script>
 		<script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/main.js"></script>
+		<script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/mustache.js"></script>
+		<script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/solr-search.js"></script>
 		<script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/backToTop.js"></script>
 		<script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/highlight.pack.js"></script>
 		<script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/readingTime.js"></script>

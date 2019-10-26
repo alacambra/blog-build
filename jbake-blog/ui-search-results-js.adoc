@@ -1,0 +1,20 @@
+= Search UI 
+Albert Lacambra Basil
+:jbake-title: Render UI results with rendered templates
+:jbake-date: 2019-10-26
+:jbake-type: post
+:jbake-status: published
+:jbake-tags: javascript
+:doc-id:Render_UI_results_with_rendered_templates
+
+
+
+== Send search query
+[source, javascript]
+--
+const url = "search/blog-solr/select?q=*%3A*";
+const search = () => {
+    fetch(url)
+    .then(response => response.json())
+    .then(j => console.log(j, j["response"]["docs"][0]));
+--
