@@ -6,6 +6,8 @@ Albert Lacambra Basil
 :jbake-type: post
 :jbake-status: published
 :jbake-tags: java EE
+:doc-id: create-solr-project-oc
+
 
 == Create docker file
 

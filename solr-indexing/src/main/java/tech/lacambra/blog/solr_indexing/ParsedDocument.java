@@ -77,4 +77,8 @@ public class ParsedDocument {
   public String getUrl() {
     return "/" + fileName;
   }
+
+  public boolean isPosted(){
+    return headers.getOrDefault("jbake-type", "").equals("post");
+  }
 }

@@ -13,7 +13,7 @@ pipeline{
         }
         stage('index-entries') {
             steps{
-                sh script: "cd ${applicationName} && mvn exec:java -Dexec.mainClass=tech.lacambra.blog.solr_indexing.Indexer -Dexec.args=\"jbake-blog/content\""
+                sh script: "cd ${applicationName} && mvn exec:java -Dexec.mainClass=tech.lacambra.blog.solr_indexing.Indexer -Dexec.args=\"../jbake-blog/content/blog/\""
             }
         }
     }

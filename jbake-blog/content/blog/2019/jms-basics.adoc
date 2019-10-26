@@ -6,6 +6,7 @@ Albert Lacambra Basil
 :jbake-tags: jms, java EE
 :idprefix:
 :description: A basic usage of jms
+:doc-id: jms-basics
 
 :source-highlighter: coderay
 

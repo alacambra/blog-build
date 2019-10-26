@@ -5,6 +5,7 @@ Albert Lacambra Basil
 :jbake-type: post
 :jbake-status: published
 :jbake-tags: java EE, json
+:doc-id: json-pinter-made-easy
 
 	
 

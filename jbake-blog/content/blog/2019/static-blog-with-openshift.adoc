@@ -5,3 +5,4 @@ Albert Lacambra Basil
 :jbake-tags: openshift, jbake
 :idprefix:
 :description: Create your static blog with jbake and openshift
+:doc-id: static-blog-with-openshift

@@ -6,6 +6,7 @@ Albert Lacambra Basil
 :jbake-type: post
 :jbake-status: published
 :jbake-tags: java EE
+:doc-id: create-your-mockito.ArgumentMatcher
 
 When testing you usually need to mock. I mock mostly using Mockito and usually, I stub using when and verify calls using verify.
 
