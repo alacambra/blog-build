@@ -1,6 +1,5 @@
-= Solr config
 Albert Lacambra Basil
-:jbake-title: solr
+:jbake-title: Solr configlr
 //:description: A basic usage of jms
 :jbake-date: 2019-05-06
 :jbake-type: post

@@ -1,0 +1,34 @@
+= Automatic update of client static files without redeploying the WAR file
+Albert Lacambra Basil
+:jbake-title: Automatic update of client static files without redeploying the WAR file
+:description: Update static files in a war file without you need to redeploy
+:jbake-date: 2019-04-24
+:jbake-type: post
+:jbake-status: published
+:jbake-tags: java EE, war
+:doc-id: autoupdate-static-files-in-war-file
+
+When creating web-applications in node.js a bunch of nice features is available. One of my favorites is that when a change has been performed, the change is immediately available on the browser.
+
+In the case of Java EE, we will need to redeploy each type, an operation that with my MacBook takes about t2 seconds and with my corporate laptop about 10 seconds. Even not a complete disaster,I think that we can agree on that is not really optimal.
+
+So what I would like is that once I have performed a change on a static file (js, html, css), this change is also immediately on the browser using my standard application server (I have tested it with Wildfly).
+
+And so we can achieve it:
+
+1. Create an exploded war.
+
+2. Compile project to create the target folder with the deployed sources.
+
+3. Using the onchange tool synchronize the statics file folder under webapp with the location where your IDE is copying the exploded files. This command looks for changes under a given directory and then executes any passed command. In our case, we just copy all the static files to the exploded target directory.
+
+[source, bash]
+--
+onchange 'path/to/watch/src/' -- cp -Rf path/to/watched/src/ /path/to/exploded/war/files
+--
+
+Now, just code :)
+
+With these simple steps, we will get our browser in snyc with our code.
+
+However, we still need to click F5 to update the browser.

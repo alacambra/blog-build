@@ -1,9 +1,9 @@
 = Title
 Albert Lacambra Basil
-:jbake-title: new title
-:description: A basic usage of jms
+:jbake-title: 
+:description: 
 :jbake-date: 2019-02-01
 :jbake-type: post
 :jbake-status: draft
-:jbake-tags: blog, jms, java EE
+:jbake-tags: blog, jms
 :doc-id: id

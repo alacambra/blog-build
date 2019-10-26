@@ -1,0 +1,27 @@
+= Solve Intellij Idea “Finished, saving caches” latency problem
+Albert Lacambra Basil
+:jbake-title: Solve Intellij Idea “Finished, saving caches” latency  problem
+:description: Intellij can suddenly be incredible slow at build project after changes. You can read the message "Finished, saving caches". Here the solution.
+:jbake-date: 2018-12-19
+:jbake-type: post
+:jbake-status: published
+:jbake-tags: intellij
+:doc-id: solve-intellij-idea-finished-saving-caches-latency
+
+Include the following line in your _/etc/hosts_ file:
+----
+127.0.0.1       localhost     <your hostname goes here>.local
+----
+
+And for IPv6 resolving, the same:
+----
+::1             localhost     <your hostname goes here>.local
+----
+
+References:
+
+https://stackoverflow.com/questions/20658400/intellij-idea-hangs-while-finished-saving-caches
+
+https://stackoverflow.com/questions/30625785/intellij-freezes-for-about-30-seconds-before-debugging
+
+https://youtrack.jetbrains.com/issue/IDEA-157303

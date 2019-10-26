@@ -1,9 +1,9 @@
 const url = "/search/blog-solr/select?q="
 // const url = "sample-solr-response.json"
-const search = () => {
+const search = (searchId) => {
 
     const template = document.querySelector('#search-result');
-    const q = document.querySelector("#search-query").value;
+    const q = document.querySelector(`#${searchId}`).value;
     const select = url + `*${q}*`;
 
     fetch(select)

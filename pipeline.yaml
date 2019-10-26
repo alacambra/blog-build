@@ -19,6 +19,3 @@ spec:
     type: JenkinsPipeline
     jenkinsPipelineStrategy:
       jenkinsfilePath: Jenkinsfile
-      env:
-        - name: SERVICE_URI
-          value: http://hello-world-wf.devops.svc:8080

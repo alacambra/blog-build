@@ -1,0 +1,12 @@
+title=About
+date=2019-09-24
+type=page
+status=published
+~~~~~~
+My name is Albert Lacambra Basil. I have over 10 years of experience in the IT sector, working as Java Senior Developer, IT Lead and Lead developer, delivering IT solutions to a variety of companies in the financial, logistics and IT sector.
+
+Through the years I have got some expertise into leading small developer teams, teaching and coaching them.
+
+Some of my typical responsibilities have been software architecture, infrastructure set-up, software development, and development team workflow.
+
+My technical core expertise is with Java, Java EE stack, git, CI/CD, AWS, Docker, Unix Networking, graph databases, and Hyperledger Fabric. 

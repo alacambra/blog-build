@@ -1,0 +1,20 @@
+= Add a new certificate to be accepted by maven
+Albert Lacambra Basil
+:jbake-title: Add a new certificate to be accepted by maven
+:description: To tell maven to trust a new certificate, you must add it into a keystore
+:jbake-date: 2018-10-16
+:jbake-type: post
+:jbake-status: published
+:jbake-tags: cert, maven, mvn
+:doc-id: add-new.certificate-to-be-accepted-maven
+
+Add the cert in the keystore:
+----
+\{JAVA_HOME}\bin\keytool.exe -importcert -alias {certAlias} -file {file}.cer -keystore cacerts
+----
+
+Add the cacert path to MAVEN_OPTS:
+
+----
+set MAVEN_OPTS=”-Djavax.net.ssl.trustStore=PATH\TO\cacerts”
+----

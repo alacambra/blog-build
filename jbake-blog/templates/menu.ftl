@@ -38,7 +38,7 @@
             </#if>
             <li class="search">
                 <a class="fa-search" href="#search">Search</a>
-                <form id="search" onsubmit="return search();">
+                <form id="search" onsubmit="return search('search-query');">
                     <input id="search-query" type="text" name="q" placeholder="Search" />
                     <input type="hidden" name="q" value="site:${config.site_host}">
                 </form>
@@ -55,8 +55,8 @@
 
     <!-- Search -->
         <section>
-            <form class="search" method="get" action="//google.com/search">
-                <input type="text" name="q" placeholder="Search" />
+            <form class="search_menu" onsubmit="return search('search-query-menu');">
+                <input id="search-query-menu" type="text" name="q" placeholder="Search" />
                 <input type="hidden" name="q" value="site:${config.site_host}">
             </form>
         </section>
@@ -116,8 +116,5 @@
                 <span class="author"/><span class="name">Albert Lacambra Basil</span><img src="../../img/main/avatar.png" alt="Albert Lacambra Basil" /></span>
             </div>
         </header>
-        <div id="content">
-        {{reducedText}}
-        </div>  
     </article>
 </template>

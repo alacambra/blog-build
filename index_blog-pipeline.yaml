@@ -19,6 +19,3 @@ spec:
     type: JenkinsPipeline
     jenkinsPipelineStrategy:
       jenkinsfilePath: index_blog.Jenkinsfile
-      env:
-        - name: SOLR_URI
-          value: http://hello-world-wf.devops.svc:8080

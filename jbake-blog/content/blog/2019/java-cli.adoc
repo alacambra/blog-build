@@ -1,0 +1,101 @@
+= Java 11 as CLI tool. No compilation. No pacakging.
+Albert Lacambra Basil
+:jbake-title: Java 11 as CLI tool. No compilation. No pacakging.
+:description: Since java 11 it is possible to run java programs without the need to compile it.That allows to useas a CLI language.
+:jbake-date: 2019-10-27
+:jbake-type: post
+:jbake-status: published
+:jbake-tags: java, cli
+:doc-id: Java-11-as-CLI-tool
+
+Since JDK 11 It is possible to run Java code without any compilation. That gives us the possibility to use java files as CLI scripts.
+
+In this way, I will use it to orchestrate *bash commands* using java while executing bash commands.
+
+To do that, we need:
+
+    1. Pass parameters to our scripts.
+    1. Execute shell commands.
+
+== Use of CREST to manage scripts parameters
+
+Crest, as defined by tomitribe is a _“Command-line API styled after JAX-RS”_. For example, the declaration of a “ls” command would look like:
+
+[source,java]
+--
+@Command("ls")
+ public void ls(@Option("a") boolean all, @Option("h") boolean human, @Option("l") boolean list, URI path) {
+  //implementation
+ }
+--
+
+Crest has a lot of options of useful options. Check his link:https://github.com/tomitribe/crest[site]
+
+Now, we are able to create a java command easily. We only miss its implementation. It can be pure java based or we could want to call some other powerfull **shell commands**.
+
+
+== Execute shell commands from java
+
+We want now run a native shell command. That means:
+
+1. Call the command
+2. Pass parameters
+3. Capture result code
+4. Capture result output
+
+[source, java]
+--
+
+/*
+ * command: shell command with parameters included
+ * stdOutConsumer: it receives the stdout response as lines.
+ * errConsumer: it receives the stderr response as lines.
+ */
+public CompletableFuture<Process> executeCommand(String command, Consumer<String> stdOutConsumer, Consumer<String> errConsumer) {
+ 
+    Process p;
+ 
+    try {
+      p = Runtime.getRuntime().exec(command);
+      run(p::getInputStream, stdOutConsumer);
+      run(p::getErrorStream, errConsumer);
+      return p.onExit();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+ 
+private void run(Supplier<InputStream> streamSupplier, Consumer<String> streamConsumer) {
+    try (InputStream stream = streamSupplier.get()) {
+      StringBuilder currentLine = new StringBuilder();
+      int nextChar;
+      while ((nextChar = stream.read()) != -1) {
+        if (nextChar == '\n') {
+          streamConsumer.accept(currentLine.toString());
+          currentLine.setLength(0);
+          continue;
+        }
+        currentLine.append((char) nextChar);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+--
+
+Here, I am passing the standard output text to the Consumers<> line per line.
+
+== Calling our script. No compilation. No pacakging.
+
+To run everything together without the need to compile, you must add the CREST dependencies into the classpath:
+
+[source,shell]
+--
+java -cp /path/to/tomitribe-crest-api-0.10.jar:/path/to/tomitribe-crest-0.10.jar:/path/to/tomitribe-util-1.0.0.jar \
+ 
+/path/to/blogs-posts-code/cli/src/main/java/tech/lacambra/blog/cli/Cli.java ls -la .
+--
+
+One useful use case is small DB backups scripts. I use java to check, create and delete folders and create proper logs while using native mysqldump command to execute the DB backup
+
+you can get the full code on link:https://github.com/alacambra/blogs-posts-code/blob/master/cli/src/main/java/tech/lacambra/blog/cli/Cli.java[github].
