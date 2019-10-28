@@ -1,12 +1,12 @@
+= Solr on Openshift
 Albert Lacambra Basil
-:jbake-title: Solr configlr
-//:description: A basic usage of jms
-:jbake-date: 2019-05-06
+:jbake-title: Run Solr in Openshift
+:description: Get a running solr instance on Openshift with s2i images
+:jbake-date: 2019-10-19
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: java EE
+:jbake-tags: solr, openshift
 :doc-id: create-solr-project-oc
-
 
 == Create docker file
 
