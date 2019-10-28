@@ -1,6 +1,6 @@
-= The JsonPointer. Json make easy
+= The JsonPointer. Json made easy
 Albert Lacambra Basil
-:jbake-title: The JsonPointer. Json make easy
+:jbake-title: The JsonPointer. Json made easy
 :jbake-date: 2019-05-19
 :jbake-type: post
 :jbake-status: published
