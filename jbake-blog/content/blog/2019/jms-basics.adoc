@@ -1,10 +1,9 @@
-
 = JMS Basics. Send and receive messages
 Albert Lacambra Basil
 :jbake-type: post
 :jbake-status: published
 :jbake-tags: jms, java EE
-:jbake-title: Send and receive messages
+:jbake-title: JMS Basics. Send and receive messages
 :description: Fast and easy way to send and receive JMS messages.
 :doc-id: jms-basics
 :jbake-date: 2019-10-19

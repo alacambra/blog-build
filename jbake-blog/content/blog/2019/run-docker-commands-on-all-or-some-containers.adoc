@@ -1,0 +1,61 @@
+= Run docker commands on all or some containers
+Albert Lacambra Basil
+:jbake-title: Run docker commands on all or some containers
+:description: execute a docker command over containers matchin some given expression
+:jbake-date: 2019-09-01
+:jbake-type: post
+:jbake-status: published
+:jbake-tags: docker
+:doc-id: run-docker-commands-on-all-or-some-containers
+
+== Use the ps command with the q param to fetch the insance id and then apply the command:
+----
+docker {COMMAND TO RUN} $(docker ps -a -q)  -> for containers
+docker {COMMAND TO RUN} $(docker images -q) -> for images
+----
+
+Examples:
+
+.Delete all stopped containers
+----
+docker rm $(docker ps -a -q)
+----
+.Delete all unused images
+----
+docker rmi $(docker images -q)
+----
+
+.Start all stopped containers:
+----
+docker start $(docker ps -a -q)
+----
+
+.Restart all containers: 
+----
+docker restart $(docker ps -a -q)
+----
+
+.Print names of containers. This commands avoids column name using NR>1 and prints the last column. So it uses the fact that las column is the one we are interested.
+----
+docker ps | awk "{if(NR>1) print $NF}"
+----
+
+.Reformat ps output format. Using format modifier we directly print only desired columns separating them using a given separetor (\t on this case) 
+----
+docker ps –format "table {{.Names}}\t{{.Image}}"
+----
+
+.Print only containers names without headers using format and tail. Print only column names using format modifier and avoid column names using tail command to print from to line 2
+----
+docker ps -a –format "table {{.Names}}" | tail -n +2
+----
+
+.For more elavorated filters. awk "{ print $1 }" captures the container id value.
+----
+docker  {COMMAND TO RUN} $(docker ps -a |grep {TEXT-TO-CAPTURE}|awk "{ print $1 }")  
+----
+
+.Remove all images with  "pattern" in name
+----
+docker rmi $(docker images -f="reference=*pattern*" -q)
+----

@@ -1,4 +1,5 @@
 = Build and deploy static blog in Openshift
+
 Albert Lacambra Basil
 :jbake-type: post
 :jbake-status: draft

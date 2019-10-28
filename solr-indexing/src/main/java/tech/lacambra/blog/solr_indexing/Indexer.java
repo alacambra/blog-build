@@ -1,5 +1,6 @@
 package tech.lacambra.blog.solr_indexing;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.common.SolrInputDocument;
 
@@ -7,8 +8,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.logging.Logger;
 
 public class Indexer {
+  private static final Logger LOGGER = Logger.getLogger(Indexer.class.getName());
+  private HttpSolrClient client;
 
   public static void main(String[] args) throws IOException {
 
@@ -16,38 +20,53 @@ public class Indexer {
       throw new RuntimeException("No content path given");
     }
 
-    Indexer indexer = new Indexer();
+    try (HttpSolrClient client = SolrClientProvider.getClient()) {
+      Indexer indexer = new Indexer(client);
+      indexer.indexAll(args[0]);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
-    Path contentPath = Paths.get(args[0]);
+  public Indexer(HttpSolrClient client) {
+    this.client = client;
+  }
 
-    Files.walk(contentPath, 1)
-        .filter(p -> !p.equals(contentPath) && Files.isDirectory(p))
-        .flatMap(p -> {
-          try {
-            return Files.walk(p, 1);
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
-        })
-        .filter(p -> Files.isRegularFile(p))
-        .map(p -> {
+  public void indexAll(String path) {
+    Path contentPath = Paths.get(path);
+    try {
+      Files.walk(contentPath, 1)
+          .filter(p -> !p.equals(contentPath) && Files.isDirectory(p))
+          .flatMap(p -> {
+            try {
+              return Files.walk(p, 1);
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
+          })
+          .filter(p -> Files.isRegularFile(p))
+          .map(p -> {
 
-          try {
-            return indexer.parseAdocText(p);
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
+            try {
+              return parseAdocText(p);
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
 
-        })
-        .filter(ParsedDocument::isPosted)
-        .forEach(indexer::indexDoc);
+          })
+          .filter(ParsedDocument::isPosted)
+          .forEach(this::indexDoc);
+    } catch (IOException e) {
+      LOGGER.info("[indexAll] Error: " + e.getMessage());
+    }
   }
 
   private void indexDoc(ParsedDocument parsedDocument) {
 
     final SolrInputDocument doc = new SolrInputDocument();
 
-    doc.addField("id", parsedDocument.getHeaderValue("doc-id").orElseThrow(() -> new RuntimeException("Id must be given for:" + parsedDocument.getUrl())));
+    String id = parsedDocument.getHeaderValue("doc-id").orElseThrow(() -> new RuntimeException("Id must be given for:" + parsedDocument.getUrl()));
+    doc.addField("id", id);
     doc.addField("url", parsedDocument.getUrl());
     doc.addField("title", parsedDocument.getHeaderValue("jbake-title").orElse(""));
     doc.addField("description", parsedDocument.getHeaderValue("description").orElse(""));
@@ -57,22 +76,16 @@ public class Indexer {
 
     String collection = "blog-solr";
 
-    try (HttpSolrClient client = getClient()) {
-
+    try {
       client.add(collection, doc);
       client.commit(collection);
+      LOGGER.info("[indexDoc] Indexed document " + id);
 
-    } catch (Exception e) {
+    } catch (SolrServerException | IOException e) {
       e.printStackTrace();
     }
-  }
 
-  private HttpSolrClient getClient() {
-    final String solrUrl = "http://solr-blog-blog.apps.oc.lacambra/solr";
-    return new HttpSolrClient.Builder(solrUrl)
-        .withConnectionTimeout(10000)
-        .withSocketTimeout(60000)
-        .build();
+
   }
 
   private ParsedDocument parseAdocText(Path path) throws IOException {

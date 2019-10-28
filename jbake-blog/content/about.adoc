@@ -9,4 +9,4 @@ Through the years I have got some expertise into leading small developer teams, 
 
 Some of my typical responsibilities have been software architecture, infrastructure set-up, software development, and development team workflow.
 
-My technical core expertise is with Java, Java EE stack, git, CI/CD, AWS, Docker, Unix Networking, graph databases, and Hyperledger Fabric. 
+My technical core expertise is with Java, Java EE / Jakarta EE stack, Microprofile, git, CI/CD, AWS, Docker, Openshift, Unix Networking, Graph Databases, Neo4j and Hyperledger Fabric. 
