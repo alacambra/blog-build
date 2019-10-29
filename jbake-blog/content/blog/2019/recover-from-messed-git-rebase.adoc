@@ -1,0 +1,64 @@
+= Recover from a messed git rebase
+Albert Lacambra Basil
+:jbake-title: Recover from a messed git rebase
+:description: IF while playing wit rebases you make a mess with your code you can go back to the orginal commits using the reflog. 
+:jbake-date: 2019-02-01
+:jbake-type: post
+:jbake-status: published
+:jbake-tags: git
+:doc-id: recover-from-messed-git-rebase
+
+Find the head commit as it was before the rebase started:
+[source, bash]
+--
+git reflog
+
+f96d1d5 HEAD@{1}: commit (amend): reflexion post
+5febdfd HEAD@{2}: commit (amend): reflexion post
+c5fcc8a HEAD@{3}: commit (amend): reflexion post
+d295da6 HEAD@{4}: commit (amend): reflexion post
+e19fca7 HEAD@{5}: commit (amend): reflexion post
+3cceb51 HEAD@{6}: commit: reflexion post
+ac6abd8 HEAD@{7}: commit (amend): added docker post
+9d491a4 HEAD@{8}: commit (amend): added docker post// 
+1a1e610 HEAD@{9}: commit (amend): added index cli
+36ea9e4 HEAD@{10}: commit (amend): added docker post
+--
+
+Looking at the git log, you can see that HEAD@{1} to HEAD@{5} belongs to the same commit "reflexion post". 
+
+[TIP]
+In _(...)_ you can see the git command it has been used.
+
+[source, bash]
+--
+
+commit 91492399bb88c34d470a32950c70049acc8385f2 (HEAD -> master, origin/master)
+Author: Albert Lacambra Basil <albert@lacambra.tech>
+Date:   Mon Oct 28 22:40:19 2019 +0100
+
+    reflexion post
+
+commit ac6abd8677bb21354704490aaa4d08507ddcb52f
+Author: Albert Lacambra Basil <albert@lacambra.tech>
+Date:   Mon Oct 28 20:36:02 2019 +0100
+
+    added docker post
+
+commit 51f0879e40d609232ce020ab5ff02d05d1f9d7b2
+Author: Albert Lacambra Basil <albert@lacambra.tech>
+Date:   Mon Oct 28 19:20:42 2019 +0100
+
+    added post
+--
+
+[NOTE]
+====
+The commit message is the same simply because I was giving it on each -amend command. It is useful in this case to identify which commits have been squashed together.  Normally each commit will have a different message.
+====
+
+Now I can just go back to an squashed commit reseting the current branch to it.
+[source, bash]
+--
+git reset –hard HEAD@{NUMBER}
+--
