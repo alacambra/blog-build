@@ -1,11 +1,11 @@
 const url = "/search/blog-solr/select?q="
-// const url = "sample-solr-response.json"
+//const url = "sample-solr-response.json"
 const search = (searchId) => {
 
     const template = document.querySelector('#search-result');
-    const q = document.querySelector(`#${searchId}`).value;
-    const select = url + `*${q}*`;
-
+    const q = document.querySelector(`#${searchId}`).value.replace(/[ ]+/g, "*");
+    const select = `${url}*${q}*`;
+    console.log(select);
     fetch(select)
         .then(response => response.json())
         .then(j => {

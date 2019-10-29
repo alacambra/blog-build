@@ -12,20 +12,19 @@ Having:
 
 [source, java]
 --
-public void setX to become a public SomeClass setX(…)
+public SomeClass setX(…){}
 --
 
 and using the regex:
-[source, java]
---
+
+----
 public void set([\w]+.+\{(\n\s+).+)
---
+----
 
 with replace:
-[source, java]
---
+----
 public SomeClass set$1$2return this;
---
+----
 
 
 It transforms
