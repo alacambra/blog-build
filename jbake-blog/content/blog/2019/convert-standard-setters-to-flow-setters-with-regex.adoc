@@ -1,0 +1,48 @@
+= Convert standard setters to flow setters with regex
+Albert Lacambra Basil
+:jbake-title: Convert standard setters to flow setters with regex
+:description: Using regex you can convert all void setters to flow or builder setters 
+:jbake-date: 2019-02-01
+:jbake-type: post
+:jbake-status: published
+:jbake-tags: java
+:doc-id: convert-standard-setters-to-flow-setters-with-regex
+
+Having:
+
+[source, java]
+--
+public void setX to become a public SomeClass setX(…)
+--
+
+and using the regex:
+[source, java]
+--
+public void set([\w]+.+\{(\n\s+).+)
+--
+
+with replace:
+[source, java]
+--
+public SomeClass set$1$2return this;
+--
+
+
+It transforms
+[source, java]
+--
+public void setX(int x){
+    this.x;
+}
+--
+
+to
+[source, java]
+--
+public MyClass setX(int x){
+    this.x;
+    return this;
+}
+--
+
+Tested with Intellij.
