@@ -1,0 +1,18 @@
+= My VCode commands
+Albert Lacambra Basil
+:jbake-title: My Visual Studio Code commands
+:description: 
+:jbake-date: 2018-02-01
+:jbake-type: post
+:jbake-status: published
+:doc-id: vcode-commands
+
+== Canviar el tema entre light i dark
+
+ - In VS Code, open the Color Theme picker with File > Preferences > Color Theme. (Code > Preferences > Color Theme on macOS).
+
+ - You can also use the keyboard shortcut **⌘K ⌘T** to display the picker.
+
+KeyMap:
+
+- **⌘K ⌘S**
