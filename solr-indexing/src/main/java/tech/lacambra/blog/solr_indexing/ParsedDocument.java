@@ -2,6 +2,7 @@ package tech.lacambra.blog.solr_indexing;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ParsedDocument {
 
@@ -59,6 +60,13 @@ public class ParsedDocument {
   }
 
   public String getBodyText() {
+
+    Stream.of("jbake-title", "description")
+        .map(this::getHeaderValue)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .forEach(body::add);
+
     return String.join("\n", body);
   }
 
