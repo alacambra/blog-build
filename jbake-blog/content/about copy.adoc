@@ -1,0 +1,21 @@
+title=About
+date=2019-09-24
+type=page
+status=draft
+~~~~~~
+My name is Albert Lacambra Basil. I have over 10 years of experience in the IT sector, working as Java Senior Developer, IT Lead and Lead developer, delivering IT solutions to a variety of companies in the financial, logistics and IT sector.
+
+Through the years I have got some expertise into leading small developer teams, teaching and coaching them.
+
+Some of my typical responsibilities have been software architecture, infrastructure set-up, software development, and development team workflow.
+
+My technical core expertise is with Java, Java EE /Jakarta EE stack, Microprofile, git, CI/CD, AWS, Docker, Openshift, Unix Networking, Graph Databases, Neo4j and Hyperledger Fabric. 
+
+How many stacks, instructions, libraries, commands, tricks, concepts, paradgims, ... do you use in a year? How many you learn in the same period? And how often do you need to reuse them and do not rember exactly how they were exactly used?
+
+In my case, I do not have a numver, but the answer is a lot of everything. I need to learn and manage much more than what my brain can remember and I need to research and an refind the sam stuff again and again. 
+
+That is the reason why I tried to save as much as I can in a simple file first. However, it becomes pretty fast unmanagable. I ended up with huge files and also lost them when moving systems. I have been trying several approches using online bookmarks like delicous or online documents like drive. 
+
+
+If you are more interesed about to know who I am: link:https://albert.lacambra.tech[Who I am?]

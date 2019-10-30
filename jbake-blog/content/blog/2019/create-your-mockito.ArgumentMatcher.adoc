@@ -8,11 +8,12 @@ Albert Lacambra Basil
 :jbake-tags: java EE
 :doc-id: create-your-mockito.ArgumentMatcher
 
-When testing you usually need to mock. I mock mostly using Mockito and usually, I stub using when and verify calls using verify.
+When testing and mocking, we can  need to perform some verifications that are not covered by the standard Mockito or Hamcrest _Matchers_.
 
-Normally you will want to verify that a given method has called with specific parameters or that a mocked method returns the desired value only when called also with specific parameters.
+In these cases, we can create our own matchers. Your own matchers, can increase readability or perform more complex assertions.
 
-In the following class, an article is the same if its id is the same. We can, however, be interested in match the article using its contents (tile and text) instead of its database id.
+Let's see an example. In the following example we have an _Article_ class. Our _article_ is quite simple. It has an _id_, a _title_ and a _text_.
+
 
 [source ,java]
 --
@@ -55,34 +56,108 @@ public class Article {
 }
 --
 
-Usually, it is enough to use the Mocikto.eq() ArgumentMatcher that will use the Object.equals() method.
+
+We can store this article in a _store_ using the field _id_ as its primary key. We use its methods _equals_ and _hashcode_ to identify two instances that represents the same stored _article_. 
+
+[source ,java]
+--
+public class ArticleStore {
+
+  private Map<Integer, Article> articles;
+  private DuplicationService duplicationService;
+
+  public ArticleStore(DuplicationService duplicationService) {
+    this.duplicationService = duplicationService;
+    articles = new HashMap<>();
+  }
+
+  public Article createArticle(String text, String title) {
+    Article article = new Article(getNextId(), text, title);
+    storeArticle(article);
+    return article;
+  }
+
+  public Article createCopy(int id) {
+    Article article = articles.get(id);
+    Article copy = duplicationService.duplicate(getNextId(), article);
+    storeArticle(copy);
+
+    return copy;
+  }
+
+  public List<Article> getArticlesLike(Article article) {
+    return articles.values()
+        .stream()
+        .filter(a -> a.getText().equalsIgnoreCase(article.getText()) && a.getTitle().equalsIgnoreCase(article.getTitle()))
+        .collect(Collectors.toList());
+  }
+
+  void storeArticle(Article article) {
+    articles.put(article.getId(), article);
+  }
+
+  private Integer getNextId() {
+    return articles.size() + 1;
+  }
+}
+--
+
+We can test that an article has been created checking that the _storeArticle_ method has been called with the desired article.
 
 [source,java]
 --
-Mockito.verify(publication).addArticle(Mockito.eq(article));
+
+@Test
+void createArticle() {
+  ArticleStore articleStore = Mockito.spy(ArticleStore.class);
+  articleStore.createArticle("someText", "title");
+
+  Article article = new Article(1, "someText", "title");
+
+  Mockito.verify(articleStore).storeArticle(Mockito.eq(article));
+
+  //Or simply
+  Mockito.verify(articleStore).storeArticle(article);
+}
 --
 
-However, if we want to match against its contents, we need a new matcher “ArticleMatcher” that compares title and text. Therefore, I will just create a **class ArticleMatcher implements ArgumentMatcher**
+Now, we have a service that duplicates this articles. That means that the _duplicate service_ will create a new _article_ that contains a different _id_ but the same _title _ and _text_.
+
+[source ,java]
+--
+package tech.lacambla.blog.examples.matchers;
+
+public class DuplicationService {
+
+  public Article duplicate(int nextId, Article article) {
+    return new Article(nextId, article.getTitle(), article.getText());
+  }
+
+}
+--
+
+If we want to verify that this method is correctly called, we must create a matcher, _ArgumentMatcher.isDuplicateOf(Article article)_.
 
 [source,java]
 --
-class ArticleMatcher implements ArgumentMatcher
-<Article> {
- 
+class ArticleMatcher implements ArgumentMatcher<Article> {
+
+
   public final Article article;
- 
-  /**
-   * register our matcher.
-   */
-  public static Article eq(Article article) {
+
+  
+  public static Article isDuplicateOf(Article article) {
+
+   // Register our matcher.
+
     mockingProgress().getArgumentMatcherStorage().reportMatcher(new ArticleMatcher(article));
     return null;
   }
- 
+
   public ArticleMatcher(Article article) {
     this.article = article;
   }
- 
+
   /**
    * Implements matches method with our matching logic.
    * @param article
@@ -92,49 +167,27 @@ class ArticleMatcher implements ArgumentMatcher
   public boolean matches(Article article) {
     return this.article.getText().equalsIgnoreCase(article.getText());
   }
- 
+
   public String toString() {
     return "<ArticleMatcher>";
   }
 }
 --
 
-Now we can use our ArgumentMutcher to create stubs and verify calls:
+Now we can use our _ArgumentMatcher_ to create stubs and verify calls:
 
 [source, java]
 --
 class ArticleTest {
  
   @Test
-  void checkVerify() {
- 
-    Article article1 = new Article(1, "someText", "title");
-    Article article2 = new Article(2, "someText", "title");
-    Article article3 = new Article(3, "someText", "title");
- 
-    Publication publication = Mockito.spy(Publication.class);
-    publication.addArticle(article1);
- 
-    Mockito.verify(publication).addArticle(ArticleMatcher.eq(article2));
-    Mockito.verify(publication, Mockito.times(0)).addArticle(Mockito.eq(article3));
- 
+  void duplicateArticle() {
+
+    Article article = articleStore.createArticle("someText", "title");
+    articleStore.createCopy(article.getId());
+
+    Mockito.verify(duplicationService).duplicate(article.getId() + 1, article);
   }
- 
-  @Test
-  void checkStub() {
- 
-    Article article1 = new Article(1, "someText", "title");
-    Article article2 = new Article(2, "someText", "title");
-    Article article3 = new Article(3, "someText", "title");
- 
-    Publication publication = Mockito.spy(Publication.class);
-    Mockito.when(publication.getArticlesLike(ArticleMatcher.eq(article2))).thenReturn(Arrays.asList(article1, article2));
- 
-    List<Article> articles = publication.getArticlesLike(article3);
-    Assertions.assertEquals(2, articles.size());
-    Assertions.assertTrue(articles.contains(article1));
-    Assertions.assertTrue(articles.contains(article2));
-    Assertions.assertFalse(articles.contains(article3));
-  }
+
 }
 --
