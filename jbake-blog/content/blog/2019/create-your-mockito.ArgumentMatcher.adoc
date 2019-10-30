@@ -8,11 +8,13 @@ Albert Lacambra Basil
 :jbake-tags: java EE
 :doc-id: create-your-mockito.ArgumentMatcher
 
-When testing and mocking, we can  need to perform some verifications that are not covered by the standard Mockito or Hamcrest _Matchers_.
+When testing and mocking, sometime we perform some _assertions/verifications_ that are not covered by the standard Mockito or Hamcrest _Matchers_.
 
-In these cases, we can create our own matchers. Your own matchers, can increase readability or perform more complex assertions.
+In these cases, we can create our own matchers. Your own matchers, can increase readability,  perform more complex assertions or call verifications. 
 
-Let's see an example. In the following example we have an _Article_ class. Our _article_ is quite simple. It has an _id_, a _title_ and a _text_.
+Let's see an example. 
+
+In the following code we have an _Article_ class. Our _article_ is quite simple. It has an _id_, a _title_ and a _text_.
 
 
 [source ,java]
@@ -121,7 +123,7 @@ void createArticle() {
 }
 --
 
-Now, we have a service that duplicates this articles. That means that the _duplicate service_ will create a new _article_ that contains a different _id_ but the same _title _ and _text_.
+Now, we have a service that duplicates this articles. That means that the _duplicate service_ will create a new _article_ that contains a different _id_ but the same _title_ and _text_.
 
 [source ,java]
 --
@@ -178,16 +180,13 @@ Now we can use our _ArgumentMatcher_ to create stubs and verify calls:
 
 [source, java]
 --
-class ArticleTest {
- 
-  @Test
+@Test
   void duplicateArticle() {
 
     Article article = articleStore.createArticle("someText", "title");
     articleStore.createCopy(article.getId());
 
-    Mockito.verify(duplicationService).duplicate(article.getId() + 1, article);
+    //2 times since the both articles have the same contents
+    Mockito.verify(articleStore, times(2)).storeArticle(ArticleMatcher.isDuplicateOf(article));
   }
-
-}
 --
