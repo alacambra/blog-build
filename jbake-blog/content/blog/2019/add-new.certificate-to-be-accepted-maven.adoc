@@ -9,12 +9,14 @@ Albert Lacambra Basil
 :doc-id: add-new.certificate-to-be-accepted-maven
 
 Add the cert in the keystore:
-----
+[source, shell]
+--
 \{JAVA_HOME}\bin\keytool.exe -importcert -alias {certAlias} -file {file}.cer -keystore cacerts
-----
+--
 
 Add the cacert path to MAVEN_OPTS:
 
-----
+[source, shell]
+--
 set MAVEN_OPTS=”-Djavax.net.ssl.trustStore=PATH\TO\cacerts”
-----
+--

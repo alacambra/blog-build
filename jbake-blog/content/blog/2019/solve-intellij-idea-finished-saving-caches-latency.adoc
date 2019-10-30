@@ -9,14 +9,16 @@ Albert Lacambra Basil
 :doc-id: solve-intellij-idea-finished-saving-caches-latency
 
 Include the following line in your _/etc/hosts_ file:
-----
+[source, shell]
+--
 127.0.0.1       localhost     <your hostname goes here>.local
-----
+--
 
 And for IPv6 resolving, the same:
-----
+[source, shell]
+--
 ::1             localhost     <your hostname goes here>.local
-----
+--
 
 References:
 

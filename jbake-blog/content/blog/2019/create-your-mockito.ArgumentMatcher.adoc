@@ -1,4 +1,4 @@
-= Create your mockito.ArgumentMatcher
+= Create your mockito ArgumentMatcher
 Albert Lacambra Basil
 :jbake-title: create your mockito.ArgumentMatcher
 //:description: A basic usage of jms
