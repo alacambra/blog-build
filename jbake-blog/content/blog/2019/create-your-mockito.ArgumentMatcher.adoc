@@ -1,11 +1,10 @@
 = Create your mockito ArgumentMatcher
 Albert Lacambra Basil
-:jbake-title: create your mockito.ArgumentMatcher
-//:description: A basic usage of jms
+:jbake-title: create your mockito ArgumentMatcher
 :jbake-date: 2019-05-06
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: java EE
+:jbake-tags: java, testing, mockito
 :doc-id: create-your-mockito.ArgumentMatcher
 
 When testing and mocking, sometime we perform some _assertions/verifications_ that are not covered by the standard Mockito or Hamcrest _Matchers_.
