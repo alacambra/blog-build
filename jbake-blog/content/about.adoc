@@ -2,6 +2,8 @@
 :jbake-title: About
 :jbake-type: page
 :jbake-status: published
+type=page
+status=published
 
 How many stacks, tricks, how-to's, libraries, commands, concepts, paradgims, ... do you use in a year? How many do you remeber at the end of the same period? How many times you would like to reuse it but do not remember it exactly?
 
