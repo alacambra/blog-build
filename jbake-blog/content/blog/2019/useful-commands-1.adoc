@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-11-04
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: bash
+:jbake-tags: bash, cli
 :doc-id: useful-commands-1
 
 == Reset console colors to bash
