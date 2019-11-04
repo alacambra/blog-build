@@ -1,6 +1,6 @@
 = Useful bash commands
 Albert Lacambra Basil
-:jbake-title: 
+:jbake-title: Useful bash commands
 :description: Som command examples using AWK, sed, find, watch and aria2
 :jbake-date: 2019-11-04
 :jbake-type: post
