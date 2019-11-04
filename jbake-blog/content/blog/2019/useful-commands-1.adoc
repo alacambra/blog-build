@@ -1,0 +1,97 @@
+= Useful bash commands
+Albert Lacambra Basil
+:jbake-title: 
+:description: Som command examples using AWK, sed, find, watch and aria2
+:jbake-date: 2019-11-04
+:jbake-type: post
+:jbake-status: published
+:jbake-tags: bash
+:doc-id: useful-commands-1
+
+== Reset console colors to bash
+
+[source, bash]
+--
+echo -e "\033[0m"
+--
+
+== AWK useful commands
+
+print column **n** using a separator **#**:
+[source, bash]
+--
+awk -F# '{print $n}'
+--
+
+print column 3 of lines that start with a number:
+[source, bash]
+--
+awk '/^[0-9]/ {print $3}'
+--
+
+=== Variables:
+**NF**: number of fields
+
+**NR**: Number of record being processed
+
+
+=== Avoid first record(row) and print last field (columnd):
+[source, bash]
+--
+awk '{if(NR>1) print $NF}': 
+--
+
+More about built-in variables: link:https://www.thegeekstuff.com/2010/01/8-powerful-awk-built-in-variables-fs-ofs-rs-ors-nr-nf-filename-fnr/?ref=binfind.com/web[8 Powerful Awk Built-in ]
+
+Some more tricks: https://twitter.com/b0rk/status/1000604334026055681
+
+== Match and replace using sed
+[source, bash]
+--
+sed -i -e ‘s/pattern/replace-for/g'
+--
+
+
+== Apply commands using find
+
+Execute rm on *.class files:
+[source, bash]
+--
+find . -name *.class -type f -exec rm;
+--
+
+Execute the sed param on files containing java in the name:
+[source, bash]
+--
+find . -type f |grep java|xargs sed -i -e ‘s/pattern/replace-for/g'
+--
+
+
+== Rerun command using watch
+
+To rerun automatically a command use:
+
+[source, bash]
+--
+watch -n 1 --differences {COMMAND TO REFRESH}
+--
+
+For example, to see creation of docker containers:
+
+[source, bash]
+--
+watch -n 1 --differences docker ps
+--
+
+== Aria2, the wget alternative	
+
+Aria2 offers interesting options to download a file, like parallel downloading:
+
+[source, bash]
+--
+aria2c -x4 {utl} to use 4 connections
+--
+
+More info: https://aria2.github.io/
+
+
