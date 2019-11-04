@@ -1,22 +1,24 @@
-title=About
-date=2019-09-24
-type=page
-status=published
-~~~~~~
+== About
+:jbake-title: About
+:jbake-type: page
+:jbake-status: published
+
 How many stacks, tricks, how-to's, libraries, commands, concepts, paradgims, ... do you use in a year? How many do you remeber at the end of the same period? How many times you would like to reuse it but do not remember it exactly?
 
 And so I have begun this blog. A way to save and find any information worthy enough to be reused. 
 
 My requirments are:
-1 A place to save any learning I do.
-1 Easy accesible from everywehre.
-1 So fast as it can be.
-1 Secured. 
-1 Easy to find my information.
-1 Easy to edit.
-1 Good looking.
 
-An so I have created an (almost) full static blog, that natively uses AsciiDoctor with Solr as a Full-Text engine. The server is a simple nginx runing on top of my own openshift set-up (just for fun :))
+1. A place to save any learning I do.
+1. Easy accesible from everywehre.
+1. So fast as it can be.
+1. Easy to find my information.
+1. Easy to edit.
+1. Well looking.
+
+An so I have created an (almost) full static blog, that natively uses AsciiDoctor with Solr as a Full-Text engine. 
+
+The server is a simple nginx runing on top of my own openshift set-up (just for fun :))
 
 
 If you are more interesed about to know who I am: link:https://albert.lacambra.tech[Who I am?]
