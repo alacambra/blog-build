@@ -1,0 +1,72 @@
+= Keyset pagination
+Albert Lacambra Basil
+:jbake-title: Keyset pagination
+:description: Make an effective pagination without offset using a table index 
+:jbake-date: 2019-11-08
+:jbake-type: post
+:jbake-status: publish
+:jbake-tags: sql
+:doc-id: keyset-pagination-uuid
+
+== Motivation of keyset pagination
+When we use OFFSET and LIMIT for pagination, the database need to fetch all the results that are being skipped.
+
+That is just a waste of effort.
+
+Using a keyset pagination, we instruct the database to begin to count from a given index. 
+
+In this way, no wasted results needs to be fetched. For a more deeper information visit link:https://use-the-index-luke.com/no-offset[Use the Index, LUKE!]
+
+== Basics about keyset pagination
+Basically we just need to indicate the Database where to begin and how should the resul set be ordered. That means to pass some indexed value.
+
+[source,sql]
+----
+SELECT b.title
+  FROM Books AS b
+ WHERE 
+   AND b.id < :last_seen_id
+ ORDER BY id DESC
+ LIMIT 10 ROWS ONLY
+----
+
+Here he are saying go to the __last_seen_id__ and give me back all books with an smaller __id__. The fact that the __id__ is indexed, is what is making the magic.
+
+== Paginating with strings
+
+Really nice to order by id. However, most of the time is useless. Normally, if we want to list books, we are gone a order it by title.
+[source, sql]
+----
+SELECT b.title
+  FROM Books AS b
+ WHERE 
+   AND b.title < :last_seen_title
+ ORDER BY title DESC
+ LIMIT 10 ROWS ONLY
+----
+
+That makes much more sense!
+
+== Paginating and ordering by not unique attributes
+Now, let suppouse that to different books (different ISBN) have exactly the same title. If we use the above mentioned query, we are not goba be able to define which was the last seen book, since the title is repeated.
+
+That means that we are gone to begin always by the first book with the same title. Well, in this case we just need to add some unique attribute. The primary __id__ will do the job.
+
+[source, sql]
+----
+SELECT b.title
+  FROM Books AS b
+ WHERE 
+   AND (b.title, b.id) < (:last_seen_title, :last_seen_id)
+ ORDER BY title DESC
+ LIMIT 10 ROWS ONLY
+----
+
+[NOTE]
+====
+*Row values in WHERE clause*
+
+(x, y) > (a, b) is true if (x > a OR (x=a AND y>b))
+
+In other words, (x, y) __sorts after__ (a, b)
+====
