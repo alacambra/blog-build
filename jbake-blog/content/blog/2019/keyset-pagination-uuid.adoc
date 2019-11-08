@@ -4,43 +4,45 @@ Albert Lacambra Basil
 :description: Make an effective pagination without offset using a table index 
 :jbake-date: 2019-11-08
 :jbake-type: post
-:jbake-status: publish
+:jbake-status: published
 :jbake-tags: sql
 :doc-id: keyset-pagination-uuid
 
 == Motivation of keyset pagination
-When we use OFFSET and LIMIT for pagination, the database need to fetch all the results that are being skipped.
+When we use OFFSET and LIMIT for pagination, the database needs to fetch all the results that are being skipped.
 
 That is just a waste of effort.
 
-Using a keyset pagination, we instruct the database to begin to count from a given index. 
+Using keyset pagination, we instruct the database to begin to count from a given index. 
 
-In this way, no wasted results needs to be fetched. For a more deeper information visit link:https://use-the-index-luke.com/no-offset[Use the Index, LUKE!]
+In this way, no wasted results need to be fetched. For more deeper information visit link:https://use-the-index-luke.com/no-offset[Use the Index, LUKE!]
 
 == Basics about keyset pagination
-Basically we just need to indicate the Database where to begin and how should the resul set be ordered. That means to pass some indexed value.
+Basically, we just need to indicate the database where to begin and how should the result set be ordered. 
+
+That means to pass some indexed value.
 
 [source,sql]
 ----
 SELECT b.title
-  FROM Books AS b
- WHERE 
-   AND b.id < :last_seen_id
- ORDER BY id DESC
- LIMIT 10 ROWS ONLY
+FROM Books AS b
+WHERE 
+AND b.id < :last_seen_id
+ORDER BY id DESC
+LIMIT 10 ROWS ONLY
 ----
 
-Here he are saying go to the __last_seen_id__ and give me back all books with an smaller __id__. The fact that the __id__ is indexed, is what is making the magic.
+Here he is saying go to the __last_seen_id__ and give me back all books with a smaller __id__. The fact that the __id__ is indexed, is what is making the magic.
 
 == Paginating with strings
 
-Really nice to order by id. However, most of the time is useless. Normally, if we want to list books, we are gone a order it by title.
+Really nice to order by id. However, most of the time is useless. Normally, if we want to list books, we are gone an order it by title.
 [source, sql]
 ----
 SELECT b.title
-  FROM Books AS b
+ FROM Books AS b
  WHERE 
-   AND b.title < :last_seen_title
+ AND b.title < :last_seen_title
  ORDER BY title DESC
  LIMIT 10 ROWS ONLY
 ----
@@ -48,16 +50,20 @@ SELECT b.title
 That makes much more sense!
 
 == Paginating and ordering by not unique attributes
-Now, let suppouse that to different books (different ISBN) have exactly the same title. If we use the above mentioned query, we are not goba be able to define which was the last seen book, since the title is repeated.
+Now, let suppose that to different books (different ISBN) have the same title. 
 
-That means that we are gone to begin always by the first book with the same title. Well, in this case we just need to add some unique attribute. The primary __id__ will do the job.
+If we use the above-mentioned query, we are not gonna be able to define which was the last seen book, since the title is repeated.
+
+That means that we are gone to begin always by the first book with the same title. Well, in this case, we just need to add some unique attribute. 
+
+The primary __id__ will do the job.
 
 [source, sql]
 ----
 SELECT b.title
-  FROM Books AS b
+ FROM Books AS b
  WHERE 
-   AND (b.title, b.id) < (:last_seen_title, :last_seen_id)
+ AND (b.title, b.id) < (:last_seen_title, :last_seen_id)
  ORDER BY title DESC
  LIMIT 10 ROWS ONLY
 ----

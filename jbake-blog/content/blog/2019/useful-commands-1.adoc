@@ -43,7 +43,7 @@ awk '{if(NR>1) print $NF}':
 
 More about built-in variables: link:https://www.thegeekstuff.com/2010/01/8-powerful-awk-built-in-variables-fs-ofs-rs-ors-nr-nf-filename-fnr/?ref=binfind.com/web[8 Powerful Awk Built-in ]
 
-Some more tricks: https://twitter.com/b0rk/status/1000604334026055681
+Some more tricks link:https://twitter.com/b0rk/status/1000604334026055681[here]
 
 == Match and replace using sed
 [source, bash]
