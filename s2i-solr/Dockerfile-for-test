@@ -1,0 +1,21 @@
+FROM solr:7.7
+MAINTAINER  Albert Lacambra Basil "albert@lacambra.tech"
+
+USER root
+RUN chgrp -R 0 /opt/solr \
+  && chmod -R g+rwX /opt/solr
+
+RUN chgrp -R 0 /opt/docker-solr \
+  && chmod -R g+rwX /opt/docker-solr
+
+ENV CORE_NAME blog-solr
+ENV SOLR_CONF_DIR /opt/solr/server/solr/configsets
+ENV CORES_DIR /opt/solr/server/solr/mycores
+ENV CONF_DIR ${SOLR_CONF_DIR}/${CORE_NAME}
+
+RUN mkdir ${CONF_DIR}
+
+ADD solr/blog-solr/ ${CONF_DIR}
+
+USER 8983
+CMD solr-precreate ${CORE_NAME} ${CONF_DIR}
