@@ -1,4 +1,4 @@
-= My VCode commands
+=  My Visual Studio Code commands
 Albert Lacambra Basil
 :jbake-title: My Visual Studio Code commands
 :description: 
@@ -16,3 +16,6 @@ Albert Lacambra Basil
 KeyMap:
 
 - **⌘K ⌘S**
+
+== Column mode curso
+- **Shift + Ctrl + Drag**

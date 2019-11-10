@@ -18,7 +18,7 @@ Using keyset pagination, we instruct the database to begin to count from a given
 In this way, no wasted results need to be fetched. For more deeper information visit link:https://use-the-index-luke.com/no-offset[Use the Index, LUKE!]
 
 == Basics about keyset pagination
-Basically, we just need to indicate the database where to begin and how should the result set be ordered. 
+We just need to indicate the database where to begin and how should the result set be ordered. 
 
 That means to pass some indexed value.
 
@@ -36,7 +36,7 @@ Here he is saying go to the __last_seen_id__ and give me back all books with a s
 
 == Paginating with strings
 
-Really nice to order by id. However, most of the time is useless. Normally, if we want to list books, we are gone an order it by title.
+Nice to order by id. However, most of the time is useless. Normally, if we want to list books, we are gone an order it by title.
 [source, sql]
 ----
 SELECT b.title
@@ -54,7 +54,7 @@ Now, let suppose that to different books (different ISBN) have the same title.
 
 If we use the above-mentioned query, we are not gonna be able to define which was the last seen book, since the title is repeated.
 
-That means that we are gone to begin always by the first book with the same title. Well, in this case, we just need to add some unique attribute. 
+That means that we are gone to begin always by the first book or skip all books with the same title. Well, in this case, we just need to add some unique attribute. 
 
 The primary __id__ will do the job.
 
@@ -63,8 +63,7 @@ The primary __id__ will do the job.
 SELECT b.title
  FROM Books AS b
  WHERE 
- AND (b.title, b.id) < (:last_seen_title, :last_seen_id)
- ORDER BY title DESC
+ AND (b.title, b.id) < (:last_seen_title, :last_seen_id\) ORDER BY title DESC
  LIMIT 10 ROWS ONLY
 ----
 
@@ -72,7 +71,176 @@ SELECT b.title
 ====
 *Row values in WHERE clause*
 
-(x, y) > (a, b) is true if (x > a OR (x=a AND y>b))
+(x, y) > (a, b) is true if (x > a OR (x=a AND y>b)\) 
+In other words, (x, y) __sorts after__ (a, b\) ====
 
-In other words, (x, y) __sorts after__ (a, b)
-====
+== Let's see an example
+Let's make a full example. We will create a book table with an __id__, __title__ and finally the __ISBN__ code
+
+.Create the book table
+[source, sql]
+----
+create table book
+(
+ `id` int NOT NULL,
+ `title` varchar(255) DEFAULT NULL,
+ `isbn` varchar(255) DEFAULT NULL,
+ PRIMARY KEY (`id`),
+ unique (isbn),
+ INDEX (title\) );
+----
+
+.Insert some books
+[source, sql]
+----
+insert into book (id, title, isbn) values (1, "WD122", "978-1-60309-455-9");
+insert into book (id, title, isbn) values (2, "WDWW", "978-1-63309-455-9");
+insert into book (id, title, isbn\) values (3, "WDWW", "978-1-60309-445-9");
+insert into book (id, title, isbn\) values (4, "WEWD", "978-1-60209-455-9");
+insert into book (id, title, isbn\) values (5, "ZTR", "978-1-60309-455-1");
+insert into book (id, title, isbn\) values (6, "GHJ", "978-1-60309-459-9");
+insert into book (id, title, isbn\) values (7, "GG", "918-1-60309-455-9");
+insert into book (id, title, isbn\) values (8, "AA", "978-1-60209-755-9");
+insert into book (id, title, isbn\) values (9, "AA ", "978-4-60309-455-9");
+insert into book (id, title, isbn\) values (10, "AA AA BB", "972-1-60309-455-9");
+insert into book (id, title, isbn\) values (11, "BBB", "978-1-60309-455-2");
+insert into book (id, title, isbn\) values (12, "B", "978-1-61309-425-9");
+insert into book (id, title, isbn\) values (13, "AA", "998-1-60309-455-9");
+insert into book (id, title, isbn\) values (14, "A", "978-1-80309-479-9");
+----
+
+The given titles are just "easy to order" letters. In this way, we can then easily appreciate how the __pagination__ and __ordering__ are working.
+
+First, we trigger a simple __select__ with an __order by title__: 
+
+[source, sql]
+----
+select b.*
+from book as b
+order by title ASC;
+----
+
+[cols=2*,options="header"]
+|===
+| id | title
+| 14 | A
+| 13 | AA
+| 9 | AA 
+| 8 | AA
+| 10 | AA AA BB
+| 12 | B
+| 11 | BBB
+| 7 | GG
+| 6 | GHJ
+| 1 | WD122
+| 3 | WDWW
+| 2 | WDWW
+| 4 | WEWD
+| 5 | ZTR
+
+|===
+
+Now, let us paginate from the first result:
+[source, sql]
+----
+select b.*
+from book as b
+where b.title > ""
+order by title ASC;
+----
+
+We indicate __title > ""__ so all title can pass the filters. The result is the same as in the table above.
+
+Now let's suppose that we want to show results after title __GG__ (__GG__ is the last title we have on the last page).
+
+[source, sql]
+----
+select b.*
+from book as b
+where b.title > "GG"
+order by title ASC;
+----
+[cols=2*,options="header"]
+|===
+| id | title
+| 6 | GHJ
+| 1 | WD122
+| 3 | WDWW
+| 2 | WDWW
+| 4 | WEWD
+| 5 | ZTR
+
+|===
+
+As expected we begin by id __6__, title __GHJ__.
+
+No we repeat the pagination listin from id __3__, title __WDWW__:
+[cols=2*,options="header"]
+|===
+| id | title
+| 4 | WEWD
+| 5 | ZTR
+
+|===
+
+Oops! We have expected to see id __2__, title __WDWW__, however, we see id 4, title __WEWD__!!
+
+That happens because id __3__ and id __2__ have the same title, so both are equally out-filtered.
+
+The solution here is to add the field __id__ (could also be ISDN, relevant here is only to use none repeated __ids__).
+
+Since we are now using also the field __id__ for filtering, we must add it to the __order by__ field too. 
+[source, sql]
+----
+select b.*
+from book as b
+where b.id <> -1
+ AND (b.title, b.id) >= ("", -1)
+order by title ASC, id ASC;
+----
+
+[cols=2*,options="header"]
+|===
+| id | title
+| 14 | A
+| 8 | AA
+| 9 | AA 
+| 13 | AA
+| 10 | AA AA BB
+| 12 | B
+| 11 | BBB
+| 7 | GG
+| 6 | GHJ
+| 1 | WD122
+| 2 | WDWW
+| 3 | WDWW
+| 4 | WEWD
+| 5 | ZTR
+
+|===
+
+We see here how the books using the same title have changed its order. Now we can paginate correctly. 
+
+So, back to our problem. We want to start pagination on id __3__, title __WDWW__ 
+
+[source, sql]
+----
+select b.*
+from book as b
+where b.id <> 2
+ AND (b.title, b.id) >= ("WDWW", 2)
+order by title ASC, id ASC;
+----
+
+Basically, on the filter we need to accept title repetition, so we use now __>=__. Ids are unique, so they are not gone a be repeated. At the same time, we want to exclude the book with id __2__. Therefore we exclude the id in the predicate __b.id <> 2__.
+
+[cols=2*,options="header"]
+|===
+| id | title
+| 3 | WDWW
+| 4 | WEWD
+| 5 | ZTR
+
+|===
+
+And here the result! We are now showing the expected entries! 
