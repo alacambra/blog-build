@@ -72,7 +72,8 @@ SELECT b.title
 *Row values in WHERE clause*
 
 (x, y) > (a, b) is true if (x > a OR (x=a AND y>b)\) 
-In other words, (x, y) __sorts after__ (a, b\) ====
+In other words, (x, y) __sorts after__ (a, b\) 
+====
 
 == Let's see an example
 Let's make a full example. We will create a book table with an __id__, __title__ and finally the __ISBN__ code

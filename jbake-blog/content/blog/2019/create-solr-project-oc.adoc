@@ -60,13 +60,15 @@ oc import-image s2i-solr --from="alacambra/openshift-solr:8.2.0" --confirm
 
 == Create App
 
+.create new app with solr config files: lacambra.tech/blog-build/s2i-solr/solr
 [source, bash]
 --
-oc new-app s2i-solr:8.2.0~/. --name=solr-blog
+oc new-app s2i-solr:8.2.0~/{path/to/s2i-solr/solr/} --name=solr-blog
 --
 
 == Reabuild app
 
+.rebuild app with solr config files: lacambra.tech/blog-build/s2i-solr/solr
 [source, bash]
 --
 oc start-build --from-dir . solr-blog
