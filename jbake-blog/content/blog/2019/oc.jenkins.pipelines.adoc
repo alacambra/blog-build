@@ -1,0 +1,93 @@
+= Create Openshift Jenkins pipelines
+Albert Lacambra Basil
+:jbake-title: Create Openshift Jenkins pipelines
+:description: Steps to get jenkins piepliens tunning on Openshift
+:jbake-date: 2019-11-26
+:jbake-type: post
+:jbake-status: published
+:jbake-tags: jenkins, openshift, pipelines
+:doc-id: oc.jenkins.pipelines
+
+== Create yaml template for the pipeline
+
+Create the pipeline resource template **pipeline.yaml**:
+[source, yaml]
+----
+kind: BuildConfig
+apiVersion: v1
+metadata:
+  name: deploy-downloader
+  labels:
+    app: deploy-downloader
+spec:
+  resources:
+    requests:
+      cpu: 2000Mi
+      memory: 1G
+  runPolicy: Parallel
+  source:
+    git:
+      ref: master
+      uri: "https://github.com/alacambra/youtubedl-java-api.git"
+    type: Git
+  strategy:
+    type: JenkinsPipeline
+    jenkinsPipelineStrategy:
+      jenkinsfilePath: deploy.oc.Jenkinsfile
+----
+
+== Create the pipeline template resource
+oc create -f pipeline.yaml
+
+== Update the pipeline template resource
+oc replace -f pipeline.yaml
+
+== Create the jenkins pipeline
+
+Create the **deploy.oc.Jenkinsfile**
+[source, groovy]
+----
+def applicationName = "downloader";
+
+
+pipeline{
+    agent {
+        label 'maven'
+    }
+
+    stages{
+        stage('build') {
+            steps{
+                sh script: "mvn clean test"
+            }
+        }
+
+        stage('copy ui') {
+            steps{
+                sh script: "cp -Rf ui/src/* downloader-server/src/main/webapp/app"
+            }
+        }
+
+         stage('package') {
+            steps{
+                sh script: "mvn package -Dmaven.test.skip=true"
+            }
+        }
+
+        stage('s2i build'){
+            steps{
+                script{
+                    openshift.withCluster(){
+                        openshift.withProject(){
+                            def build = openshift.selector("bc", applicationName);
+                            def startedBuild = build.startBuild("--from-file=\"./downloader-server/target/downloader.war\"");
+                            startedBuild.logs('-f');
+                            echo "${applicationName} build status: ${startedBuild.object().status}";
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+----
