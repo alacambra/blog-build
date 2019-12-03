@@ -19,3 +19,6 @@ KeyMap:
 
 == Column mode curso
 - **Shift + Ctrl + Drag**
+
+== Open terminal
+- **Shift + Ctrl + ´**
