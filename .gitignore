@@ -28,3 +28,6 @@ jbake-blog-old/templates/menu.ftl
 jbake-blog-old/templates/page.ftl
 jbake-blog-old/templates/post.ftl
 jbake-blog-old/templates/sitemap.ftl
+
+.vscode
+
