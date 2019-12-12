@@ -1,0 +1,21 @@
+= Clean non excluded git branches 
+Albert Lacambra Basil 
+:jbake-title: Clean non excluded git branches 
+:description: Remove merged branches from the local repo 
+:jbake-date: 2019-12-12 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags:  
+:doc-id: clean_non_excluded_git_branches  
+
+== Clean all branches branches except master and development
+[source, bash]
+----
+git branch | grep -v '^* master$' | grep -v '^  master$' | grep -v '^* development$' | grep -v '^  development$' | xargs git branch -D
+----
+
+== Clean all branches merged branches except master and development
+[source, bash]
+----
+git branch --merged | grep -v '^* master$' | grep -v '^  master$' | grep -v '^* development$' | grep -v '^  development$' | xargs git branch -d
+----
