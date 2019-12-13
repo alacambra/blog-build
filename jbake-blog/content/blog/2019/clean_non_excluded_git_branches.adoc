@@ -1,7 +1,7 @@
 = Clean non excluded git branches 
 Albert Lacambra Basil 
 :jbake-title: Clean non excluded git branches 
-:description: Remove merged branches from the local repo 
+:description: Remove branches that have note been explicitly excluded (e.g. master) from the local repo 
 :jbake-date: 2019-12-12 
 :jbake-type: post 
 :jbake-status: published 
