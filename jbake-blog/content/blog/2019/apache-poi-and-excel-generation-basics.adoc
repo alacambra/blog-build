@@ -1,0 +1,56 @@
+= Apache Poi and excel generation basics 
+Albert Lacambra Basil 
+:jbake-title: Apache Poi and excel generation basics 
+:description: Generate and edit excel xlsx file with Apache Poi 
+:jbake-date: 2019-12-15 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags:  
+:doc-id: apache-poi-and-excel-generation-basics 
+
+== Load a workbook
+
+.A woorkbook represents an excel file
+[source, java]
+----
+XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream("D:\\DEV\\ILV\\hipps\\hipps-app\\src\\main\\resources\\annex1-export-tpl.xlsx"));
+----
+
+
+== Load and remove a sheet
+
+.Load a sheet named "table 1"
+[source, java]
+----
+XSSFSheet sheet = workbook.getSheet("table 1");
+----
+
+.removes sheet on position 1. The first sheet is position 0.
+[source, java]
+----
+workbook.removeSheetAt(1);
+----
+
+== Load Rows and Cells
+
+You can work directly with row and cell indexes which are Integers and begin per the index 0.
+
+.Load rows and cells using an index
+[source, java]
+----
+XSSFRow row = sheet.getRow(rowIndex);
+XSSFCell cell = row.getCell(cellIndex);
+----
+
+Another option that helps to work together with an excel sheet as a template are **CellReference**s. The can reference cell in a more human way, using excel coordinates.
+
+.Load rows and cells using a CellReference
+[source, java]
+----
+
+//Represent indexes (0, 0)
+CellReference reference = new CellReference("A1");
+
+XSSFRow row = sheet.getRow(reference.getRow());
+XSSFCell cell = row.getCell(reference.getCol());
+----

@@ -11,7 +11,7 @@ public class TemplateBuilder {
         String title = args.length > 0 ? args[0] : "";
         String description = args.length > 1 ? args[1] : "";
         String tags = args.length > 2 ? args[2] : "";
-        String id = title.toLowerCase().replace(" ", "_");
+        String id = title.toLowerCase().replace(" ", "-");
 
         String template = "= __title__ \n" + "Albert Lacambra Basil \n" + ":jbake-title: __title__ \n"
                 + ":description: __description__ \n" + ":jbake-date: __date__ \n" + ":jbake-type: post \n"
