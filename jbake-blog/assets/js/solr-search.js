@@ -3,7 +3,7 @@ const url = "/search/blog-solr/select?q="
 const search = (searchId) => {
 
     const template = document.querySelector('#search-result');
-    const q = document.querySelector(`#${searchId}`).value.replace(/[ ]+/g, "*");
+    const q = "*" + document.querySelector(`#${searchId}`).value.trim().replace(/[ ]+/g, "* && *") + "*";
     const select = `${url}*${q}*`;
     console.log(select);
     fetch(select)
