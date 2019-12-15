@@ -1,0 +1,189 @@
+= DNS Troubleshooting with Dig 
+Albert Lacambra Basil 
+:jbake-title: DNS Troubleshooting with Dig 
+:description: Use the dig tool to explore dns records with different DNS servers 
+:jbake-date: 2019-12-15 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags:  dig, linux, dns
+:doc-id: dns_troubleshooting_with_dig
+
+
+== Explore DNS answers for the default dns server
+[source, sh]
+----
+dig google.com
+
+; <<>> DiG 9.10.6 <<>> google.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 18396
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;google.com.			IN	A
+
+;; ANSWER SECTION:
+google.com.		36	IN	A	172.217.21.206
+
+;; Query time: 8 msec
+;; SERVER: 8.8.8.8#53(8.8.8.8)
+;; WHEN: Sun Dec 15 19:33:57 CET 2019
+;; MSG SIZE  rcvd: 55
+----
+
+
+== Explore DNS answers for a given dns server
+[source, sh]
+----
+dig @208.67.222.222 google.com
+
+; <<>> DiG 9.10.6 <<>> @208.67.222.222 google.com
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 6530
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;google.com.			IN	A
+
+;; ANSWER SECTION:
+google.com.		300	IN	A	216.58.207.78
+
+;; Query time: 39 msec
+;; SERVER: 208.67.222.222#53(208.67.222.222)
+;; WHEN: Sun Dec 15 19:36:09 CET 2019
+;; MSG SIZE  rcvd: 55
+----
+
+== Reverse DNS lokup using a specific dns server
+
+[source, sh]
+----
+dig @8.8.8.8 -x  172.217.16.142
+
+; <<>> DiG 9.10.6 <<>> @8.8.8.8 -x 172.217.16.142
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 11055
+;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;142.16.217.172.in-addr.arpa.	IN	PTR
+
+;; ANSWER SECTION:
+142.16.217.172.in-addr.arpa. 21447 IN	PTR	zrh04s06-in-f142.1e100.net.
+142.16.217.172.in-addr.arpa. 21447 IN	PTR	fra15s46-in-f14.1e100.net.
+
+;; Query time: 20 msec
+;; SERVER: 8.8.8.8#53(8.8.8.8)
+;; WHEN: Sun Dec 15 19:38:41 CET 2019
+;; MSG SIZE  rcvd: 126
+----
+
+
+== Dns tracing
+
+[source, sh]
+----
+dig google.com +trace
+
+; <<>> DiG 9.10.6 <<>> google.com +trace
+;; global options: +cmd
+.			518400	IN	NS	K.ROOT-SERVERS.NET.
+.			518400	IN	NS	M.ROOT-SERVERS.NET.
+.			518400	IN	NS	L.ROOT-SERVERS.NET.
+.			518400	IN	NS	F.ROOT-SERVERS.NET.
+.			518400	IN	NS	J.ROOT-SERVERS.NET.
+.			518400	IN	NS	D.ROOT-SERVERS.NET.
+.			518400	IN	NS	H.ROOT-SERVERS.NET.
+.			518400	IN	NS	B.ROOT-SERVERS.NET.
+.			518400	IN	NS	G.ROOT-SERVERS.NET.
+.			518400	IN	NS	E.ROOT-SERVERS.NET.
+.			518400	IN	NS	C.ROOT-SERVERS.NET.
+.			518400	IN	NS	I.ROOT-SERVERS.NET.
+.			518400	IN	NS	A.ROOT-SERVERS.NET.
+;; Received 239 bytes from 192.168.1.25#53(192.168.1.25) in 8 ms
+
+com.			172800	IN	NS	f.gtld-servers.net.
+com.			172800	IN	NS	d.gtld-servers.net.
+com.			172800	IN	NS	l.gtld-servers.net.
+com.			172800	IN	NS	e.gtld-servers.net.
+com.			172800	IN	NS	g.gtld-servers.net.
+com.			172800	IN	NS	b.gtld-servers.net.
+com.			172800	IN	NS	a.gtld-servers.net.
+com.			172800	IN	NS	k.gtld-servers.net.
+com.			172800	IN	NS	h.gtld-servers.net.
+com.			172800	IN	NS	c.gtld-servers.net.
+com.			172800	IN	NS	j.gtld-servers.net.
+com.			172800	IN	NS	m.gtld-servers.net.
+com.			172800	IN	NS	i.gtld-servers.net.
+com.			86400	IN	DS	30909 8 2 E2D3C916F6DEEAC73294E8268FB5885044A833FC5459588F4A9184CF C41A5766
+com.			86400	IN	RRSIG	DS 8 1 86400 20191228170000 20191215160000 22545 . LyJ1FfonG6oqFcZQIeEP21KBszCXpR1v/Gmkz9vqO53Vat+17TAkdXNX tjJkQg+gCBToMETM0SoyofEc4SwxrSdKeYsZ5nNy0+/zeqajUge2zNGn fzPynoIlU6t0f9fHXB1+2OZi0a9TqJLUFf7IoMVnVnS/t67f3RNNwWGZ vXaGSgvHHLokZyUWZQmARi5vqmLyrhRXtaeZ1o+v7RWGj640XJIRJ80J H/oKhjyWdamvrJ60YZEAosZrZZ0vTgYpwAMNoApAJL/iKYZ2LLMziFru LiROTmddilATCXbINTqTyCzC0Y3x7kS4I3atfIrJkNYrpZprZwAUl+dx WTxLAA==
+;; Received 1170 bytes from 202.12.27.33#53(M.ROOT-SERVERS.NET) in 22 ms
+
+google.com.		172800	IN	NS	ns2.google.com.
+google.com.		172800	IN	NS	ns1.google.com.
+google.com.		172800	IN	NS	ns3.google.com.
+google.com.		172800	IN	NS	ns4.google.com.
+CK0POJMG874LJREF7EFN8430QVIT8BSM.com. 86400 IN NSEC3 1 1 0 - CK0Q1GIN43N1ARRC9OSM6QPQR81H5M9A  NS SOA RRSIG DNSKEY NSEC3PARAM
+CK0POJMG874LJREF7EFN8430QVIT8BSM.com. 86400 IN RRSIG NSEC3 8 2 86400 20191221054833 20191214043833 12163 com. LGlbe+OzdCIqSwiLRkqOpUnD0ufR+eiWtNzOoDTYWFjOd1m62dPNzP4/ 3wgegn/8korrCPP4tsqDKB23C0macwRhHmZFPW2rk9niv1dO7FqD2OC9 DlksocUzFxwofriReSOqOgg4I66doVLdSXdZjnYWFqA9zjnWWVttQg6h aegPNGvvSLQZZPVicQvUDg55jcsBsHKWS6JPsACeK1URUQ==
+S84BDVKNH5AGDSI7F5J0O3NPRHU0G7JQ.com. 86400 IN NSEC3 1 1 0 - S84EDELLAUPA96DT12TJKJN32334NGL3  NS DS RRSIG
+S84BDVKNH5AGDSI7F5J0O3NPRHU0G7JQ.com. 86400 IN RRSIG NSEC3 8 2 86400 20191222055344 20191215044344 12163 com. a9fQBOL89b90tBRK+S6X8dF87GtbhYa/9n7OSGucRwv07rPVpSTTS08o 5uGh3DZYXsiZuv1vOrwpsqAjsr2ANi70Iz1/rmcTvCF8SrznHwmI89nZ T6ixZOnwiRzSSkQBGHr8VJ2cXnPj72x6BOwoL8KqjLjtCniqC8x3ukpX dsJbVwrbuQOXQxF8RVfbYI/tYwiYczLTGko4dSRfBji+sw==
+;; Received 836 bytes from 192.26.92.30#53(c.gtld-servers.net) in 36 ms
+
+google.com.		300	IN	A	172.217.18.110
+;; Received 55 bytes from 216.239.34.10#53(ns2.google.com) in 30 ms
+----
+
+== Query for a record type
+
+[source, sh]
+----
+dig @8.8.8.8 google.com AAA
+
+; <<>> DiG 9.10.6 <<>> @8.8.8.8 google.com AAA
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 56222
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;google.com.			IN	A
+
+;; ANSWER SECTION:
+google.com.		140	IN	A	172.217.16.174
+
+;; Query time: 19 msec
+;; SERVER: 8.8.8.8#53(8.8.8.8)
+;; WHEN: Sun Dec 15 19:41:37 CET 2019
+;; MSG SIZE  rcvd: 55
+
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 25603
+;; flags: qr rd ra ad; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;AAA.				IN	A
+
+;; AUTHORITY SECTION:
+AAA.			37	IN	SOA	ns1.dns.nic.AAA. hostmaster.neustar.biz. 1561433480 900 900 604800 60
+
+;; Query time: 12 msec
+;; SERVER: 8.8.8.8#53(8.8.8.8)
+;; WHEN: Sun Dec 15 19:41:37 CET 2019
+;; MSG SIZE  rcvd: 102
+----
