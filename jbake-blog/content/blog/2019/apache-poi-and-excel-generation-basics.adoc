@@ -227,5 +227,8 @@ sheet1.copyRows(
 );
 ----
 
-With this method you can copy rows from one sheetto another. That allows you to create some templates and use it directly to another sheet. You can remove at the end the templates sheet, leaving only
-the reals content. However, you need to be aware, that **if the source row index and the target row index are the same, Poi will throw and exception**. It will treat it as if you try to copy over the  source row. That happens because Poi is not aware the the rows belongs to a different sheet.
+With this method you can copy rows from one sheet to another. That allows you to create some templates and use it directly to another sheet. You can remove at the end the templates sheet, leaving only the reals content.
+
+However, you need to be aware, that **if the source row index and the target row index are the same, Poi will throw and exception**. 
+ 
+It will treat it as if you try to copy over the  source row. That happens because Poi is not aware the the rows belongs to a different sheet.
