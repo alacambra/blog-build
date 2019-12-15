@@ -156,3 +156,76 @@ xssfColor.setRGB(COLOR_MAP.getRGB(color));
 //Use the HSSFColorPredefined.class
 xssfColor.setRGB(DefaultIndexedColorMap.getDefaultRGB(HSSFColor.HSSFColorPredefined.BLACK.getIndex()));
 ----
+
+== Set background color to a cell fromma cloned CellStyle
+
+[source, java]
+----
+XSSFCellStyle style = (XSSFCellStyle) cell.getCellStyle().clone();
+
+style.cloneStyleFrom(cell.getCellStyle());
+XSSFColor xssfColor = new XSSFColor(COLOR_MAP);
+xssfColor.setRGB(COLOR_MAP.getRGB(colorIndex));
+style.setFillForegroundColor(xssfColor);
+cell.setCellStyle(style);
+----
+
+== Add a cell comment
+
+[source, java]
+----
+CreationHelper factory = wrkbook.getCreationHelper();
+ClientAnchor anchor = factory.createClientAnchor();
+Drawing drawing = cell.getSheet().createDrawingPatriarch();
+
+anchor.setCol1(cell.getColumnIndex());
+anchor.setCol2(cell.getColumnIndex() + 1);
+
+anchor.setRow1(cell.getRowIndex());
+anchor.setRow2(cell.getRowIndex() + 1);
+
+Comment comment = drawing.createCellComment(anchor);
+XSSFRichTextString xssfRichTextString = new XSSFRichTextString("some text in first row\n");
+xssfRichTextString.append("text in second row");
+comment.setString(xssfRichTextString);
+----
+
+== Apply color to the text in a cell
+
+[source, java]
+----
+XSSFFont xssfFont = new XSSFFont();
+XSSFColor xssfColor = new XSSFColor(COLOR_MAP);
+byte color = MyIndexedColorMap.RED;
+xssfColor.setRGB(COLOR_MAP.getRGB(color));
+xssfFont.setColor(xssfColor);
+richTextString.append("a RED text", xssfFont);
+
+XSSFFont xssfFont = new XSSFFont();
+XSSFColor xssfColor = new XSSFColor(COLOR_MAP);
+byte color = MyIndexedColorMap.GREEN;
+xssfColor.setRGB(COLOR_MAP.getRGB(color));
+xssfFont.setColor(xssfColor);
+richTextString.append("a GREEN text", xssfFont);
+----
+
+== Copy a row from one sheet to another
+[source, java]
+
+XSSFSheet sheet1 = workbook.getSheet("table 1");
+XSSFSheet sheet2 = workbook.getSheet("table 2");
+
+XSSFRow sourceRow = sheet2.getRow(0);
+
+----
+
+int targetRowIndex = 0;
+sheet1.copyRows(
+    Collections.singletonList(sourceRow),
+    targetRowIndex,
+    new CellCopyPolicy.Builder().cellStyle(true).cellValue(true).cellFormula(true).build()
+);
+----
+
+With this method you can copy rows from one sheetto another. That allows you to create some templates and use it directly to another sheet. You can remove at the end the templates sheet, leaving only
+the reals content. However, you need to be aware, that **if the source row index and the target row index are the same, Poi will throw and exception**. It will treat it as if you try to copy over the  source row. That happens because Poi is not aware the the rows belongs to a different sheet.
