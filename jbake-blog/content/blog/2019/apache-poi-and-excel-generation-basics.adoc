@@ -13,7 +13,7 @@ Albert Lacambra Basil
 .A woorkbook represents an excel file
 [source, java]
 ----
-XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream("D:\\DEV\\ILV\\hipps\\hipps-app\\src\\main\\resources\\annex1-export-tpl.xlsx"));
+XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream("/path/to/xlsx/file"));
 ----
 
 
@@ -211,13 +211,11 @@ richTextString.append("a GREEN text", xssfFont);
 
 == Copy a row from one sheet to another
 [source, java]
-
+----
 XSSFSheet sheet1 = workbook.getSheet("table 1");
 XSSFSheet sheet2 = workbook.getSheet("table 2");
 
 XSSFRow sourceRow = sheet2.getRow(0);
-
-----
 
 int targetRowIndex = 0;
 sheet1.copyRows(
