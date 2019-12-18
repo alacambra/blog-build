@@ -1,0 +1,25 @@
+= Maven useful commands
+Albert Lacambra Basil 
+:jbake-title: maven useful commands
+:description: some of the most transversal and usefull mvn commands 
+:jbake-date: 2019-12-18 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags:  
+:doc-id: maven-useful-commands
+
+
+== Execute main class using maven
+
+[source, sh]
+----
+mvn exec:java -Dexec.mainClass="your.main.Class"
+----
+
+
+== List the dependency tree with filtering
+
+[source, sh]
+----
+mvn dependency:tree -Dverbose -Dincludes=commons-collections
+----
