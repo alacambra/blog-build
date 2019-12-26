@@ -28,7 +28,7 @@ lvremove /dev/centos/home
 ----
 
 
-Recreate partition with desired capacity
+.Recreate partition with desired capacity
 [source, sh]
 ----
 lvcreate -L 20G -n home centos
