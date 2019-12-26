@@ -1,0 +1,63 @@
+= XFS filedisk manipulation 
+Albert Lacambra Basil 
+:jbake-title: XFS filedisk manipulation 
+:description: resize the capacity of an xfs partition 
+:jbake-date: 2019-12-27 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: xfs
+:doc-id: xfs-filedisk-manipulation 
+
+== Reduce XFS fylesystem
+
+XFS fylesystem can not be reduced, only extended. In order to reduce it, you need to delete the filesystem and then recreate it with the new capacity. 
+
+Before to delete it, we will backup it, and once the filesystem has been recreated, we will restore it.
+
+.Create backup
+[source, sh]
+----
+xfsdump -l 0 -f /ome-image /dev/mapper/centos-home
+----
+
+.Delete partition
+[source, sh]
+----
+umount /home
+lvremove /dev/centos/home
+----
+
+
+Recreate partition with desired capacity
+[source, sh]
+----
+lvcreate -L 20G -n home centos
+----
+
+.Create filesystem
+[source, sh]
+----
+mkfs.xfs /dev/centos/home
+----
+
+.Restore backup
+[source, sh]
+----
+mount /home
+xfsrestore -f /home-image /home
+----
+
+== Extend partition
+
+.Extend desired partition
+[source, sh]
+----
+lvextend -L +20G /dev/centos/root
+----
+
+.Increase filesystem capcity to maximal partition capacity
+
+[source, sh]
+----
+xfs_growfs /
+----
