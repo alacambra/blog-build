@@ -23,7 +23,7 @@ public class TemplateBuilder {
                 .replaceAll("__date__", LocalDate.now().format(DateTimeFormatter.ISO_DATE))
                 .replaceAll("__status__", "published").replaceAll("__tags__", tags).replaceAll("__id__", id);
 
-        Path p = Files.createFile(Paths.get("../jbake-blog/content/blog/2019/" + id + ".adoc"));
+        Path p = Files.createFile(Paths.get("../jbake-blog/content/blog/2020/" + id + ".adoc"));
         Files.write(p, template.getBytes());
     }
 }
