@@ -2,7 +2,7 @@
 Albert Lacambra Basil 
 :jbake-title: @RepeatedTest with Junit 5 
 :description: Run the same tests with different parameters using Junit5 
-:jbake-date: 2020-01-22 
+:jbake-date: 2020-01-21
 :jbake-type: post 
 :jbake-status: published
 :jbake-tags: junit, java 
