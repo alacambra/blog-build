@@ -1,9 +1,0 @@
-= @RepeatedTest with Junit 5 
-Albert Lacambra Basil 
-:jbake-title: @RepeatedTest with Junit 5 
-:description: Run the same tests with different parameters using Junit5 
-:jbake-date: 2020-01-22 
-:jbake-type: post 
-:jbake-status: published 
-:jbake-tags: junit, java 
-:doc-id: @repeatedtest-with-junit-5 

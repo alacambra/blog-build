@@ -4,7 +4,7 @@ Albert Lacambra Basil
 :description: Run the same tests with different parameters using Junit5 
 :jbake-date: 2020-01-22 
 :jbake-type: post 
-:jbake-status: published 
+:jbake-status: published
 :jbake-tags: junit, java 
 :doc-id: @repeatedtest-with-junit-5 
 
@@ -18,36 +18,8 @@ void someTest(){
 }
 ----
 
-== Passing parameters
-Normally you will want to repeat the test changing the parameters and assertions.
-You can pass the parameters to the test using different kind of source:
-
-- *@ArgumentSource*: (_from javadoc_) @ArgumentsSource is a repeatable annotation that is used to register argument providers for the annotated test method.
-@ArgumentsSource may also be used as a meta-annotation in order to create a custom composed annotation that inherits the semantics of @ArgumentsSource.
-
-- *@CsvFileSource*: (_from javadoc_)  ArgumentsSource which is used to load comma-separated value (CSV) files from one or more classpath resources.
-The lines of these CSV files will be provided as arguments to the annotated @ParameterizedTest method.
-
-- *@CsvSource*: (_from javadoc_) @ArgumentsSource which reads comma-separated values (CSV) from one or more supplied CSV lines. The supplied values will be provided as arguments to the annotated @ParameterizedTest method.
-
-- *@EmptySource*: (_from javadoc_) @ArgumentsSource which provides a single empty argument to the annotated @ParameterizedTest method.
-Supported Parameter Types
-
-- *@EnumSource*:  (_from javadoc_) @EnumSource is an ArgumentsSource for constants of a specified Enum.
-The enum constants will be provided as arguments to the annotated @ParameterizedTest method.
-The set of enum constants can be restricted via the names() and mode() attributes.
-- *@MethodSource*: References a method that returns a Stream of Arguments. The arguments are passed to the test function.
-
-- *@NullAndEmptySource*: (_from javadoc_) composed annotation that combines the functionality of @NullSource and @EmptySource.
-Annotating a @ParameterizedTest method with @NullAndEmptySource is equivalent to annotating the method with @NullSource and @EmptySource.
-
-- *@NullSource*: (_from javadoc_) is an ArgumentsSource which provides a single null argument to the annotated @ParameterizedTest method.
-Note that @NullSource cannot be used for an argument that has a primitive type.
-
-- *@ValueSource*: (_from javadoc_) ArgumentsSource which provides access to an array of literal values. Supported types include _shorts(), bytes(), ints(), longs(), floats(), doubles(), chars(), booleans(), strings(), and classes()_. Note, however, that only one of the supported types may be specified per @ValueSource declaration.
-The supplied literal values will be provided as arguments to the annotated @ParameterizedTest method.
-
 == Displaing the test names
+In the following code you see the different options to display the repeated test name. In the screenshot you can get an idea about how looks like:
 [source, java]
 ----
 @RepeatedTest(value = 3, name = RepeatedTest.SHORT_DISPLAY_NAME)
@@ -65,3 +37,5 @@ void testDisplayNamePlaceholder() {}
 @RepeatedTest(value = 3, name = RepeatedTest.TOTAL_REPETITIONS_PLACEHOLDER)
 void testTotalRepetitionsPlaceholder() {‚}
 ----
+
+image::/img/blog/2020/repeated-test-print-types.png[width=50%, height=50%, Results display options]
