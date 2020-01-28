@@ -1,0 +1,20 @@
+= Get a Map<MyClassKey, MyClassValue> with streams (not Map<MyClassKey, List<MyClassValue>>) 
+Albert Lacambra Basil 
+:jbake-title: Get a Map<MyClassKey, MyClassValue> with streams (not Map<MyClassKey, List<MyClassValue>>) 
+:description: Per default, collectors groupBy, collects to List. Sometimes we just don't need the list and once a sim ple object associated with a key.
+:jbake-date: 2020-01-22 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags:  
+:doc-id: get-a-mapmyclasskey-myclassvalue-with-streams-not-mapmyclasskey-listmyclassvalue
+
+== Use reducing and kill the list
+
+[source, java]
+----
+Map<String, SimpleObject> myObjects = Stream.of(SimpleObject...)
+        .map(someTransformation())
+        .collect(Collectors.groupingBy(SimpleObject::getUniqueId, Collectors.reducing(null, (a, b) -> a != null ? a : b)));
+----
+
+Since we are sure that only one object can have a given ID, we can garantie that the reduction will only become a single value.
