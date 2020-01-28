@@ -81,7 +81,7 @@ spec:
 
 Pay special attention to the keys *_metadata.labels.role_* and *_metadata.labels.slave-label_*.
 
-* *_role: jenkins_slave_* indicates that this image is to be used by a jenkins slave 
+* *_role: jenkins-slave_* indicates that this image is to be used by a jenkins slave 
 * *_slave-label: jbake_* is the value to be used into the jenkins pipelins to use this slave image.
 
 == Reference the image into the Jenkinsfile
