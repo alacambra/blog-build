@@ -1,0 +1,101 @@
+= Create openshift jenkins slave images 
+Albert Lacambra Basil 
+:jbake-title: Create openshift jenkins slave images 
+:description: Per default you can only use a couple of images for your slaves. Sometimes is enough to get java and maven but most of the time you will want to have your own images. That allows to add new executables, cache dependencies, ...
+
+:jbake-date: 2020-01-28 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags:  jenkins, openshift
+:doc-id: create-openshift-jenkins-slave-images 
+
+== Create an image file
+First you need to create your dockerfile. It must be created from _FROM quay.io/openshift/origin-jenkins-agent-base:v4.0
+_
+
+To build this blog, I am using the foillowing Dockerfile:
+[source, docker]
+----
+FROM quay.io/openshift/origin-jenkins-agent-base:v4.0
+# This is a base image that install and configures JBake.
+# Child Dockerfiles can run command `jbake` to bake or anything else.
+
+# Define environment variables.
+ENV BUILD_DATE=05252019
+ENV JBAKE_HOME=/opt/jbake
+ENV JBAKE_USER=jbake
+ENV JBAKE_VERSION=2.6.4
+ENV PATH ${JBAKE_HOME}/bin:$PATH
+
+# SSL Cert for downloading mule zip
+
+RUN adduser ${JBAKE_USER}
+
+RUN mkdir -p /opt/jbake-${JBAKE_VERSION} && \
+    ln -s /opt/jbake-${JBAKE_VERSION} ${JBAKE_HOME} && \
+    chown ${JBAKE_USER}:${JBAKE_USER} -R /opt/jbake*
+
+RUN mkdir /opt/jbake-structure && \
+    chown ${JBAKE_USER}:${JBAKE_USER} -R /opt/jbake*
+    
+# For checksum, alpine linux needs two spaces between checksum and file name
+RUN cd ~ && wget https://dl.bintray.com/jbake/binary/jbake-${JBAKE_VERSION}-bin.zip && \
+    unzip ~/jbake-${JBAKE_VERSION}-bin.zip && \
+    cd /opt && cp -R ~/jbake-${JBAKE_VERSION}-bin/* ${JBAKE_HOME}/ && \
+    rm ~/jbake-${JBAKE_VERSION}-bin.zip && \ 
+    rm -rf ~/jbake-${JBAKE_VERSION}-bin
+
+RUN cd /opt
+
+USER ${JBAKE_USER}
+
+CMD jbake -b /opt/jbake-structure
+----
+
+Once is created, push the image into a repository that is accessible by openshift.
+
+== Create an imagestream
+Second, create a new imagestream. You can import it and then edit the required labels or create it from a template. That is the template of my JBake imagestream:
+[source, yaml]
+----
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    app: jbake
+    role: jenkins-slave
+    slave-label: jbake
+  name: jbake
+  namespace: blog
+spec:
+  tags:
+    - annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+        openshift.io/imported-from: alacambra/jbake
+      from:
+        kind: DockerImage
+        name: alacambra/jbake
+      name: latest
+      referencePolicy:
+        type: Source
+----
+
+Pay special attention to the keys *_metadata.labels.role_* and *_metadata.labels.slave-label_*.
+
+* *_role: jenkins_slave_* indicates that this image is to be used by a jenkins slave 
+* *_slave-label: jbake_* is the value to be used into the jenkins pipelins to use this slave image.
+
+== Reference the image into the Jenkinsfile
+
+Finally you just need to tell your pipeline to use the created image. Do that giving to _label_ the value of _slave-label_:
+
+[source, jenkins]
+----
+pipeline{
+    agent {
+        label 'jbake'
+    }
+....
+----
+
+Done.
