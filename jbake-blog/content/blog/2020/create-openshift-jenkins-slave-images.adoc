@@ -2,7 +2,6 @@
 Albert Lacambra Basil 
 :jbake-title: Create openshift jenkins slave images 
 :description: Per default you can only use a couple of images for your slaves. Sometimes is enough to get java and maven but most of the time you will want to have your own images. That allows to add new executables, cache dependencies, ...
-
 :jbake-date: 2020-01-28 
 :jbake-type: post 
 :jbake-status: published 
