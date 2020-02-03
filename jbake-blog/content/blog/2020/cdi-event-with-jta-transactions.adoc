@@ -1,0 +1,175 @@
+= CDI event with JTA Transactions 
+Albert Lacambra Basil 
+:jbake-title: CDI event with JTA Transactions 
+:description: CDI events can we triggered in different faces of a transaction 
+:jbake-date: 2020-02-03 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: java, jakarta ee, jta 
+:doc-id: cdi-event-with-jta-transactions 
+
+== CDI Events
+We can send events using CDI.
+
+.Declaration of an event.
+[source, java]
+----
+@Inject
+Event<EventObject> event;
+
+...
+event.fire(new EventObject("Some event's payload"));
+...
+----
+
+.Declarition of an event handler
+[source, java]
+----
+public void inProgress(@Observes EventObject eventObject) {
+    System.out.println("IN_PROGRESS: " + eventObject.getMsg());
+} 
+----
+
+== Events on transaction phases
+
+A transaction have the following phases: 
+
+* **TransactionPhase.IN_PROGRESS**:  Identifies a regular observer method, called when the event is fired.
+* **TransactionPhase.BEFORE_COMPLETION**: Identifies a before completion observer method, called during the before completion phase of the transaction.
+* **TransactionPhase.AFTER_SUCCESS**: Identifies an after success observer method, called during the after completion phase of the transaction, only when the
+* **TransactionPhase.AFTER_COMPLETION**: Identifies an after completion observer method, called during the after completion phase of the transaction.
+* **TransactionPhase.AFTER_FAILURE**: Identifies an after failure observer method, called during the after completion phase of the transaction, only when the transaction fails.
+
+== Execution order
+
+Given a transactional method, I will trigger an event before to persist and after persist a model: 
+[source, java]
+----
+@Transactional
+public class Service {
+
+  @PersistenceContext
+  EntityManager em;
+
+  @Inject
+  Event<EventObject> event;
+
+  public Model anotherModel(){
+
+    event.fire(new EventObject("before save a model"));
+
+    Model m = new Model();
+
+    m.setName("name" + System.currentTimeMillis());
+    em.persist(m);
+
+    event.fire(new EventObject("after persist the model"));
+    return m;
+  }
+}
+----
+
+.Observers
+[source, java]
+----
+package tech.lacambra;
+
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
+
+public class Observers {
+
+  public void inProgress(@Observes(during = TransactionPhase.IN_PROGRESS) EventObject eventObject) {
+    System.out.println("IN_PROGRESS: " + eventObject.getMsg());
+  }
+
+  public void after(@Observes(during = TransactionPhase.AFTER_COMPLETION) EventObject eventObject) {
+    System.out.println("AFTER_COMPLETION: " + eventObject.getMsg());
+  }
+
+  public void before(@Observes(during = TransactionPhase.BEFORE_COMPLETION) EventObject eventObject) {
+    System.out.println("BEFORE_COMPLETION: " + eventObject.getMsg());
+  }
+
+  public void afterTx(@Observes(during = TransactionPhase.AFTER_SUCCESS) EventObject eventObject) {
+    System.out.println("AFTER_SUCCESS: " + eventObject.getMsg());
+  }
+
+  public void afterFailure(@Observes(during = TransactionPhase.AFTER_FAILURE) EventObject eventObject) {
+    System.out.println("AFTER_FAILURE: " + eventObject.getMsg());
+  }
+}
+----
+
+The above code will produce the following output:
+----
+21:49:02,597 INFO  [stdout] (default task-1) IN_PROGRESS: before save a model: Event 1
+21:49:02,599 INFO  [stdout] (default task-1) Hibernate: insert into Model (name) values (?)
+21:49:02,608 INFO  [stdout] (default task-1) IN_PROGRESS: after persist the model: Event 2
+21:49:02,610 INFO  [stdout] (default task-1) BEFORE_COMPLETION: before save a model: Event 1
+21:49:02,611 INFO  [stdout] (default task-1) BEFORE_COMPLETION: after persist the model: Event 2
+21:49:02,614 INFO  [stdout] (default task-1) AFTER_COMPLETION: after persist the model: Event 2
+21:49:02,615 INFO  [stdout] (default task-1) AFTER_SUCCESS: after persist the model: Event 2
+21:49:02,616 INFO  [stdout] (default task-1) AFTER_COMPLETION: before save a model: Event 1
+21:49:02,617 INFO  [stdout] (default task-1) AFTER_SUCCESS: before save a model: Event 1
+----
+
+And using directly __UserTransactions__:
+
+[source, java]
+----
+public class ManualService {
+
+  @PersistenceContext
+  EntityManager em;
+
+  @Resource
+  UserTransaction userTransaction;
+
+  @Inject
+  Event<EventObject> event;
+
+  public Model anotherModel() throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+
+    event.fire(new EventObject("Before TX: Event 1"));
+    userTransaction.begin();
+    event.fire(new EventObject("TX begins: Event 2"));
+    Model m = new Model();
+
+    m.setName("name" + System.currentTimeMillis());
+    em.persist(m);
+
+    event.fire(new EventObject("After persist. Before TX commit: Event 3"));
+    userTransaction.commit();
+    event.fire(new EventObject("After TX commit: Event 4"));
+
+    return m;
+  }
+}
+----
+
+The above code will produces:
+----
+21:57:30,936 INFO  [stdout] (default task-1) IN_PROGRESS: Before TX: Event 1
+21:57:30,937 INFO  [stdout] (default task-1) AFTER_COMPLETION: Before TX: Event 1
+21:57:30,937 INFO  [stdout] (default task-1) AFTER_SUCCESS: Before TX: Event 1
+21:57:30,937 INFO  [stdout] (default task-1) BEFORE_COMPLETION: Before TX: Event 1
+21:57:30,938 INFO  [stdout] (default task-1) AFTER_FAILURE: Before TX: Event 1
+21:57:30,940 INFO  [stdout] (default task-1) IN_PROGRESS: TX begins: Event 2
+21:57:30,941 INFO  [stdout] (default task-1) Hibernate: insert into Model (name) values (?)
+21:57:30,949 INFO  [stdout] (default task-1) IN_PROGRESS: After persist. Before TX commit: Event 3
+21:57:30,950 INFO  [stdout] (default task-1) BEFORE_COMPLETION: TX begins: Event 2
+21:57:30,950 INFO  [stdout] (default task-1) BEFORE_COMPLETION: After persist. Before TX commit: Event 3
+21:57:30,953 INFO  [stdout] (default task-1) AFTER_COMPLETION: After persist. Before TX commit: Event 3
+21:57:30,954 INFO  [stdout] (default task-1) AFTER_SUCCESS: After persist. Before TX commit: Event 3
+21:57:30,954 INFO  [stdout] (default task-1) AFTER_COMPLETION: TX begins: Event 2
+21:57:30,954 INFO  [stdout] (default task-1) AFTER_SUCCESS: TX begins: Event 2
+21:57:30,955 INFO  [stdout] (default task-1) IN_PROGRESS: After TX commit: Event 4
+21:57:30,955 INFO  [stdout] (default task-1) AFTER_COMPLETION: After TX commit: Event 4
+21:57:30,955 INFO  [stdout] (default task-1) AFTER_SUCCESS: After TX commit: Event 4
+21:57:30,956 INFO  [stdout] (default task-1) BEFORE_COMPLETION: After TX commit: Event 4
+21:57:30,956 INFO  [stdout] (default task-1) AFTER_FAILURE: After TX commit: Event 4
+----
+
+
+Interestingly, if you use any __TransactionPhase__ when not inside a TX context, all observers will be triggered (Look events 1 and 4).
