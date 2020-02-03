@@ -103,15 +103,15 @@ public class Observers {
 
 The above code will produce the following output:
 ----
-21:49:02,597 INFO  [stdout] (default task-1) IN_PROGRESS: before save a model: Event 1
-21:49:02,599 INFO  [stdout] (default task-1) Hibernate: insert into Model (name) values (?)
-21:49:02,608 INFO  [stdout] (default task-1) IN_PROGRESS: after persist the model: Event 2
-21:49:02,610 INFO  [stdout] (default task-1) BEFORE_COMPLETION: before save a model: Event 1
-21:49:02,611 INFO  [stdout] (default task-1) BEFORE_COMPLETION: after persist the model: Event 2
-21:49:02,614 INFO  [stdout] (default task-1) AFTER_COMPLETION: after persist the model: Event 2
-21:49:02,615 INFO  [stdout] (default task-1) AFTER_SUCCESS: after persist the model: Event 2
-21:49:02,616 INFO  [stdout] (default task-1) AFTER_COMPLETION: before save a model: Event 1
-21:49:02,617 INFO  [stdout] (default task-1) AFTER_SUCCESS: before save a model: Event 1
+IN_PROGRESS: before save a model: Event 1
+Hibernate: insert into Model (name) values (?)
+IN_PROGRESS: after persist the model: Event 2
+BEFORE_COMPLETION: before save a model: Event 1
+BEFORE_COMPLETION: after persist the model: Event 2
+AFTER_COMPLETION: after persist the model: Event 2
+AFTER_SUCCESS: after persist the model: Event 2
+AFTER_COMPLETION: before save a model: Event 1
+AFTER_SUCCESS: before save a model: Event 1
 ----
 
 And using directly __UserTransactions__:
@@ -150,26 +150,26 @@ public class ManualService {
 
 The above code will produces:
 ----
-21:57:30,936 INFO  [stdout] (default task-1) IN_PROGRESS: Before TX: Event 1
-21:57:30,937 INFO  [stdout] (default task-1) AFTER_COMPLETION: Before TX: Event 1
-21:57:30,937 INFO  [stdout] (default task-1) AFTER_SUCCESS: Before TX: Event 1
-21:57:30,937 INFO  [stdout] (default task-1) BEFORE_COMPLETION: Before TX: Event 1
-21:57:30,938 INFO  [stdout] (default task-1) AFTER_FAILURE: Before TX: Event 1
-21:57:30,940 INFO  [stdout] (default task-1) IN_PROGRESS: TX begins: Event 2
-21:57:30,941 INFO  [stdout] (default task-1) Hibernate: insert into Model (name) values (?)
-21:57:30,949 INFO  [stdout] (default task-1) IN_PROGRESS: After persist. Before TX commit: Event 3
-21:57:30,950 INFO  [stdout] (default task-1) BEFORE_COMPLETION: TX begins: Event 2
-21:57:30,950 INFO  [stdout] (default task-1) BEFORE_COMPLETION: After persist. Before TX commit: Event 3
-21:57:30,953 INFO  [stdout] (default task-1) AFTER_COMPLETION: After persist. Before TX commit: Event 3
-21:57:30,954 INFO  [stdout] (default task-1) AFTER_SUCCESS: After persist. Before TX commit: Event 3
-21:57:30,954 INFO  [stdout] (default task-1) AFTER_COMPLETION: TX begins: Event 2
-21:57:30,954 INFO  [stdout] (default task-1) AFTER_SUCCESS: TX begins: Event 2
-21:57:30,955 INFO  [stdout] (default task-1) IN_PROGRESS: After TX commit: Event 4
-21:57:30,955 INFO  [stdout] (default task-1) AFTER_COMPLETION: After TX commit: Event 4
-21:57:30,955 INFO  [stdout] (default task-1) AFTER_SUCCESS: After TX commit: Event 4
-21:57:30,956 INFO  [stdout] (default task-1) BEFORE_COMPLETION: After TX commit: Event 4
-21:57:30,956 INFO  [stdout] (default task-1) AFTER_FAILURE: After TX commit: Event 4
+IN_PROGRESS: Before TX: Event 1
+AFTER_COMPLETION: Before TX: Event 1
+AFTER_SUCCESS: Before TX: Event 1
+BEFORE_COMPLETION: Before TX: Event 1
+AFTER_FAILURE: Before TX: Event 1
+IN_PROGRESS: TX begins: Event 2
+Hibernate: insert into Model (name) values (?)
+IN_PROGRESS: After persist. Before TX commit: Event 3
+BEFORE_COMPLETION: TX begins: Event 2
+BEFORE_COMPLETION: After persist. Before TX commit: Event 3
+AFTER_COMPLETION: After persist. Before TX commit: Event 3
+AFTER_SUCCESS: After persist. Before TX commit: Event 3
+AFTER_COMPLETION: TX begins: Event 2
+AFTER_SUCCESS: TX begins: Event 2
+IN_PROGRESS: After TX commit: Event 4
+AFTER_COMPLETION: After TX commit: Event 4
+AFTER_SUCCESS: After TX commit: Event 4
+BEFORE_COMPLETION: After TX commit: Event 4
+AFTER_FAILURE: After TX commit: Event 4
 ----
 
 
-Interestingly, if you use any __TransactionPhase__ when not inside a TX context, all observers will be triggered (Look events 1 and 4).
+Interestingly, if you use any __TransactionPhase__ when not inside a TX context, all observers will be triggered (Look events 1 and 4).˚
