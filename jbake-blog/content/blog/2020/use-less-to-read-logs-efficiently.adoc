@@ -1,0 +1,27 @@
+= Useful commands with less
+Albert Lacambra Basil 
+:jbake-title: Useful commands with less
+:description: Use less to read logs efficiently
+:jbake-date: 2020-04-21
+:jbake-type: post 
+:jbake-status: draft 
+:jbake-tags: less, bash
+:doc-id: use-less-to-read-logs-efficiently
+
+== 
+shift g: goes to end.
+shift f: tails the file.
+
+  – ctrl+c: switch to normal mode (no tails)
+?: search upwards
+/: search downward
+ – n: search next match in current direction
+ – shift n: search next match in counter direction
+
+Also useful to find 2 or more words in one line is the regex:
+– Word1.+Word2 finds both words in the same line
+
+
+As an extra to review logs, it is also useful the command grep with options after and before:
+grep -A: lines after match
+grep -B: lines before match
