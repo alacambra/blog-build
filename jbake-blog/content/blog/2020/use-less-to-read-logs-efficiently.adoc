@@ -4,7 +4,7 @@ Albert Lacambra Basil
 :description: Use less to read logs efficiently
 :jbake-date: 2020-04-21
 :jbake-type: post 
-:jbake-status: draft 
+:jbake-status: published 
 :jbake-tags: less, bash
 :doc-id: use-less-to-read-logs-efficiently
 
