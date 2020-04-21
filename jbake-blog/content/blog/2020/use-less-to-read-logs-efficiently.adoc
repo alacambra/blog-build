@@ -10,6 +10,7 @@ Albert Lacambra Basil
 
 == Move through the document
 *shift g*: goes to end.
+
 *shift f*: tails the file.
 
 == Search through the document
