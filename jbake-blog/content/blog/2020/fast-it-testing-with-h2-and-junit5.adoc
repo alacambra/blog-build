@@ -1,0 +1,83 @@
+= Fast IT testing with H2 and JUnit5 
+Albert Lacambra Basil 
+:jbake-title: Fast IT testing with H2 and JUnit5 
+:description:  
+:jbake-date: 2020-04-17 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags:  
+:doc-id: fast-it-testing-with-h2-and-junit5 
+
+== Creating an empty DB on meemory:
+
+Create an H2 empty DB is quite fast if we are deploying an application. However, if using for hour jpa test or integration test, the time that it is taking is significant.
+
+The following code creates a fresh DB each time a test run. 
+[source, java]
+----
+ @BeforeEach
+  void setUp() {
+        EntityManager em = Persistence.createEntityManagerFactory("SCHEMA_NAME").createEntityManager();
+  }
+----
+
+The output when creating a new factory is as follows: 
+[source]
+----
+class TestOfTest {
+
+  @BeforeEach
+  void init() {
+    EntityManager em = Persistence.createEntityManagerFactory("hippstest").createEntityManager();
+  }
+
+  @Test
+  void t1() {}
+
+  @Test
+  void t2() {}
+
+  @Test
+  void t3() {}
+}
+----
+
+image::/img/blog/2020/h2-load-test-time.png[width=50%, height=50%, Run three empty test loading an H2 db]
+
+As we see in the image, a complete empty test needs about three seconds to load everything.
+
+== The solution?
+
+Just load the factory once, and per each test empty the DB. So easy...
+
+=== Find all tables and execute delete queries
+
+[source, java]
+----
+for (EntityType<?> entity : em.getMetamodel().getEntities()) {
+    final String className = entity.getName();
+    Query q = em.createQuery("delete from " + className + " c");
+    q.executeUpdate();
+}
+----
+
+
+=== Restart autoincrement counters
+
+[source, java]
+----
+
+List<Object[]> sequences = em.createNativeQuery("SELECT * FROM INFORMATION_SCHEMA.SEQUENCES").getResultList();
+
+for (Object[] sequence : sequences) {
+    String seqName = (String) sequence[2];
+    em.createNativeQuery("ALTER SEQUENCE " + seqName + " RESTART WITH 1").executeUpdate();
+}
+
+----
+
+The return of the sequences qeuries, produces the following result:
+image::/img/blog/2020/h2-sequences-query.png[width=50%, height=50%]
+
+
+=== Disable referencial integrity (foreign keys)˚

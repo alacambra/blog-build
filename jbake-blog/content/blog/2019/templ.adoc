@@ -1,9 +1,0 @@
-= Title
-Albert Lacambra Basil
-:jbake-title: 
-:description: 
-:jbake-date: 2019-02-01
-:jbake-type: post
-:jbake-status: draft
-:jbake-tags: blog, jms
-:doc-id: id

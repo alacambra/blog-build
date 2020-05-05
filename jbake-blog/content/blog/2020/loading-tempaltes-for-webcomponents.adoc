@@ -1,0 +1,13 @@
+= Loading tempaltes for WebComponents 
+Albert Lacambra Basil 
+:jbake-title: Loading tempaltes for WebComponents 
+:description: If you do not like in JS templating you can just download html templates for the WebComponents dynamically 
+:jbake-date: 2020-03-01 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags:  
+:doc-id: loading-tempaltes-for-webcomponents 
+
+The idea of the webcomponets if to develop small Widgets or elements that fully contains there own html, css and js. However, is not always easy to keep everything well structured and isolated.
+
+One classical alternative I have seen is to write the HTML code into the same js classes
