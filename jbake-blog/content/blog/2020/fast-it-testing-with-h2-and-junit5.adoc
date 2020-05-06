@@ -8,7 +8,7 @@ Albert Lacambra Basil
 :jbake-tags:  
 :doc-id: fast-it-testing-with-h2-and-junit5 
 
-== Creating an empty DB on meemory:
+== Creating an empty DB on memory:
 
 Create an H2 empty DB is quite fast if we are deploying an application. However, if using for hour jpa test or integration test, the time that it is taking is significant.
 
