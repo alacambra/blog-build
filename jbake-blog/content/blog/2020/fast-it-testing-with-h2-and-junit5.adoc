@@ -28,7 +28,7 @@ class TestOfTest {
 
   @BeforeEach
   void init() {
-    EntityManager em = Persistence.createEntityManagerFactory("hippstest").createEntityManager();
+    EntityManager em = Persistence.createEntityManagerFactory("SCHEMA_NAME").createEntityManager();
   }
 
   @Test
