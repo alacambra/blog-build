@@ -52,6 +52,13 @@ Just load the factory once, and per each test empty the DB. So easy...
 
 === Find all tables and execute delete queries
 
+Calling the function _em.getMetamodel().getEntities()_ gives us all the JPA entites being created buy the current PersistenceFactory.
+Now we just need to execute a _DELETE_ query to clean up all the H2 database.
+[source, sql]
+----
+SET REFERENTIAL_INTEGRITY FALSE;
+----
+
 [source, java]
 ----
 for (EntityType<?> entity : em.getMetamodel().getEntities()) {
@@ -61,9 +68,29 @@ for (EntityType<?> entity : em.getMetamodel().getEntities()) {
 }
 ----
 
+=== Disable referencial integrity (foreign keys)˚
+
+To be able to cleanly delete all entites without any _Referencial Integrity error_ we need firstly to diable _foreign key constraints_.
+
 
 === Restart autoincrement counters
 
+The following query, gives us the name of all H2 current sequences:
+
+[source, sql]
+----
+SELECT * FROM INFORMATION_SCHEMA.SEQUENCES;
+----
+
+image::/img/blog/2020/h2-sequences-query.png[width=50%, height=50%, ]
+
+The element on position2 of the array _sequence[2]_ is the name of the sequence. Now we can just restart it using an _ALTER_ command:
+[source, sql]
+----
+ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 1;
+----
+
+.Restart sequences. ALl together.
 [source, java]
 ----
 
@@ -73,11 +100,64 @@ for (Object[] sequence : sequences) {
     String seqName = (String) sequence[2];
     em.createNativeQuery("ALTER SEQUENCE " + seqName + " RESTART WITH 1").executeUpdate();
 }
-
 ----
 
-The return of the sequences qeuries, produces the following result:
-image::/img/blog/2020/h2-sequences-query.png[width=50%, height=50%]
+=== Share the Entity_Manager_Factory
 
+You nneed to share the EntityManagerFactory in order to only create it once and save this 1 second per test. You can do it in several ways, but a simple one is to use a helper class with static variables:
 
-=== Disable referencial integrity (foreign keys)˚
+[source, java]
+----
+public class EntityManagerFactoryHelper {
+
+    private static EntityManagerFactory entityManagerFactory;
+    
+    public static EntityManagerFactory getEntityManagerFactory() {
+        if (entityManagerFactory == null) {
+        entityManagerFactory = Persistence.createEntityManagerFactory("schema");
+        }
+    }
+}
+----
+
+This version is not using any lock, so the test cannot be multithreaded or parallel.
+
+== Use H2 on memory with Hibernate
+
+Add maven dependencies. H2 on meory database and hibernate entiy manager:
+[source, xml]
+----
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <version>1.4.197</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-entitymanager</artifactId>
+    <version>5.3.7.Final</version>
+    <scope>test</scope>
+</dependency>
+----
+
+Create persitance.xml file with dsesired params on _src/test/resources/META-INF/persistence.xml_:
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+
+<persistence-unit name="{{db-schema}}" transaction-type="RESOURCE_LOCAL">
+    <properties>
+        <property name="hibernate.show_sql" value="false"/>
+        <property name="hibernate.connection.pool_size" value="10"/>
+        <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"/>
+        <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+        <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+        <property name="javax.persistence.validation.mode" value="none"/>
+    </properties>
+</persistence-unit>
+----
