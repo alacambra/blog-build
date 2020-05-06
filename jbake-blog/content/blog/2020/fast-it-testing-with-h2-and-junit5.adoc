@@ -161,3 +161,42 @@ Create persitance.xml file with dsesired params on _src/test/resources/META-INF/
     </properties>
 </persistence-unit>
 ----
+
+== Creating a Junit5 extension
+
+Now that we have all the pieces, let's integrate it with junit5 using an extension. We want that @BeforeEach test the H2 DB is like a new one.
+The runner will expect that the test class have an _EntityManager em_ attribute. We will access it throw refelction and a assign it a new created_EntityManager_ before each test.
+
+
+[source, java]
+----
+public class H2Extension implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback {
+
+  private static EntityManagerFactory emf;
+
+  @Override
+  public void beforeEach(ExtensionContext context) throws NoSuchFieldException, IllegalAccessException {
+    Object testInstance = context.getTestInstance().get();
+    EntityManager em = emf.createEntityManager();
+    testInstance.getClass().getField("em").set(testInstance, em);
+  }
+
+  @Override
+  public void afterEach(ExtensionContext context) throws NoSuchFieldException, IllegalAccessException {
+
+    Object testInstance = context.getTestInstance().get();
+    EntityManager em = (EntityManager) testInstance.getClass().getField("em").get(testInstance);
+    PersistenceContextHelper.deleteAllEntities(em);
+  }
+
+  @Override
+  public void beforeAll(ExtensionContext context) {
+    if (emf == null) {
+      emf = Persistence.createEntityManagerFactory("SCHEMA_NAME");
+    }
+  }
+}
+----
+
+This extension will assign a new EntiyManager to the test instance each time anew test run and will clear the database each timea test is finsihed.
+The _static EntityManagerFactory_ allow to reuse it for all the test clases using this extension and not only for one.
