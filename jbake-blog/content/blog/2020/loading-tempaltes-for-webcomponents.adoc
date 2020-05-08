@@ -2,12 +2,156 @@
 Albert Lacambra Basil 
 :jbake-title: Loading tempaltes for WebComponents 
 :description: If you do not like in JS templating you can just download html templates for the WebComponents dynamically 
-:jbake-date: 2020-03-01 
+:jbake-date: 2020-05-08 
 :jbake-type: post 
 :jbake-status: published 
 :jbake-tags:  
 :doc-id: loading-tempaltes-for-webcomponents 
 
-The idea of the webcomponets if to develop small Widgets or elements that fully contains there own html, css and js. However, is not always easy to keep everything well structured and isolated.
+The idea of the webcomponets if to develop small Widgets or elements that fully contains their own html, css and js. 
 
-One classical alternative I have seen is to write the HTML code into the same js classes
+However, is not always easy to keep everything well structured and isolated.
+
+Modules must be first loaded, and then each one needs its own html contents. A simple possibility is to import all modules in the index.html and each module to have its own html embedded with its js code using string literals. 
+
+The advantage is that keeping everything together is easy to have a full view of the component and to rework it. 
+
+The disadvantage is that is everything together :) making it difficult to work with it at a given sizes of code, letting expert designers to work it or to have nice syntax highlighting.
+
+So, another alternative to keep js and html separated. Following this idea, I will create a _component.js_ containing the component javascript logic and declaration, and another file _component.tpl.html_ containing the html. 
+
+This two files should be always packed together.
+
+.simple-component.js
+[source, javascript]
+----
+export class SimpleComponent extends HTMLElement {
+    constructor() {
+        super();
+    }
+    async connectedCallback() 
+        const templates = await Templates.loadTemplateFetch("simple-component.tpl.html");
+        const node = document.importNode(templates, true);
+    }
+}
+if (!customElements.get('simple-component')) {
+    customElements.define('simple-component', SimpleComponent);
+}
+----
+
+.simple-component.tpl.html
+[source, html]
+----
+<template id="simple-component-tpl">
+    <section>
+        I am an instance of a <b>SimpleComponent</b>
+    </section>
+</template>
+----
+
+The follwoing code will provide us with a downloaded template loaded in the component:
+[source, javascript]
+----
+loadTemplateNoCache: (templateName) => {
+
+        return new Promise(function (resolve, reject) {
+
+            return fetch("/" + templateName, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "text/html"
+                },
+            }).then(
+                async response => {
+                    if (responseIsSuccessful(response.status)) {
+                        const html = await response.text();
+                        let tpl = document.createElement("div");
+                        tpl.innerHTML = html;
+                        resolve(tpl.firstChild);
+                    } else {
+                        const error = { "status": response.status, "text": response.text() };
+                        reject(error);
+                    }
+                }
+            );
+        })
+    }
+----
+
+These three blocks allows us to separate js and html and download on a component basis.
+
+However, what happens if we have several instaces of the same compopnent?
+
+[source, html]
+----
+<main>
+    <simple-component></simple-component>
+    <simple-component></simple-component>
+    <simple-component></simple-component>
+    <simple-component></simple-component>
+</main>
+----
+
+
+Doing that, the template of the component is loaded each time that a new component is attached. 
+
+Therefore, I am going to add some caching capability, to assure that an *IMMUTABLE* template is only downloaded once during the whole application lifetime.
+
+image::/img/blog/2020/loading-tempaltes-for-webcomponents/download-tpls-multiple-times.png[width=1000%, height=100%, "image"]
+
+
+[NOTE]
+====
+Since templatres are static they will be more likely cached by the browser itself. So, maybe there is no need for any specific solution.
+====
+
+
+[source, javascript]
+----
+const cache = {};
+const time = Date.now();
+const promises = new Map();
+
+export let Templates = {
+    loadTemplateFetch: (templateName) => {
+
+        if (!promises.has(templateName)) {
+            promises.set(templateName, new Promise(function (resolve, reject) {
+
+                if (cache.hasOwnProperty(templateName)) {
+                    resolve(cache[templateName]);
+                } else {
+                    return fetch("/" + templateName, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "text/html"
+                        },
+                    }).then(
+                        async response => {
+                            if (responseIsSuccessful(response.status)) {
+                                const html = await response.text();
+                                let tpl = document.createElement("div");
+                                tpl.innerHTML = html;
+                                cache[templateName] = tpl.firstChild;
+                                resolve(cache[templateName]);
+                            } else {
+                                const error = { "status": response.status, "text": response.text() };
+                                reject(error);
+                            }
+                        }
+                    );
+                }
+            }));
+        }
+        return promises.get(templateName);
+    }
+};
+----
+
+Now we are caching the templates. We also save running promises, since it is possible that the components are loaded several times while the tpl is being transfered. 
+
+Once a template is asked, the related promises is saved, and in case the same template is required again, the same promise will be returned without further requests.
+
+image::/img/blog/2020/loading-tempaltes-for-webcomponents/download-tpls-cached.png[width=1000%, height=100%, "image"]
+
+Now is loaded once and *THAT's ALL!*
