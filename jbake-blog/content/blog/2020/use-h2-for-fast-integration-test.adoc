@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2020-02-11 
 :jbake-type: post 
 :jbake-status: draft 
-:jbake-tags: java, testing
+:jbake-tags: java, testing, h2, jpa
 :doc-id: use-h2-for-fast-integration-test 
 
 == Use H2 on memory with Hibernate
