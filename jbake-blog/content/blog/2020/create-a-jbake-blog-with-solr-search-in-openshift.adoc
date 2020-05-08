@@ -1,0 +1,13 @@
+= Create a JBake blog with Solr search in Openshift 
+Albert Lacambra Basil 
+:jbake-title: Create a JBake blog with Solr search in Openshift 
+:description: Create a JBake blog with Solr search in Openshift with Jankins build and automated deployment on push event
+:jbake-date: 2018-05-01 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: solr, openshift, jbake, jenkins 
+:doc-id: create-a-jbake-blog-with-solr-search-in-openshift 
+
+== What we are gone a do
+
+image::/img/blog/2020/create-a-jbake-blog-with-solr-search-in-openshift/blog-parts.png[width=100%, height=100%, parts]
