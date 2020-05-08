@@ -120,7 +120,3 @@ public static void deleteAllEntities(EntityManager em) {
 ----
 
 [CAUTION] Take care that the above code should not be used in any multithreading test.
-
-
-
-
