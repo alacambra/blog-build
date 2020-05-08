@@ -41,15 +41,17 @@ awk '/^[0-9]/ {print $3}'
 awk '{if(NR>1) print $NF}': 
 --
 
-More about built-in variables: link:https://www.thegeekstuff.com/2010/01/8-powerful-awk-built-in-variables-fs-ofs-rs-ors-nr-nf-filename-fnr/?ref=binfind.com/web[8 Powerful Awk Built-in ]
+More about built-in variables: link:https://www.thegeekstuff.com/2010/01/8-powerful-awk-built-in-variables-fs-ofs-rs-ors-nr-nf-filename-fnr/?ref=binfind.com/web[8 Powerful Awk Built-in,window=_blank]
 
-Some more tricks link:https://twitter.com/b0rk/status/1000604334026055681[here]
+Some more tricks link:https://twitter.com/b0rk/status/1000604334026055681[here,window=_blank]
 
 == Match and replace using sed
 [source, bash]
 --
 sed -i -e ‘s/pattern/replace-for/g'
 --
+
+link:https://www.gnu.org/software/sed/manual/sed.html[Sed website,window=_blank]
 
 
 == Apply commands using find

@@ -1,0 +1,130 @@
+= Cleaning elasticsearch on openshift 
+Albert Lacambra Basil 
+:jbake-title: Cleaning elasticsearch on openshift 
+:description: Remove logs from openshift ELK
+:jbake-date: 2020-05-07
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: openshift, elk 
+:doc-id: cleaning-elasticsearch-on-openshift 
+
+
+== Connect to elastichsearch
+
+You can just connect to the pod using rsh (RemoteSHell):
+----
+oc rsh <ES_POD>
+----
+
+[NOTE]
+You can also probably use a port forwarding, but then you will need to add new keys or to extract those of the container.
+
+== Get statistics
+----
+curl --key /etc/elasticsearch/secret/admin-key   \
+--cert /etc/elasticsearch/secret/admin-cert   \
+--cacert /etc/elasticsearch/secret/admin-ca \
+-XGET "https://localhost:9200/_stats?pretty=true"
+----
+
+== List indexes
+
+----
+curl --key /etc/elasticsearch/secret/admin-key   \
+--cert /etc/elasticsearch/secret/admin-cert   \
+--cacert /etc/elasticsearch/secret/admin-ca \
+-XGET "https://localhost:9200/_aliases?pretty=true"
+----
+
+----
+{
+  "project.devops.0318cb7b-de51-11e9-a51f-ac1f6bd5d876.2020.05.08" : {
+    "aliases" : {
+      ".all" : { }
+    }
+  },
+  "project.playground.d114ffc1-e559-11e9-9f8b-ac1f6bd5d876.2020.05.08" : {
+    "aliases" : {
+      ".all" : { }
+    }
+  },
+  ....
+----
+
+== Stats of an index
+
+----
+curl --key /etc/elasticsearch/secret/admin-key   \
+--cert /etc/elasticsearch/secret/admin-cert   \
+--cacert /etc/elasticsearch/secret/admin-ca \
+-XGET "https://localhost:9200/project.playground.d114ffc1-.../_stats?pretty=true"
+----
+
+----
+{
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_all" : {
+    "primaries" : {
+      "docs" : {
+        "count" : 230,
+        "deleted" : 0
+      },
+      "store" : {
+        "size_in_bytes" : 301998,
+        "throttle_time_in_millis" : 0
+      },
+      "indexing" : {
+        "index_total" : 230,
+        "index_time_in_millis" : 61,
+        "index_current" : 0,
+        "index_failed" : 0,
+        "delete_total" : 0,
+        "delete_time_in_millis" : 0,
+        "delete_current" : 0,
+        "noop_update_total" : 0,
+        "is_throttled" : false,
+        "throttle_time_in_millis" : 0
+      },
+      ...
+    }
+  }
+}
+----
+
+== Clean index
+
+----
+curl --key /etc/elasticsearch/secret/admin-key \
+  --cert /etc/elasticsearch/secret/admin-cert \
+  --cacert /etc/elasticsearch/secret/admin-ca -XDELETE \
+  "https://localhost:9200/project.playground.d114ffc1-e559-11e9-9f8b-ac1f6bd5d876.2020.05.08"
+----
+
+.Produces
+----
+{"acknowledged":true}
+----
+
+[TIP]
+====
+You can save the ouput to a file with the resource name as follows:
+
+    export RESOURCE=
+    "project.devops.0318cb7b-de51-11e9-a51f-ac1f6bd5d876.2020.05.08/_stats" && \ 
+    curl (-...headers...) \
+    -XGET "https://localhost:9200/${RESOURCE}?pretty=true" > \
+    $(echo ${RESOURCE} | sed 's/\//_/').json
+
+That will save the output of the curl command into a file called *project.devops.0318cb7b-de51-11e9-a51f-ac1f6bd5d876.2020.05.08__stats.json*.
+
+The filename and the url are bounded through the var _${RESOURCE}_ and the *sed* command replace any filename invalid symbol (e.g. a _/_ wiol be intepreted as a dir , getting a filenotfound error) 
+
+====
+
+
+
+More info: link:https://docs.openshift.com/container-platform/3.11/install_config/aggregate_logging.html?#aggregate-logging-performing-elasticsearch-maintenance-operations[Performing Administrative Elasticsearch Operations,window=_blank]
