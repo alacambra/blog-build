@@ -2,7 +2,7 @@
 Albert Lacambra Basil 
 :jbake-title: Create a JBake blog with Solr search in Openshift 
 :description: Create a JBake blog with Solr search in Openshift with Jankins build and automated deployment on push event
-:jbake-date: 2018-05-01 
+:jbake-date: 2008-05-01 
 :toc:
 :jbake-type: post 
 :jbake-status: published 
@@ -82,8 +82,7 @@ Just go to link:https://jbake.org/[JBake Official Site,window=_blank] to know mo
 
 Now what I am intereested is about to automatize this build process. To do that, I have a created a *jenkins image* and a *jenkins pipeline*
 
-=== JBake Jenkins image
-==== Create the docker image
+== Create the JBake docker image
 We need to create here a jenkins slave image with JBake already installed.
 
 [source, Dockerfile]
@@ -121,7 +120,7 @@ USER ${JBAKE_USER}
 CMD jbake -b /opt/jbake-structure
 ----
 
-==== Create an Openshift's ImageStream 
+== Create a JBake Openshift's ImageStream 
 Then we just need to push it to the docker repo our choise (in my case the docker hub) and then create an imagestream with it in Openshift:
 
 [source, bash]
@@ -129,7 +128,7 @@ Then we just need to push it to the docker repo our choise (in my case the docke
 14:07:35 ➜ docker push alacambra/jbake
 
 ....
-lots of stuff happening here....
+lots of blablablabla here....
 ....
 
 14:14:21 ➜  junk oc import-image  jbake --from=alacambra/jbake:latest --confirm
@@ -159,9 +158,156 @@ Annotations:	image.openshift.io/dockerLayersOrder=ascending
 Image Size:	234.4MB in 10 layers
 
 ....
-lot of stuff happening here....
+lots of further blablablabla here....
 ....
 ----
 
-==== Register the image as jenikins slave
+== Register the JBake image as jenikins slave
 The last step is to tell openshift that this image is gonna be used as a *jenkins slave*
+
+To do that it is enough to add some special labels to the created image streams:
+
+* *role: jenkins-slave* indicates that this image is to be used by a jenkins slave
+
+* *slave-label: jbake* is the value to be used into the jenkins pipelins to use this slave image.
+
+You can add it through openshift directly or create the imagestream using a template instead to use the _oc import-image_ command.
+
+[source, yaml]
+----
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    app: [my-app]
+    role: jenkins-slave
+    slave-label: jbake
+  name: jbake
+  namespace: blog
+spec:
+  tags:
+    - annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+        openshift.io/imported-from: alacambra/jbake
+      from:
+        kind: DockerImage
+        name: alacambra/jbake
+      name: latest
+      referencePolicy:
+        type: Source
+----
+
+== Create an Nginx S2i image for the blog
+
+Here we are gonna a create an S2i image, so per each new push a new image will be created
+
+[NOTE] 
+====
+If you do not know about S2i, visit the official website: link:https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/builds_and_image_streams.html#source-build[Source-to-Image (S2I) Build, window=_blank]
+====
+
+The foolowing image is based on link:https://github.com/openshift/source-to-image/blob/master/docs/builder_image.md
+[source, Dockerfile]
+----
+
+# nginx-centos7
+# Here you can use whatever base image is relevant for your application.
+FROM centos:centos7
+LABEL maintainer="Albert Lacambra Basil <albert@lacambra.tech>"
+ENV NGINX_VERSION=1.6.3
+
+# Set the labels that are used for OpenShift to describe the builder image.
+LABEL io.k8s.description="Nginx Webserver" \
+    io.k8s.display-name="Nginx 1.6.3" \
+    io.openshift.expose-services="8080:http" \
+    io.openshift.tags="builder,webserver,html,nginx" \
+    # this label tells s2i where to find its mandatory scripts
+    # (run, assemble, save-artifacts)
+    io.openshift.s2i.scripts-url="image:///usr/libexec/s2i"
+
+# Install the nginx web server package and clean the yum cache
+RUN yum install -y epel-release && \
+    yum install -y --setopt=tsflags=nodocs nginx && \
+    yum clean all
+
+# Change the default port for nginx 
+# Required if you plan on running images as a non-root user).
+#
+RUN sed -i 's/80/8080/' /etc/nginx/nginx.conf
+#RUN sed -i 's/user nginx;/user nginx;/' /etc/nginx/nginx.conf
+
+# Copy the S2I scripts to /usr/libexec/s2i since we set the label that way
+COPY ./s2i/bin/ /usr/libexec/s2i
+
+ENV NGINX_USER=nginx
+
+#RUN adduser -u 1001 ${NGINX_USER}
+
+RUN chown -R ${NGINX_USER}:${NGINX_USER} /usr/share/nginx
+RUN chown -R ${NGINX_USER}:${NGINX_USER} /var/log/nginx
+RUN chown -R ${NGINX_USER}:${NGINX_USER} /var/lib/nginx
+RUN touch /run/nginx.pid
+RUN chown -R ${NGINX_USER}:${NGINX_USER} /run/nginx.pid
+RUN chown -R ${NGINX_USER}:${NGINX_USER} /etc/nginx
+
+#Workaround to fix execution with no nginx user...
+RUN chmod -R 777 /var/log/nginx
+RUN chmod -R 777 /var/lib/nginx
+RUN  chmod -R 777 /run/nginx.pid
+
+
+USER 999
+
+# Set the default port for applications built using this image
+EXPOSE 8080
+
+# Modify the usage script in your application dir to inform the user how to run
+# this image.
+CMD ["/usr/libexec/s2i/usage"]
+----
+
+== Create a piple to build JBake and an Nginx image
+
+Basically we need to execute three steps:
+
+. Execute the command _jbake -b jbake-blog/_
+. Copy the the generated website into the folder where nginx will start a nnew buid
+. Start an S2i Nginx build
+
+[source, Jenkinsfile]
+----
+def applicationName = "blog";
+
+pipeline{
+    agent {
+        label 'jbake'
+    }
+
+    stages{
+        stage('build-blog') {
+            steps{
+                sh script: "jbake -b jbake-blog/"
+            }
+        }
+        stage('copy-blog') {
+            steps{
+                sh script: "cp -Rf jbake-blog/output s2i-nginx/files/ "
+            }
+        }
+        stage('s2i build'){
+            steps{
+                script{
+                    openshift.withCluster(){
+                        openshift.withProject(){
+                            def build = openshift.selector("bc", applicationName);
+                            def startedBuild = build.startBuild("--from-file=\"./s2i-nginx/files\"");
+                            startedBuild.logs('-f');
+                            echo "${applicationName} build status: ${startedBuild.object().status}";
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+----
