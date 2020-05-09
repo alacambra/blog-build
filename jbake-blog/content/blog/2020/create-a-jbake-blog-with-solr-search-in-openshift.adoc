@@ -3,11 +3,165 @@ Albert Lacambra Basil
 :jbake-title: Create a JBake blog with Solr search in Openshift 
 :description: Create a JBake blog with Solr search in Openshift with Jankins build and automated deployment on push event
 :jbake-date: 2018-05-01 
+:toc:
 :jbake-type: post 
 :jbake-status: published 
 :jbake-tags: solr, openshift, jbake, jenkins 
 :doc-id: create-a-jbake-blog-with-solr-search-in-openshift 
 
+toc::[]
+
+
 == What we are gone a do
 
+Basically the blog is plain html/css/jss without backend. However, I wanted to have some search capabilities so I have added a solr server.
+
+Also the blog should be _code friendly_ so I wanted to write it using *asciidoctor* syntax. 
+
+To convert _adoc_ files to html, I am gone a use link:https://jbake.org/[JBake,window=_blank].
+
+The process to add a new blog entry is as follows:
+
+. Write the articale into a new adoc document
+. Push to a git repo
+. Build the website with JBake
+. Deploy it to an Nginx server
+. Index all blog entries with a Solr server
+
 image::/img/blog/2020/create-a-jbake-blog-with-solr-search-in-openshift/blog-parts.png[width=100%, height=100%, parts]
+
+== Building the website with JBake
+
+To build a JBake site is quite easy. In short you just need to run the following command:
+
+[source, bash]
+----
+13:49:03 ➜   jbake -i
+JBake v2.6.4 (2019-01-21 21:03:37PM) [http://jbake.org]
+
+Base folder structure successfully created.
+13:49:08 ➜   ls -la
+total 8
+drwxr-xr-x    6 albertlacambra  staff   192 May  9 13:49 .
+drwxr-xr-x+ 102 albertlacambra  staff  3264 May  9 13:49 ..
+drwxr-xr-x    6 albertlacambra  staff   192 May  9 13:49 assets
+drwxr-xr-x    4 albertlacambra  staff   128 May  9 13:49 content
+-rw-r--r--    1 albertlacambra  staff    64 May  9 13:49 jbake.properties
+drwxr-xr-x   12 albertlacambra  staff   384 May  9 13:49 templates
+----
+
+Now we have a basic website build. The blog contents are gone a be saved under the folder *content*. My Current structure looks like that:
+
+[source, bash]
+----
+13:53:34:~/git/lacambra.tech/blog-build ->ls -lR jbake-blog/content/
+total 24
+-rw-r--r--  1 albertlacambra  staff  216 20 Okt  2019 404.html
+-rw-r--r--  1 albertlacambra  staff  883  4 Nov  2019 about.adoc
+drwxr-xr-x  4 albertlacambra  staff  128 22 Jan 18:55 blog
+
+jbake-blog/content/blog:
+total 0
+drwxr-xr-x  26 albertlacambra  staff  832  1 Mär 18:40 2019
+drwxr-xr-x  13 albertlacambra  staff  416  8 Mai 16:34 2020
+
+jbake-blog/content//blog/2019:
+total 264
+-rw-r--r--  1 albertlacambra  staff   636  8 Nov  2019 add-new.certificate-to-be-accepted-maven.adoc
+-rw-r--r--  1 albertlacambra  staff  7726 18 Dez 21:39 apache-poi-and-excel-generation-basics.adoc
+...
+
+jbake-blog/content//blog/2020:
+total 120
+-rw-r--r--  1 albertlacambra  staff  5385  3 Feb 22:15 cdi-event-with-jta-transactions.adoc
+-rw-r--r--  1 albertlacambra  staff  2005  9 Mai 13:53 create-a-jbake-blog-with-solr-search-in-openshift.adoc
+...
+----
+
+Just go to link:https://jbake.org/[JBake Official Site,window=_blank] to know more about this amazing tool :)
+
+Now what I am intereested is about to automatize this build process. To do that, I have a created a *jenkins image* and a *jenkins pipeline*
+
+=== JBake Jenkins image
+==== Create the docker image
+We need to create here a jenkins slave image with JBake already installed.
+
+[source, Dockerfile]
+----
+FROM quay.io/openshift/origin-jenkins-agent-base:v4.0
+# This is a base image that install and configures JBake.
+# Child Dockerfiles can run command `jbake` to bake or anything else.
+
+# Define environment variables.
+ENV BUILD_DATE=05252019
+ENV JBAKE_HOME=/opt/jbake
+ENV JBAKE_USER=jbake
+ENV JBAKE_VERSION=2.6.4
+ENV PATH ${JBAKE_HOME}/bin:$PATH
+
+RUN adduser ${JBAKE_USER}
+
+RUN mkdir -p /opt/jbake-${JBAKE_VERSION} && \
+    ln -s /opt/jbake-${JBAKE_VERSION} ${JBAKE_HOME} && \
+    chown ${JBAKE_USER}:${JBAKE_USER} -R /opt/jbake*
+
+RUN mkdir /opt/jbake-structure && \
+    chown ${JBAKE_USER}:${JBAKE_USER} -R /opt/jbake*
+    
+RUN cd ~ && wget https://dl.bintray.com/jbake/binary/jbake-${JBAKE_VERSION}-bin.zip && \
+    unzip ~/jbake-${JBAKE_VERSION}-bin.zip && \
+    cd /opt && cp -R ~/jbake-${JBAKE_VERSION}-bin/* ${JBAKE_HOME}/ && \
+    rm ~/jbake-${JBAKE_VERSION}-bin.zip && \ 
+    rm -rf ~/jbake-${JBAKE_VERSION}-bin
+
+RUN cd /opt
+
+USER ${JBAKE_USER}
+
+CMD jbake -b /opt/jbake-structure
+----
+
+==== Create an Openshift's ImageStream 
+Then we just need to push it to the docker repo our choise (in my case the docker hub) and then create an imagestream with it in Openshift:
+
+[source, bash]
+----
+14:07:35 ➜ docker push alacambra/jbake
+
+....
+lots of stuff happening here....
+....
+
+14:14:21 ➜  junk oc import-image  jbake --from=alacambra/jbake:latest --confirm
+imagestream.image.openshift.io/jbake imported
+
+Name:			jbake
+Namespace:		playground
+Created:		Less than a second ago
+Labels:			<none>
+Annotations:		openshift.io/image.dockerRepositoryCheck=2020-05-09T12:14:31Z
+Docker Pull Spec:	docker-registry.default.svc:5000/playground/jbake
+Image Lookup:		local=false
+Unique Images:		1
+Tags:			    1
+
+latest
+  tagged from alacambra/jbake:latest
+
+  * alacambra/jbake@sha256:8bc165fcee614dd71b42ab4e5b48d620633d97b6e72f4bdf3057df6d2c828de6
+      Less than a second ago
+
+Image Name:	jbake:latest
+Docker Image:	alacambra/jbake@sha256:8bc165fcee614dd71b42ab4e5b48d620633d97b6e72f4bdf3057df6d2c828de6
+Name:		sha256:8bc165fcee614dd71b42ab4e5b48d620633d97b6e72f4bdf3057df6d2c828de6
+Created:	Less than a second ago
+Annotations:	image.openshift.io/dockerLayersOrder=ascending
+Image Size:	234.4MB in 10 layers
+
+....
+lot of stuff happening here....
+....
+----
+
+==== Register the image as jenikins slave
+The last step is to tell openshift that this image is gonna be used as a *jenkins slave*

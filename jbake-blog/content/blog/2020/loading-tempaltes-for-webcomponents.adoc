@@ -97,7 +97,7 @@ Doing that, the template of the component is loaded each time that a new compone
 
 Therefore, I am going to add some caching capability, to assure that an *IMMUTABLE* template is only downloaded once during the whole application lifetime.
 
-image::/img/blog/2020/loading-tempaltes-for-webcomponents/download-tpls-multiple-times.png[width=1000%, height=100%, "image"]
+image::/blog/2020/loading-tempaltes-for-webcomponents/download-tpls-multiple-times.png[width=1000%, height=100%, "image"]
 
 
 [NOTE]
@@ -152,6 +152,6 @@ Now we are caching the templates. We also save running promises, since it is pos
 
 Once a template is asked, the related promises is saved, and in case the same template is required again, the same promise will be returned without further requests.
 
-image::/img/blog/2020/loading-tempaltes-for-webcomponents/download-tpls-cached.png[width=1000%, height=100%, "image"]
+image::/blog/2020/loading-tempaltes-for-webcomponents/download-tpls-cached.png[width=1000%, height=100%, "image"]
 
 Now is loaded once and *THAT's ALL!*

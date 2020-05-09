@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2020-05-06
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags:  
+:jbake-tags:  junit, testing,jpa/jta
 :doc-id: fast-it-testing-with-h2-and-junit5 
 
 == Creating an empty DB on memory:
@@ -42,7 +42,7 @@ class TestOfTest {
 }
 ----
 
-image::/img/blog/2020/fast-it-testing-with-h2-and-junit5/h2-load-test-time.png[width=50%, height=50%, Run three empty test loading an H2 db]
+image::/blog/2020/fast-it-testing-with-h2-and-junit5/h2-load-test-time.png[width=50%, height=50%, Run three empty test loading an H2 db]
 
 As we see in the image, a complete empty test needs about three seconds to load everything.
 
@@ -82,7 +82,7 @@ The following query, gives us the name of all H2 current sequences:
 SELECT * FROM INFORMATION_SCHEMA.SEQUENCES;
 ----
 
-image::/img/blog/2020/fast-it-testing-with-h2-and-junit5/h2-sequences-query.png[width=50%, height=50%, ]
+image::/blog/2020/fast-it-testing-with-h2-and-junit5/h2-sequences-query.png[width=50%, height=50%, ]
 
 The element on position2 of the array _sequence[2]_ is the name of the sequence. Now we can just restart it using an _ALTER_ command:
 [source, sql]

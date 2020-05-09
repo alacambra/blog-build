@@ -4,8 +4,8 @@ Albert Lacambra Basil
 :description: CDI events can we triggered in different faces of a transaction 
 :jbake-date: 2020-02-03 
 :jbake-type: post 
-:jbake-status: published 
-:jbake-tags: java, jakarta ee, jta 
+:jbake-status: published
+:jbake-tags: java, jakarta ee, jpa/jta
 :doc-id: cdi-event-with-jta-transactions 
 
 == CDI Events

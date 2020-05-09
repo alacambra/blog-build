@@ -1,15 +1,17 @@
 = RepeatedTest with Junit 5 
 Albert Lacambra Basil 
-:jbake-title: @RepeatedTest with Junit 5 
+:jbake-title: @RepeatedTest with Junit 5
 :description: Run the same tests with different parameters using Junit5 
 :jbake-date: 2020-01-21
 :jbake-type: post 
 :jbake-status: published
 :jbake-tags: junit, java 
-:doc-id: @repeatedtest-with-junit-5 
+:doc-id: @repeatedtest-with-junit-5
 
 == Basic usage
+
 The following snippet will run 5 times the test _someTest_.
+
 [source, java]
 ----
 @RepeatedTest(5)
@@ -38,4 +40,4 @@ void testDisplayNamePlaceholder() {}
 void testTotalRepetitionsPlaceholder() {‚}
 ----
 
-image::/img/blog/2020/repeated-test-print-types.png[width=50%, height=50%, Results display options]
+image::/blog/2020/@repeatedtest-with-junit-5/repeated-test-print-types.png[width=50%, height=50%, Results display options]
