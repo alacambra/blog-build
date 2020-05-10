@@ -210,8 +210,6 @@ The foolowing image is based on link:https://github.com/openshift/source-to-imag
 [source, Dockerfile]
 ----
 
-# nginx-centos7
-# Here you can use whatever base image is relevant for your application.
 FROM centos:centos7
 LABEL maintainer="Albert Lacambra Basil <albert@lacambra.tech>"
 ENV NGINX_VERSION=1.6.3
@@ -225,23 +223,18 @@ LABEL io.k8s.description="Nginx Webserver" \
     # (run, assemble, save-artifacts)
     io.openshift.s2i.scripts-url="image:///usr/libexec/s2i"
 
-# Install the nginx web server package and clean the yum cache
 RUN yum install -y epel-release && \
     yum install -y --setopt=tsflags=nodocs nginx && \
     yum clean all
 
 # Change the default port for nginx 
 # Required if you plan on running images as a non-root user).
-#
 RUN sed -i 's/80/8080/' /etc/nginx/nginx.conf
-#RUN sed -i 's/user nginx;/user nginx;/' /etc/nginx/nginx.conf
 
 # Copy the S2I scripts to /usr/libexec/s2i since we set the label that way
 COPY ./s2i/bin/ /usr/libexec/s2i
 
 ENV NGINX_USER=nginx
-
-#RUN adduser -u 1001 ${NGINX_USER}
 
 RUN chown -R ${NGINX_USER}:${NGINX_USER} /usr/share/nginx
 RUN chown -R ${NGINX_USER}:${NGINX_USER} /var/log/nginx
@@ -257,21 +250,58 @@ RUN  chmod -R 777 /run/nginx.pid
 
 
 USER 999
-
-# Set the default port for applications built using this image
 EXPOSE 8080
-
-# Modify the usage script in your application dir to inform the user how to run
-# this image.
 CMD ["/usr/libexec/s2i/usage"]
 ----
+
+The next step is to create the s2i scripts. Basically we need to create the _./s2i/bin/assemble_ ans the _./s2i/bin/run_ script 
+
+.assemble
+[source, bash]
+----
+#!/bin/bash -e
+if [[ "$1" == "-h" ]]; then
+	exec /usr/libexec/s2i/usage
+fi
+
+echo "---> Building and installing application from source..."
+
+TRACK=s2ibuild-${RANDOM:0:5}
+
+echo "${TRACK}:here is source"
+ls -l /tmp/src/
+echo "${TRACK}:source is done"
+
+if [ -f /tmp/src/nginx.conf ]; then
+  echo "${TRACK}:added nginx.conf"
+  mv /tmp/src/nginx.conf /etc/nginx/nginx.conf
+fi
+if [ "$(ls -A /tmp/src)" ]; then
+  echo "${TRACK}:added rest of files"
+  mv /tmp/src/output/* /usr/share/nginx/html/
+fi
+----
+
+Assamble script basically copies the passed files to the nginx directory:
+
+* *nginx.conf* will be moved to */etc/nginx/nginx.conf* becomming the config file used by nginx
+* any file under *output* will be served by added to nginx as static resources. Is in this folder where we need to place the generated website.
+
+
+.run
+[source, bash]
+----
+exec /usr/sbin/nginx -g "daemon off;"
+----
+
+The run command is exactly that. The run command. Is what normlly you will put in you Dockerfile under *CMD ...*
 
 == Create a piple to build JBake and an Nginx image
 
 Basically we need to execute three steps:
 
 . Execute the command _jbake -b jbake-blog/_
-. Copy the the generated website into the folder where nginx will start a nnew buid
+. Copy the the generated website into the folder where nginx will start a new buid
 . Start an S2i Nginx build
 
 [source, Jenkinsfile]
@@ -306,6 +336,409 @@ pipeline{
                         }
                     }
                 }
+            }
+        }
+    }
+}
+----
+
+== Create sol2 s2I image
+
+As like the Nginyx image I am gona use S2i:
+
+.Solr Dockerfile
+[source, Dockerfile]
+----
+FROM solr:7.7
+MAINTAINER  Albert Lacambra Basil "albert@lacambra.tech"
+
+USER root
+ENV STI_SCRIPTS_PATH=/usr/libexec/s2i
+
+LABEL io.k8s.description="Run SOLR search in OpenShift" \
+      io.k8s.display-name="SOLR 7.7" \
+      io.openshift.expose-services="8983:http" \
+      io.openshift.tags="builder,solr,solr7.7" \
+      io.openshift.s2i.scripts-url="image:///${STI_SCRIPTS_PATH}"
+
+RUN chgrp -R 0 /opt/solr \
+  && chmod -R g+rwX /opt/solr
+
+RUN chgrp -R 0 /opt/docker-solr \
+  && chmod -R g+rwX /opt/docker-solr
+
+COPY ./s2i/bin/. ${STI_SCRIPTS_PATH}
+RUN chmod -R a+rx ${STI_SCRIPTS_PATH}
+
+USER 8983
+----
+
+This image is based on link:https://github.com/dudash/openshift-docker-solr[window=_blank]
+
+== Create java code to index blog entries
+
+* *SolrClientProvider*: It creates a solr client.
+* *Indexer*: Takes files under a given directory and create a SolrDocument to be indexed. Basically it makes the step *(adoc) -[:to]-> (solr)*
+* *ParsedDocument*: It pases each file and extracts the headers, the body and the filename. Those fileds are being added to the SolrDocuemnt.
+* *Cli*: A class providing endpoints to perform actions like _delete, reindex, ..._ using link:https://github.com/tomitribe/crest#example[Crest from tomitribe,window=_blank]
+
+[source, java]
+----
+package tech.lacambra.blog.solr_indexing;
+
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+
+public class SolrClientProvider {
+
+  public static HttpSolrClient getClient() {
+    final String solrUrl = "http://solr-blog-blog.apps.oc.lacambra/solr";
+    return new HttpSolrClient.Builder(solrUrl)
+        .withConnectionTimeout(10000)
+        .withSocketTimeout(60000)
+        .build();
+  }
+}
+----
+
+[source, java]
+----
+package tech.lacambra.blog.solr_indexing;
+
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.common.SolrInputDocument;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.logging.Logger;
+
+public class Indexer {
+  private static final Logger LOGGER = Logger.getLogger(Indexer.class.getName());
+  private HttpSolrClient client;
+
+  public static void main(String[] args) throws IOException {
+
+    if (args.length < 1) {
+      throw new RuntimeException("No content path given");
+    }
+
+    try (HttpSolrClient client = SolrClientProvider.getClient()) {
+      Indexer indexer = new Indexer(client);
+      indexer.indexAll(args[0]);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public Indexer(HttpSolrClient client) {
+    this.client = client;
+  }
+
+  public void indexAll(String path) {
+    Path contentPath = Paths.get(path);
+    try {
+      Files.walk(contentPath, 1)
+          .filter(p -> !p.equals(contentPath) && Files.isDirectory(p))
+          .flatMap(p -> {
+            try {
+              return Files.walk(p, 1);
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
+          })
+          .filter(p -> Files.isRegularFile(p))
+          .map(p -> {
+
+            try {
+              return parseAdocText(p);
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
+
+          })
+          .filter(ParsedDocument::isPosted)
+          .forEach(this::indexDoc);
+    } catch (IOException e) {
+      LOGGER.info("[indexAll] Error: " + e.getMessage());
+    }
+  }
+
+  private void indexDoc(ParsedDocument parsedDocument) {
+
+    final SolrInputDocument doc = new SolrInputDocument();
+
+    String id = parsedDocument.getHeaderValue("doc-id").orElseThrow(() -> new RuntimeException("Id must be given for:" + parsedDocument.getUrl()));
+    doc.addField("id", id);
+    doc.addField("url", parsedDocument.getUrl());
+    doc.addField("title", parsedDocument.getHeaderValue("jbake-title").orElse(""));
+    doc.addField("description", parsedDocument.getHeaderValue("description").orElse(""));
+    doc.addField("reducedText", parsedDocument.getTextResume());
+    doc.addField("text", parsedDocument.getBodyText());
+    doc.addField("date", parsedDocument.getDisplayDate());
+
+    String collection = "blog-solr";
+
+    try {
+      client.add(collection, doc);
+      client.commit(collection);
+      LOGGER.info("[indexDoc] Indexed document " + id);
+
+    } catch (SolrServerException | IOException e) {
+      e.printStackTrace();
+    }
+
+
+  }
+
+  private ParsedDocument parseAdocText(Path path) throws IOException {
+
+    ParsedDocument parsedDocument = new ParsedDocument(path.toString());
+    Files.readAllLines(path).forEach(parsedDocument::parseLine);
+
+    return parsedDocument;
+  }
+}
+
+----
+
+[source, java]
+----
+package tech.lacambra.blog.solr_indexing;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class ParsedDocument {
+
+  private Map<String, String> headers;
+  private List<String> body;
+  private String fileName;
+
+  public ParsedDocument(String fileName) {
+    this.fileName = fileName.replace(".adoc", ".html");
+    headers = new HashMap<>();
+    body = new ArrayList<>();
+  }
+
+  public ParsedDocument parseLine(String line) {
+
+    line = line.trim();
+
+    if (line.startsWith(":")) {
+
+      String headerName = parseHeaderName(line);
+      String headerValue = parseHeaderValue(line);
+      headers.put(headerName, headerValue);
+
+    } else {
+
+      body.add(line);
+
+    }
+
+    return this;
+  }
+
+  String parseHeaderName(String header) {
+
+    header = header.trim();
+
+    int index = header.indexOf(":", 1);
+    String headerName = header.substring(1, index);
+
+    return headerName.trim();
+  }
+
+  String parseHeaderValue(String header) {
+
+    header = header.trim();
+
+    int index = header.indexOf(":", 1);
+    String headerValue = header.substring(index + 1);
+
+    return headerValue.trim();
+  }
+
+  public List<String> getBodyLines() {
+    return new ArrayList<>(body);
+  }
+
+  public String getBodyText() {
+
+    Stream.of("jbake-title", "description")
+        .map(this::getHeaderValue)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .forEach(body::add);
+
+    return String.join("\n", body);
+  }
+
+  public Map<String, String> getHeaders() {
+    return new HashMap<>(headers);
+  }
+
+  public String getTextResume() {
+    return body.stream().limit(5).collect(Collectors.joining("\n"));
+  }
+
+  public Optional<String> getHeaderValue(String headerName) {
+    return Optional.ofNullable(headers.get(headerName));
+  }
+
+  public String getUrl() {
+    return fileName.substring(fileName.indexOf("content") + "content".length());
+  }
+
+  public boolean isPosted() {
+    return headers.getOrDefault("jbake-type", "").equals("post");
+  }
+
+  public String getDisplayDate() {
+    return headers.getOrDefault("jbake-date", "");
+  }
+
+  public String getFileName() {
+    return fileName;
+  }
+}
+
+----
+
+[source, java]
+----
+package tech.lacambra.blog.solr_indexing;
+
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.UpdateResponse;
+import org.tomitribe.crest.Main;
+import org.tomitribe.crest.api.Command;
+import org.tomitribe.crest.api.Default;
+import org.tomitribe.crest.api.Option;
+import org.tomitribe.crest.environments.SystemEnvironment;
+
+import java.util.logging.Logger;
+
+
+public class Cli {
+
+  private static final Logger LOGGER = Logger.getLogger(Cli.class.getName());
+  private String collection = "blog-solr";
+
+  @Command("check")
+  public void check() {
+    LOGGER.info("[check] OK!");
+  }
+
+
+  @Command("delete")
+  public void delete(@Option("id") @Default("") String id) {
+
+    if (id.isEmpty()) {
+      deleteAll();
+    } else {
+      deleteId(id);
+    }
+  }
+
+  @Command("reindex")
+  public void reindex(@Option("path") @Default("") String path) {
+
+    if (path.isEmpty()) {
+      throw new RuntimeException("invalid path=" + path);
+    }
+
+    deleteAll();
+
+    try (HttpSolrClient client = SolrClientProvider.getClient()) {
+      Indexer indexer = new Indexer(client);
+      indexer.indexAll(path);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+
+  }
+
+  public static void main(String[] args) throws Exception {
+    Main main = new Main(Cli.class);
+    main.main(new SystemEnvironment(), args);
+  }
+
+  private void deleteAll() {
+    try (HttpSolrClient client = SolrClientProvider.getClient()) {
+
+      if ("".isEmpty()) {
+        SolrQuery q = new SolrQuery("*:*");
+        q.addField("id");
+
+        QueryResponse r = client.query(collection, q);
+
+        while (!r.getResults().isEmpty()) {
+          r.getResults().stream()
+              .map(d -> d.get("id"))
+              .forEach(id -> {
+                try {
+                  UpdateResponse ur = client.deleteById(collection, (String) id);
+                  client.commit(collection);
+                  LOGGER.info("[main] Deleted document " + id);
+
+                } catch (Exception e) {
+                  LOGGER.info("[main] Error deleting " + id + " : " + e.getMessage());
+                }
+              });
+
+          r = client.query(collection, q);
+        }
+      }
+
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void deleteId(String id) {
+    try (HttpSolrClient client = SolrClientProvider.getClient()) {
+
+      UpdateResponse ur = client.deleteById(collection, (String) id);
+      client.commit(collection);
+      LOGGER.info("[main] Deleted document " + id);
+
+    } catch (Exception e1) {
+      e1.printStackTrace();
+    }
+  }
+}
+----
+
+== Create a pipeline to index blog entries
+
+This pipeline will just execute the *Indexer*. Thenall the adocs will be reindexed to *Solr*.
+
+[source, Jenkinsfile]
+----
+def applicationName = "solr-indexing";
+
+pipeline{
+    agent {
+        label 'maven'
+    }
+
+    stages{
+        stage('build-solr-indexing') {
+            steps{
+                sh script: "cd ${applicationName} && mvn clean package"
+            }
+        }
+        stage('index-entries') {
+            steps{
+                sh script: "cd ${applicationName} && mvn exec:java -Dexec.mainClass=tech.lacambra.blog.solr_indexing.Indexer -Dexec.args=\"../jbake-blog/content/blog/\""
             }
         }
     }
