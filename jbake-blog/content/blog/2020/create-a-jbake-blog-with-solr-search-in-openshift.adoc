@@ -375,6 +375,71 @@ USER 8983
 
 This image is based on link:https://github.com/dudash/openshift-docker-solr[window=_blank]
 
+=== Solr configuration
+We need also to configure the schema that we are gone to use for our documents:
+
+.schema.xml
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="post" version="1.1">
+    <uniqueKey>id</uniqueKey>
+
+    <fieldType name="string" class="solr.StrField"/>
+    <fieldType name="text" class="solr.TextField">
+        <analyzer type="index">
+            <tokenizer class="solr.StandardTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+        <analyzer type="query">
+            <tokenizer class="solr.StandardTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>
+
+    <field name="id" type="string" indexed="true" stored="true" multiValued="false" required="true"/>
+    <field name="url" type="string" indexed="true" stored="true"/>
+    <field name="title" type="text" indexed="true" stored="true"/>
+    <field name="description" type="text" indexed="true" stored="true"/>
+    <field name="reducedText" type="text" indexed="true" stored="true"/>
+    <field name="text" type="text" indexed="true" stored="true"/>
+    <field name="date" type="text" indexed="true" stored="true"/>
+
+</schema>
+----
+
+More about configuring solr: link:https://lucene.apache.org/solr/guide/7_0/solr-configuration-files.html[solr-configuration-files, window=_blank]
+
+=== Solr S2i scripts
+
+as with nginx we need to create the **assamble** and **run** script.
+
+.
+[source, bash]
+----
+#!/bin/bash
+SOURCE_FILE_DIR=/tmp/src
+
+if [ -z "${SOLR_CONF_DIR}" ]; then
+  SOLR_CONF_DIR="${SOLR_HOME:-/opt/solr/server/solr}/configsets"
+fi
+
+echo "==========================================================="
+echo "Source Repo Files"
+echo "-----------------------------------------------------------"
+ls -al ${SOURCE_FILE_DIR}
+echo "==========================================================="
+echo
+
+echo "Copying SOLR conf files from ${SOURCE_FILE_DIR}/. to ${SOLR_CONF_DIR} ..."
+cp -Rf ${SOURCE_FILE_DIR}/. ${SOLR_CONF_DIR}
+echo "Copied SOLR conf files."
+echo
+----
+
+Basically we copy all config files under ${SOURCE_FILE_DIR} under the Solr configuration directory ${SOLR_CONF_DIR}. THe only file I have added to the default config is the **schema.xml**. The rest are just defaults.
+
 == Create java code to index blog entries
 
 * *SolrClientProvider*: It creates a solr client.
@@ -719,7 +784,7 @@ public class Cli {
 
 == Create a pipeline to index blog entries
 
-This pipeline will just execute the *Indexer*. Thenall the adocs will be reindexed to *Solr*.
+This pipeline will just execute the *Indexer*. Then all the _adocs_ will be reindexed to *Solr*.
 
 [source, Jenkinsfile]
 ----
@@ -744,3 +809,126 @@ pipeline{
     }
 }
 ----
+
+== Integrate Solr with JBake
+
+Once everytging is configured and working, I need to be able to call solr from the website.
+
+.solr-search.js
+[source, javascript]
+----
+const url = "/search/blog-solr/select?q="
+
+const search = (searchId) => {
+
+    //Pick the query from the search input box and create the search query
+    const q = "*" + document.querySelector(`#${searchId}`).value.trim().replace(/[ ]+/g, "*%20%26%26%20*") + "*";
+    const select = `${url}${q}`;
+    
+    fetch(select)
+        .then(response => response.json())
+        .then(j => {
+
+            //Prepare the results section
+            let main = document.querySelector("#main");
+            main.innerHTML = "";
+
+            //Show "nothing found" error
+            if (j["response"]["docs"].length === 0) {
+                main.innerHTML = `<article class="post"><header><div class="title">Nothing found for ${q}</div></header></article>`;
+            }
+
+            //Load results to main section
+            j["response"]["docs"].forEach(entry => {
+                const template = document.querySelector('#search-result');
+                let rendered = Mustache.render(template.innerHTML, entry);
+                let div = document.createElement("div");
+                div.innerHTML = rendered;
+                main.appendChild(div);
+            });
+        });
+
+    return false;
+}
+----
+
+A solr response will look like:
+[source, json]
+----
+{
+    "responseHeader": {
+        "status": 0,
+        "QTime": 3,
+        "params": {
+            "q": "*:*",
+            "_": "1572110726768"
+        }
+    },
+    "response": {
+        "numFound": 1,
+        "start": 0,
+        "docs": [
+            {
+                "id": "...",
+                "url": "...",
+                "title": "...",
+                "description": "...",
+                "reducedText": "...",
+                "text": "...",
+                "date": "..."
+            },
+        ]
+    }
+}
+----
+
+In jabke you can load the javascripts file in the footer.ftl (it will depends on your tempaltes though):
+
+.footer.ftl
+[source, html]
+----
+<script src="<#if (content.rootpath)??>${content.rootpath}<#else></#if>js/solr-search.js"></script>
+----
+
+The template for the search results is created in *menu.ftl*
+
+.menu.ftl
+[source, html]
+----
+<template id="search-result">
+    <article class="post">
+        <header>
+            <div class="title">
+                <h2><a href="{{url}}">{{title}}</a></h2>
+                <p>{{description}}</p>
+            </div>
+            <div class="meta">
+                <time class="published"
+                    datetime='{{date}}'>
+                    {{date}}</time>
+                    <div class="published eta"></div>
+                <span class="author"/><span class="name">Albert Lacambra Basil</span><img src="../../img/main/avatar.png" alt="Albert Lacambra Basil" /></span>
+            </div>
+        </header>
+    </article>
+</template>
+----
+
+and finally bind the search function to the search menu. 
+
+.menu.ftl
+[source, html]
+----
+<li class="search">
+    <a class="fa-search" href="#search">Search</a>
+    <form id="search" onsubmit="return search('search-query');">
+        <input id="search-query" type="text" name="q" placeholder="Search" />
+        <input type="hidden" name="q" value="site:${config.site_host}">
+    </form>
+</li>
+----
+
+And taht's all! (I hope....)
+
+
+

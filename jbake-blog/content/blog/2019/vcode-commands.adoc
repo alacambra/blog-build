@@ -22,3 +22,14 @@ KeyMap:
 
 == Open terminal
 - **Shift + Ctrl + ´**
+
+== Show open file into the explorer
+- **"explorer.autoReveal": true**
+- **CMD + Shift + E** in Mac or **Ctrl + Shift + E** in Windows
+
+== Open Default config file
+- **CMD + Shift + P** and search **>open default Settings**
+- or use file: 
+    * Windows %APPDATA%\Code\User\settings.json
+    * macOS $HOME/Library/Application Support/Code/User/settings.json
+    * Linux $HOME/.config/Code/User/settings.json
