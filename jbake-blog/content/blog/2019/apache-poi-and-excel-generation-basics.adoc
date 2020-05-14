@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-12-15 
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags:  
+:jbake-tags: poi, excel
 :doc-id: apache-poi-and-excel-generation-basics 
 
 == Load a workbook
