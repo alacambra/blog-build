@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2020-01-22 
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags:  
+:jbake-tags:  java
 :doc-id: get-a-mapmyclasskey-myclassvalue-with-streams-not-mapmyclasskey-listmyclassvalue
 
 == Use reducing and kill the list
