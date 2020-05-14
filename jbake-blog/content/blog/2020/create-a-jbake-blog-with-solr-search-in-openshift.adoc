@@ -928,7 +928,7 @@ and finally bind the search function to the search menu.
 </li>
 ----
 
-And taht's all! (I hope....)
+And taht's all!s
 
 
 
