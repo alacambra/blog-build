@@ -342,7 +342,7 @@ pipeline{
 }
 ----
 
-== Create sol2 s2I image
+== Create Solr s2I image
 
 As like the Nginyx image I am gona use S2i:
 
