@@ -2,7 +2,7 @@
 Albert Lacambra Basil 
 :jbake-title: Create a JBake blog with Solr search in Openshift 
 :description: Create a JBake blog with Solr search in Openshift with Jankins build and automated deployment on push event
-:jbake-date: 2008-05-01 
+:jbake-date: 2020-05-14
 :toc:
 :jbake-type: post 
 :jbake-status: published 
