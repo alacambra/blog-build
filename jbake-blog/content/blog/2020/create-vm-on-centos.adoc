@@ -1,6 +1,6 @@
 = Create a vm on centos 
 Albert Lacambra Basil 
-:jbake-title: create-vm-on-centos 
+:jbake-title: Create a vm on centos
 :description:  
 :jbake-date: 2018-05-14 
 :jbake-type: post 
