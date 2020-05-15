@@ -1,4 +1,4 @@
-= create-vm-on-centos 
+= Create a vm on centos 
 Albert Lacambra Basil 
 :jbake-title: create-vm-on-centos 
 :description:  
