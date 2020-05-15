@@ -1,0 +1,201 @@
+= Begin to work with TypeScript 
+Albert Lacambra Basil 
+:jbake-title: Begin to work with TypeScript 
+:description:  Install configure and first steps with TypeScript
+:jbake-date: 2018-05-15 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: typescript
+:doc-id: begin-to-work-with-typescript 
+
+== Documentatin
+
+link:https://www.typescriptlang.org/docs/home.html[alt]
+
+== Install
+
+npm -i -g typescript
+tsc -v
+
+== Config
+
+_tsconfig_ file
+
+.Example
+[source, json]
+----
+{
+    "compilerOptions": {
+        "target": "es6",
+        "strictNullChecks": true
+    },
+    "files": [],
+    "include":[
+        "*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
+----
+
+link:https://www.typescriptlang.org/docs/handbook/compiler-options.html[Compiler oprions]
+
+== Build TS to JS
+*. ts file extensions
+ts -> js
+
+* Convert ts to js
+[source, bash]
+----
+tsc first.ts
+----
+
+== Execute TS
+
+ts-node file.ts 
+
+* Convert ts to es6
+[source, bash]
+----
+tsc --target es6 first.ts
+----
+
+== Datatypes
+
+Thre primitives:
+* boolean
+* numberm
+* string
+
+Declarartions comes behind the var. First declare the var, then give the type.
+
+=== Arrays
+const numbers: number[] = [1, 2, 3]; // Type of elements given, like java generics
+numbers.push(4);
+
+Or
+
+const numbers: Array<number> = [1, 2, 3]; // Type of elements given, like <>
+numbers.push(4);
+
+const mixed: (string|number)[] = [1,"hi"]; 
+
+====
+cons isAdmin: boolean =  true;
+====
+
+=== Tuple
+let mix: [string, number];
+mix[0] //string
+mix[1] //number
+
+=== Enum
+
+[source, typescript]
+----
+enum Cardtype {Hearts, Diamons, Spades, Clubs}
+let myCard: Cardtype = Cardtype.Hearts;
+----
+
+=== Any
+is like _Object_ in java
+
+=== Never
+means a function never returns, e.g. when a functions end with an ifinityloop or alweays throes an exception. Why is that useful? no idea.
+
+=== Functions
+function greet(name: string, age: number): number {
+    return 1;
+}
+
+=== Type
+
+Like _c_ struct
+
+[source, js]
+----
+type User = {
+    name: string;
+    age: number;
+};
+
+const myUser = {
+ name: "John",
+ age:40
+};
+----
+
+=== Assertions
+
+soft casting
+
+[source, js]
+----
+const myUser = {};
+(myUser as User).age=10;
+----
+
+== Interfaces
+
+Objects conforms certain rules.
+
+[source, ts]
+----
+interface IUser{
+    name: string;
+    readonly age: number;
+    address?: string;
+}
+----
+
+[NOTE]
+ To intertfaces with same name merges. Do not produces any error. Any object of the interface type must have all attributes of both declarations. 
+ 
+[NOTE]
+Interfaces can also extends (I1 extends I2), having the same effect. 
+
+== Classes
+
+=== Scope
+_public, protected, private and readonly_.
+Like in Java
+
+== Abstract 
+like in java. Use _abstract_ keyword.
+
+== Typings
+
+npm -i --save @types/_underscore_ or whatever library
+
+== Webpack
+
+Put all assets into dependency pack.
+npm -i -g webpack
+
+webpack.config.js
+[source, json]
+----
+module.exports = {
+    entry: './app.ts',
+    output: {
+        filename: './dist/bundle.js'
+    },
+    resolve: {
+        extension: ['.ts']
+    },
+    module: {
+        rules: [
+            {
+                test: /\.ts$/,
+                loader: 'ts-loader'
+            }
+        ]
+    }
+};
+----
+
+== Debuging
+== Logging
+
+

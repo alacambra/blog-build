@@ -1,0 +1,32 @@
+= create-vm-on-centos 
+Albert Lacambra Basil 
+:jbake-title: create-vm-on-centos 
+:description:  
+:jbake-date: 2020-05-14 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: centos, linux, vm
+:doc-id: create-vm-on-centos 
+
+
+wget https://mirrors.edge.kernel.org/centos/8.1.1911/isos/x86_64/CentOS-8.1.1911-x86_64-boot.iso
+
+[source, bash]
+----
+virt-install \
+--virt-type=kvm \
+--name centos7 \
+--ram 2048 \
+--vcpus=1 \
+--os-variant=centos7.0 \
+--cdrom=/var/lib/libvirt/boot/CentOS-8.1.1911-x86_64-boot.iso \
+--network=bridge=virbr0,model=virtio \
+--graphics vnc \
+--disk path=/opt/vm1/images/centos8.qcow2,size=40,bus=virtio,format=qcow2
+----
+lvcreate -L 100G -n vm1 centos
+vgdisplay
+osinfo-query os
+ssh alacambra@angelet -L 5900:127.0.0.1:5900
+virsh list
+virsh start centos7.0
