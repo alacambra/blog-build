@@ -27,7 +27,12 @@ _tsconfig_ file
 {
     "compilerOptions": {
         "target": "es6",
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "sourceMaps": true,
+        "outFile": "./dist/bundle.js",
+        "module": "system",
+        "inlineSources": true,
+        "inlineSourceMap": true
     },
     "files": [],
     "include":[
@@ -184,6 +189,7 @@ module.exports = {
     resolve: {
         extension: ['.ts']
     },
+    devtool: 'inline-source-map',
     module: {
         rules: [
             {
@@ -196,6 +202,9 @@ module.exports = {
 ----
 
 == Debuging
+
+
+
 == Logging
 
 
