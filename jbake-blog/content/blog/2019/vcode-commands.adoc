@@ -33,3 +33,9 @@ KeyMap:
     * Windows %APPDATA%\Code\User\settings.json
     * macOS $HOME/Library/Application Support/Code/User/settings.json
     * Linux $HOME/.config/Code/User/settings.json
+
+== Fins Symbols 
+
+- Grouped within a file:  **@:**
+- Listed within a file:   **@**
+- Across files: **#**
