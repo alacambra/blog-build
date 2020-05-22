@@ -1,0 +1,67 @@
+= Jenkinsfile variables 
+Albert Lacambra Basil 
+:jbake-title: Jenkinsfile variables 
+:description: How to use variables in jenkins pipelines with Groovy 
+:jbake-date: 2020-05-22 
+:jbake-type: post 
+:jbake-status: draft 
+:jbake-tags: jenkins 
+:doc-id: jenkinsfile-variables 
+
+[source, jenkinsfile]
+----
+def HELLO1="groovy another hello"
+pipeline{
+    agent {
+        label 'maven-j13'
+    }
+  
+    environment {
+        HELLO = "!!!env hello!!"
+        ENV_DEC_TEST = "ENV_DEC_TEST-empty"
+    }
+
+
+    stages{
+        stage('build') {
+            steps{
+                script {
+                    echo "block 1"
+                 //   def TEST="my-test"
+                 //   echo "$TEST and ${env.TEST}"
+                    NOT_ENV_ON_STAGE="NOT_ENV_ON_STAGE-init_st1"
+                    ENV_ON_STAGE="ENV_ON_STAGE-init_st1"
+                    ENV_DEC_TEST="${ENV_DEC_TEST}-updated_st1"
+                    echo "ENV_DEC_TEST=${ENV_DEC_TEST}"
+                    echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
+                    echo "ENV_DEC_TEST=${ENV_DEC_TEST}"
+
+
+                }
+                script {
+                    echo "block 2"
+                    
+                    ENV_DEC_TEST="${ENV_DEC_TEST}-updated-st2"
+                    NOT_ENV_ON_STAGE="${NOT_ENV_ON_STAGE}-init-updated_st2"
+                    ENV_ON_STAGE="${ENV_ON_STAGE}-init-updated_st2"
+                    
+                    echo "ENV_DEC_TEST=${ENV_DEC_TEST}"
+                    echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
+                    echo "ENV_ON_STAGE=${ENV_ON_STAGE}"
+                
+                }
+                sh script: "echo ${ENV_DEC_TEST}"
+                sh script: "echo ${NOT_ENV_ON_STAGE}"
+                sh script: "echo ${ENV_ON_STAGE}"
+                sh script: "${this.binding.variables.each {k,v -> println '$k = $v'}}"
+                
+                sh script: "export ENV_DEC_TEST=${env.ENV_DEC_TEST}-shell_updated && env" 
+                sh script: "env"
+
+
+              //  sh script: "echo \"Final: ${TEST2} and ${env.TEST}... ${env.HELLO}\""
+            }
+        }
+    }
+}
+----
