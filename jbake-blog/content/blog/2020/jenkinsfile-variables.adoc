@@ -35,6 +35,10 @@ pipeline{
                     echo "ENV_DEC_TEST=${ENV_DEC_TEST}"
                     echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
                     echo "ENV_DEC_TEST=${ENV_DEC_TEST}"
+                    
+                    print params
+                    print getBinding().getVariables()
+                    //this.binding.variables.each {k,v -> println '$k = $v'}
 
 
                 }
@@ -48,15 +52,18 @@ pipeline{
                     echo "ENV_DEC_TEST=${ENV_DEC_TEST}"
                     echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
                     echo "ENV_ON_STAGE=${ENV_ON_STAGE}"
+                    
+                    print "using print now --> ENV_ON_STAGE=${ENV_ON_STAGE}"
                 
                 }
                 sh script: "echo ${ENV_DEC_TEST}"
                 sh script: "echo ${NOT_ENV_ON_STAGE}"
                 sh script: "echo ${ENV_ON_STAGE}"
-                sh script: "${this.binding.variables.each {k,v -> println '$k = $v'}}"
+                //sh script: "${this.binding.variables.each {k,v -> println '$k = $v'}}"
+                sh script: " echo 'printing with groovy in sh: ${getBinding().getVariables()}'"
                 
-                sh script: "export ENV_DEC_TEST=${env.ENV_DEC_TEST}-shell_updated && env" 
-                sh script: "env"
+                sh script: "export ENV_DEC_TEST=${env.ENV_DEC_TEST}-shell_updated" 
+                //sh script: "env"
 
 
               //  sh script: "echo \"Final: ${TEST2} and ${env.TEST}... ${env.HELLO}\""
