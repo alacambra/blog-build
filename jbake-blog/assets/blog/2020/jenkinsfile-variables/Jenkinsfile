@@ -15,21 +15,16 @@ pipeline{
                 script {
 
                     echo "block 1"
-                 //   def TEST="my-test"
-                 //   echo "$TEST and ${env.TEST}"
                     def NOT_ENV_ON_STAGE="NOT_ENV_ON_STAGE-init_st1"
                     ENV_ON_STAGE="ENV_ON_STAGE-init_st1"
                     ENV_DECLARED_VAR="${ENV_DECLARED_VAR}-updated_st1"
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
                     echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
-                    
+                    getBinding().getVariables()
                     print params
                     print "getBinding().getVariables(): " getBinding().getVariables()
                     print someVar
-                    //this.binding.variables.each {k,v -> println '$k = $v'}
-
-
                 }
                 script {
                     echo "block 2"
