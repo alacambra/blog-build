@@ -21,16 +21,15 @@ pipeline{
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
                     echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
-                    // getBinding().getVariables()
                     print params
-                    // print "getBinding().getVariables(): " getBinding().getVariables()
+                    print "getBinding().getVariables(): " getBinding().getVariables()
                     print someVar
                 }
                 script {
                     echo "block 2"
                     
                     ENV_DECLARED_VAR="${ENV_DECLARED_VAR}-updated-st2"
-                    def NOT_ENV_ON_STAGE="${NOT_ENV_ON_STAGE}-init-updated_st2"
+                    NOT_ENV_ON_STAGE="${NOT_ENV_ON_STAGE}-init-updated_st2"
                     ENV_ON_STAGE="${ENV_ON_STAGE}-init-updated_st2"
                     
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
