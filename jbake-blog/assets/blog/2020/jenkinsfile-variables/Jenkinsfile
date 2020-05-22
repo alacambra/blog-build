@@ -21,8 +21,8 @@ pipeline{
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
                     echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
-                    print params
-                    print "getBinding().getVariables(): " getBinding().getVariables()
+                    print params;
+                    print "getBinding().getVariables(): " getBinding().getVariables();
                     print someVar
                 }
                 script {
