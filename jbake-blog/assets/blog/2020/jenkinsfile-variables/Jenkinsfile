@@ -21,9 +21,9 @@ pipeline{
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
                     echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
-                    getBinding().getVariables()
+                    // getBinding().getVariables()
                     print params
-                    print "getBinding().getVariables(): " getBinding().getVariables()
+                    // print "getBinding().getVariables(): " getBinding().getVariables()
                     print someVar
                 }
                 script {
@@ -43,7 +43,7 @@ pipeline{
                 sh script: "echo ${ENV_DECLARED_VAR}"
                 sh script: "echo ${NOT_ENV_ON_STAGE}"
                 sh script: "echo ${ENV_ON_STAGE}"
-                sh script: " echo 'printing with groovy in sh: ${getBinding().getVariables()}'"
+                // sh script: " echo 'printing with groovy in sh: ${getBinding().getVariables()}'"
                 
                 sh script: "export ENV_DECLARED_VAR=${env.ENV_DECLARED_VAR}-shell_updated && echo \${ENV_DECLARED_VAR}" 
                 sh script: "echo \${ENV_DECLARED_VAR}"
@@ -58,10 +58,10 @@ pipeline{
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
                     
                     print params
-                    print getBinding().getVariables()
+                    // print getBinding().getVariables()
                 }
                 
-                sh script: "echo 'printing with groovy in sh: ${getBinding().getVariables()}'"
+                // sh script: "echo 'printing with groovy in sh: ${getBinding().getVariables()}'"
                 sh script: "export ENV_DECLARED_VAR=${env.ENV_DECLARED_VAR}-shell_updated && echo \${ENV_DECLARED_VAR}" 
                 sh script: "echo 'print from shell env. \$ symbol is scaped so it is not interpreted by groovy but by shell '\${ENV_DECLARED_VAR}"
                 sh script: "echo ${ENV_DECLARED_VAR}"
