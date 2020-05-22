@@ -1,17 +1,3 @@
-= Jenkinsfile variables 
-Albert Lacambra Basil 
-:jbake-title: Jenkinsfile variables 
-:description: How to use variables in jenkins pipelines with Groovy 
-:jbake-date: 2020-05-22 
-:jbake-type: post 
-:jbake-status: draft 
-:jbake-tags: jenkins 
-:doc-id: jenkinsfile-variables 
-
-
-
-[source, jenkinsfile]
-----
 def someVar="a global var"
 
 pipeline{
@@ -27,8 +13,11 @@ pipeline{
         stage('phase1') {
             steps{
                 script {
+
                     echo "block 1"
-                    NOT_ENV_ON_STAGE="NOT_ENV_ON_STAGE-init_st1"
+                 //   def TEST="my-test"
+                 //   echo "$TEST and ${env.TEST}"
+                    def NOT_ENV_ON_STAGE="NOT_ENV_ON_STAGE-init_st1"
                     ENV_ON_STAGE="ENV_ON_STAGE-init_st1"
                     ENV_DECLARED_VAR="${ENV_DECLARED_VAR}-updated_st1"
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
@@ -36,7 +25,8 @@ pipeline{
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
                     
                     print params
-                    print getBinding().getVariables()
+                    print "getBinding().getVariables(): " getBinding().getVariables()
+                    print someVar
                     //this.binding.variables.each {k,v -> println '$k = $v'}
 
 
@@ -85,4 +75,3 @@ pipeline{
         }
     }
 }
-----
