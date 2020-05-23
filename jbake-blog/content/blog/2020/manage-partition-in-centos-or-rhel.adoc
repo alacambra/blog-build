@@ -47,19 +47,19 @@ VG     #PV #LV #SN Attr   VSize    VFree
 centos   1   4   0 wz--n- <930.51g <689.20g
 ----
 
-== vgcreate
+=== vgcreate
 
 *vgcreate* creates a new _volume group_ on block devices. If the devices were not previously intialized as _physical volumes_ with pvcreate(8), vgcreate will inititialize them, making them _physical volumes_. The pvcreate options for initializing devices are also available with vgcreate.
 
 vgcreate vgdata /dev/sdaX
 
-== lvcreate
+ === lvcreate
 
 *lvcreate*  creates  a  new _logical volume_ in a _volume group_. For standard _logical volumes_, this requires allocating logical extents from the _volume group_'s free physical extents. If there is not enough free space, the _volume group_ can be extended with other __physical volumes__ (vgextend(8)), or existing _logical volumes_ can be reduced or removed (lvremove(8), lvreduce(8).)
 
 lvcreate -n lvdata -L 1G vgdata
 
-== lvs
+ === lvs
 
 *lvs* - Display information about _logical volumes_
 
@@ -73,7 +73,7 @@ lvcreate -n lvdata -L 1G vgdata
   vm1  centos -wi-ao---- 100.00g
 ----
 
-== pvdisplay
+=== pvdisplay
 
 *pvdisplay* shows the attributes of physical volume, like size, physical extent size, space used for the _volume group_ descriptor area, etc.
 
@@ -92,7 +92,7 @@ lvcreate -n lvdata -L 1G vgdata
   PV UUID               xxxxxxx-xxxx-xxxx-xxxx-xxxx-xxxxx-xxxxxx
 ----
 
-== lvdisplay
+ === lvdisplay
 
 *lvdisplay* shows the attributes of _logical volumes_, like size, read/write status, snapshot information, etc.
 
@@ -138,7 +138,7 @@ lvcreate -n lvdata -L 1G vgdata
 ....
 ----
 
-== mkfs.XXX
+ === mkfs.XXX
 
 *mkfs* is used to build a Linux filesystem on a device, usually a hard disk partition. The device argument is either the device name (e.g. /dev/hda1, /dev/sdb2), or a regular file that shall contain the filesystem. The size argument is the number of blocks to be used for the filesystem.
 
@@ -156,3 +156,22 @@ lvcreate -n lvdata -L 1G vgdata
 
 *mkfs.xfs* - construct an XFS filesystem
 mkfs.xfs /dev/vgdata/lvdata
+
+
+=== df
+
+*df* displays the amount of disk space available on the file system containing each file name argument.  If no file name is given, the space available on all currently mounted file systems is shown.  Disk space is shown in 1K blocks by default, unless the environment variable POSIXLY_CORRECT is set, in which case 512-byte blocks are used.
+
+[source, bash]
+----
+[XXX ~]# df
+Filesystem              1K-blocks     Used Available Use% Mounted on
+devtmpfs                 32695216        0  32695216   0% /dev
+tmpfs                    32707128        0  32707128   0% /dev/shm
+tmpfs                    32707128    15196  32691932   1% /run
+tmpfs                    32707128        0  32707128   0% /sys/fs/cgroup
+/dev/mapper/centos-root  94346240 71135956  23210284  76% /
+/dev/sda1                 1038336   239152    799184  24% /boot
+/dev/mapper/centos-home  20961280    70960  20890320   1% /home
+overlay                  94346240 71135956  23210284  76% /var/lib/docker/overlay2/6a50cb93df20ae90c6443af765cf1e7e4f657f27b25aa37c442de7f435994c4c/merged
+----
