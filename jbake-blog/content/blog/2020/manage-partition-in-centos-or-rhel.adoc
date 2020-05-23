@@ -16,12 +16,15 @@ Albert Lacambra Basil
 
 ----
 fdsik /dev/sda 
+# (option n -> create) 
 ----
 
 === partprobe
 *partprobe* is a program that informs the operating system kernel of partition table changes, by requesting that the operating system re-read the partition table.
 
-partprobe /dev/sda (option n -> create) 
+----
+partprobe /dev/sda
+----
 
 === pvcreate
 *pvcreate* initializes a _physical volume_ so that it is recognized as belonging to LVM, and allows the _physical volume_ to be used in a VG. A _physical volume_ can be a disk partition, whole disk, meta device, or loopback file.
