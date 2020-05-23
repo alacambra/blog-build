@@ -53,13 +53,13 @@ centos   1   4   0 wz--n- <930.51g <689.20g
 
 vgcreate vgdata /dev/sdaX
 
- === lvcreate
+=== lvcreate
 
 *lvcreate*  creates  a  new _logical volume_ in a _volume group_. For standard _logical volumes_, this requires allocating logical extents from the _volume group_'s free physical extents. If there is not enough free space, the _volume group_ can be extended with other __physical volumes__ (vgextend(8)), or existing _logical volumes_ can be reduced or removed (lvremove(8), lvreduce(8).)
 
 lvcreate -n lvdata -L 1G vgdata
 
- === lvs
+=== lvs
 
 *lvs* - Display information about _logical volumes_
 
