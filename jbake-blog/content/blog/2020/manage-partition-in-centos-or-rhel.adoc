@@ -13,7 +13,7 @@ toc::[]
 
 == Commands
 
-=== Fdisk
+=== fdisk
 *fdisk* - manipulate disk partition table
 *fdisk* (in the first form of invocation) is a menu-driven program for creation and manipulation of _partition tables_.  It understands GPT (experimental for now), MBR, Sun, SGI and BSD _partition tables_.
 
@@ -194,7 +194,7 @@ overlay                  94346240 71135956  23210284  76% /var/lib/docker/overla
 
 == Device mapper
 
-Is an interface to linux kernel that allows logical volums and other volumes and software to communicate with the kernel.
+Is an interface to linux kernel that allows logical volums and other kind of volumes and software to communicate with the kernel.
 
 Device mapper devices are identified as /dev/dm-X.
 
