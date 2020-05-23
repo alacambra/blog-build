@@ -1,13 +1,13 @@
-= Manage partition in Centos or RHEL 
+= Manage partitions and volumes in Centos or RHEL 
 Albert Lacambra Basil 
-:jbake-title: Manage partition in Centos or RHEL 
+:jbake-title: Manage partitions and volumes in Centos or RHEL 
 :description: 
 :jbake-date: 2020-05-23 
 :jbake-type: post 
 :jbake-status: published 
 :toc:
 :jbake-tags: xfs,linux 
-:doc-id: manage-partition-in-centos-or-rhel 
+:doc-id: manage-partition-and-volumes-in-centos-or-rhel 
 
 toc::[]
 
