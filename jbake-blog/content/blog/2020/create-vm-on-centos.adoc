@@ -31,4 +31,6 @@ osinfo-query os
 
 ssh user@host -L 5900:127.0.0.1:5900
 virsh list
-virsh start centos7.0
+virsh list --all
+virsh start/reboot/shutdown... centos7.0
+fdsik (create partition) vs mkfs.* (create filesystem on a partition)

@@ -1,0 +1,158 @@
+= Manage partition in Centos or RHEL 
+Albert Lacambra Basil 
+:jbake-title: Manage partition in Centos or RHEL 
+:description: 
+:jbake-date: 2020-05-23 
+:jbake-type: post 
+:jbake-status: draft 
+:jbake-tags: xfs,linux 
+:doc-id: manage-partition-in-centos-or-rhel 
+
+== Commands
+
+=== Fdisk
+*fdisk* - manipulate disk partition table
+*fdisk* (in the first form of invocation) is a menu-driven program for creation and manipulation of _partition tables_.  It understands GPT (experimental for now), MBR, Sun, SGI and BSD _partition tables_.
+
+fdsik /dev/sda 
+
+=== partprobe
+*partprobe* is a program that informs the operating system kernel of partition table changes, by requesting that the operating system re-read the partition table.
+
+partprobe /dev/sda (option n -> create) 
+
+=== pvcreate
+*pvcreate* initializes a _physical volume_ so that it is recognized as belonging to LVM, and allows the _physical volume_ to be used in a VG. A _physical volume_ can be a disk partition, whole disk, meta device, or loopback file.
+
+pvcreate /dev/sdaX
+
+=== pvs
+*pvs* - Display information about _physical volumes_
+
+[source, bash]
+----
+[xxx ~]# pvs
+PV         VG     Fmt  Attr PSize    PFree
+/dev/sda2  centos lvm2 a--  <930.51g <689.20g
+----
+
+=== vgs
+
+*vgs* - Display information about _volume groups_
+
+[source, bash]
+----
+[XXX ~]# vgs
+VG     #PV #LV #SN Attr   VSize    VFree
+centos   1   4   0 wz--n- <930.51g <689.20g
+----
+
+== vgcreate
+
+*vgcreate* creates a new _volume group_ on block devices. If the devices were not previously intialized as _physical volumes_ with pvcreate(8), vgcreate will inititialize them, making them _physical volumes_. The pvcreate options for initializing devices are also available with vgcreate.
+
+vgcreate vgdata /dev/sdaX
+
+== lvcreate
+
+*lvcreate*  creates  a  new _logical volume_ in a _volume group_. For standard _logical volumes_, this requires allocating logical extents from the _volume group_'s free physical extents. If there is not enough free space, the _volume group_ can be extended with other __physical volumes__ (vgextend(8)), or existing _logical volumes_ can be reduced or removed (lvremove(8), lvreduce(8).)
+
+lvcreate -n lvdata -L 1G vgdata
+
+== lvs
+
+*lvs* - Display information about _logical volumes_
+
+[source, bash]
+----
+[xxx ~]# lvs
+  LV   VG     Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  home centos -wi-ao----  20.00g
+  root centos -wi-ao----  90.00g
+  swap centos -wi-a-----  31.31g
+  vm1  centos -wi-ao---- 100.00g
+----
+
+== pvdisplay
+
+*pvdisplay* shows the attributes of physical volume, like size, physical extent size, space used for the _volume group_ descriptor area, etc.
+
+[source, bash]
+----
+[XXX ~]# pvdisplay
+  --- Physical volume ---
+  PV Name               /dev/sdaX
+  VG Name               centos
+  PV Size               930.51 GiB / not usable 4.00 MiB
+  Allocatable           yes
+  PE Size               4.00 MiB
+  Total PE              238210
+  Free PE               176434
+  Allocated PE          61776
+  PV UUID               xxxxxxx-xxxx-xxxx-xxxx-xxxx-xxxxx-xxxxxx
+----
+
+== lvdisplay
+
+*lvdisplay* shows the attributes of _logical volumes_, like size, read/write status, snapshot information, etc.
+
+[source, bash]
+----
+[XXX ~]# lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/centos/swap
+  LV Name                swap
+  VG Name                centos
+  LV UUID                xxxxxxx-xxxx-xxxx-xxxx-xxxx-xxxxx-xxxxxx
+  LV Write Access        read/write
+  LV Creation host, time host_name, 2019-09-22 16:46:16 +0200
+  LV Status              available
+  # open                 0
+  LV Size                31.31 GiB
+  Current LE             8016
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:1
+
+  --- Logical volume ---
+  LV Path                /dev/centos/root
+  LV Name                root
+  VG Name                centos
+  LV UUID                xxxxxxx-xxxx-xxxx-xxxx-xxxx-xxxxx-xxxxxx
+  LV Write Access        read/write
+  LV Creation host, time host_name, 2019-09-22 16:46:19 +0200
+  LV Status              available
+  # open                 1
+  LV Size                90.00 GiB
+  Current LE             23040
+  Segments               2
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:0
+
+....
+....
+....
+----
+
+== mkfs.XXX
+
+*mkfs* is used to build a Linux filesystem on a device, usually a hard disk partition. The device argument is either the device name (e.g. /dev/hda1, /dev/sdb2), or a regular file that shall contain the filesystem. The size argument is the number of blocks to be used for the filesystem.
+
+* mkfs
+* mkfs.btrfs
+* mkfs.cramfs 
+* mkfs.ext2
+* mkfs.ext3
+* mkfs.ext4
+* mkfs.fat
+* mkfs.minix
+* mkfs.msdos
+* mkfs.vfat
+* mkfs.xfs
+
+*mkfs.xfs* - construct an XFS filesystem
+mkfs.xfs /dev/vgdata/lvdata
