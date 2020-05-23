@@ -4,7 +4,7 @@ Albert Lacambra Basil
 :description: 
 :jbake-date: 2020-05-23 
 :jbake-type: post 
-:jbake-status: draft 
+:jbake-status: published 
 :jbake-tags: xfs,linux 
 :doc-id: manage-partition-in-centos-or-rhel 
 
