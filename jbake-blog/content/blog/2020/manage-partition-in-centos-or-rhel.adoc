@@ -5,8 +5,11 @@ Albert Lacambra Basil
 :jbake-date: 2020-05-23 
 :jbake-type: post 
 :jbake-status: published 
+:toc:
 :jbake-tags: xfs,linux 
 :doc-id: manage-partition-in-centos-or-rhel 
+
+toc::[]
 
 == Commands
 
