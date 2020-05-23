@@ -191,3 +191,38 @@ tmpfs                    32707128        0  32707128   0% /sys/fs/cgroup
 /dev/mapper/centos-home  20961280    70960  20890320   1% /home
 overlay                  94346240 71135956  23210284  76% /var/lib/docker/overlay2/6a50cb93df20ae90c6443af765cf1e7e4f657f27b25aa37c442de7f435994c4c/merged
 ----
+
+== Device mapper
+
+Is an interface to linux kernel that allows logical volums and other volumes and software to communicate with the kernel.
+
+Device mapper devices are identified as /dev/dm-X.
+
+We cann identify these devices through more convinient names using the following symbolic links
+
+----
+/dev/{VirtualGroup}/{LogicalVolumeName}
+----
+[source, bash]
+----
+[XXX ~]# ls -l /dev/centos/
+total 0
+lrwxrwxrwx. 1 root root 7 May 14 17:30 home -> ../dm-2
+lrwxrwxrwx. 1 root root 7 May 14 17:30 root -> ../dm-0
+lrwxrwxrwx. 1 root root 7 May 14 17:30 swap -> ../dm-1
+lrwxrwxrwx. 1 root root 7 May 14 22:14 vm1 -> ../dm-3
+----
+
+----
+/dev/mapper/{VirtualGroup}-{LogicalVolumeName}
+----
+
+[source, bash]
+----
+[XXX ~]# ls -l  /dev/mapper/
+total 0
+lrwxrwxrwx. 1 root root       7 May 14 17:30 centos-home -> ../dm-2
+lrwxrwxrwx. 1 root root       7 May 14 17:30 centos-root -> ../dm-0
+lrwxrwxrwx. 1 root root       7 May 14 17:30 centos-swap -> ../dm-1
+lrwxrwxrwx. 1 root root       7 May 14 22:14 centos-vm1 -> ../dm-3
+----
