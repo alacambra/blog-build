@@ -14,7 +14,9 @@ Albert Lacambra Basil
 *fdisk* - manipulate disk partition table
 *fdisk* (in the first form of invocation) is a menu-driven program for creation and manipulation of _partition tables_.  It understands GPT (experimental for now), MBR, Sun, SGI and BSD _partition tables_.
 
+----
 fdsik /dev/sda 
+----
 
 === partprobe
 *partprobe* is a program that informs the operating system kernel of partition table changes, by requesting that the operating system re-read the partition table.
@@ -24,7 +26,9 @@ partprobe /dev/sda (option n -> create)
 === pvcreate
 *pvcreate* initializes a _physical volume_ so that it is recognized as belonging to LVM, and allows the _physical volume_ to be used in a VG. A _physical volume_ can be a disk partition, whole disk, meta device, or loopback file.
 
+----
 pvcreate /dev/sdaX
+----
 
 === pvs
 *pvs* - Display information about _physical volumes_
@@ -51,13 +55,17 @@ centos   1   4   0 wz--n- <930.51g <689.20g
 
 *vgcreate* creates a new _volume group_ on block devices. If the devices were not previously intialized as _physical volumes_ with pvcreate(8), vgcreate will inititialize them, making them _physical volumes_. The pvcreate options for initializing devices are also available with vgcreate.
 
+----
 vgcreate vgdata /dev/sdaX
+----
 
 === lvcreate
 
 *lvcreate*  creates  a  new _logical volume_ in a _volume group_. For standard _logical volumes_, this requires allocating logical extents from the _volume group_'s free physical extents. If there is not enough free space, the _volume group_ can be extended with other __physical volumes__ (vgextend(8)), or existing _logical volumes_ can be reduced or removed (lvremove(8), lvreduce(8).)
 
+----
 lvcreate -n lvdata -L 1G vgdata
+----
 
 === lvs
 
@@ -92,7 +100,7 @@ lvcreate -n lvdata -L 1G vgdata
   PV UUID               xxxxxxx-xxxx-xxxx-xxxx-xxxx-xxxxx-xxxxxx
 ----
 
- === lvdisplay
+=== lvdisplay
 
 *lvdisplay* shows the attributes of _logical volumes_, like size, read/write status, snapshot information, etc.
 
@@ -138,7 +146,7 @@ lvcreate -n lvdata -L 1G vgdata
 ....
 ----
 
- === mkfs.XXX
+=== mkfs.XXX
 
 *mkfs* is used to build a Linux filesystem on a device, usually a hard disk partition. The device argument is either the device name (e.g. /dev/hda1, /dev/sdb2), or a regular file that shall contain the filesystem. The size argument is the number of blocks to be used for the filesystem.
 
@@ -155,8 +163,10 @@ lvcreate -n lvdata -L 1G vgdata
 * mkfs.xfs
 
 *mkfs.xfs* - construct an XFS filesystem
-mkfs.xfs /dev/vgdata/lvdata
 
+----
+mkfs.xfs /dev/vgdata/lvdata
+----
 
 === df
 
