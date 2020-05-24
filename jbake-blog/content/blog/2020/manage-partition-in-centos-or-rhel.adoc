@@ -11,6 +11,23 @@ Albert Lacambra Basil
 
 toc::[]
 
+== Structure of volumes and filesystems
+
+image::/blog/2020/manage-partition-and-volumes-in-centos-or-rhel/volumes-and-filesystems.png[]
+
+Devices like SDA, SDB, ... are partitioned creating _physical partition_.
+
+_physical partition_ can be added to a _volumes group_
+
+[NOTE]
+--
+The Volume Group is the highest level abstraction used within the LVM. It gathers together a collection of Logical Volumes and Physical Volumes into one administrative unit. 
+
+from link:https://tldp.org/HOWTO/LVM-HOWTO/vg.html[]
+--
+
+A _Volume Group_ will have assigned server _logical volumes_ and each _logical volume_ will contain a file system
+
 == Commands
 
 === fdisk
@@ -20,6 +37,13 @@ toc::[]
 ----
 fdsik /dev/sda 
 # (option n -> create) 
+----
+
+-l options list all partitions
+[source, bash]
+----
+/dev/sda1   *        2048     2099199     1048576   83  Linux
+/dev/sda2         2099200  1953523711   975712256   8e  Linux LVM
 ----
 
 === partprobe
@@ -401,4 +425,5 @@ lvremove /dev/centos/home
 === Backup and restore filesystem
 
 xfsdump -l 0 -f /home-image /dev/mapper/centos-home
+
 xfsrestore -f /home-image /home
