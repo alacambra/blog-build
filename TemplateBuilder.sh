@@ -8,6 +8,10 @@ import java.time.format.DateTimeFormatter;
 
 public class TemplateBuilder {
 
+    private static String year = "2020";
+    private static Path contentPath = Paths.get("jbake-blog/content/blog/" + year);
+    private static Path assetsPath = Paths.get("jbake-blog/assets/blog/" + year);
+
     public static void main(String[] args) throws Exception {
 
         String title = args.length > 0 ? args[0] : "";
@@ -23,7 +27,10 @@ public class TemplateBuilder {
                 .replaceAll("__date__", LocalDate.now().format(DateTimeFormatter.ISO_DATE))
                 .replaceAll("__status__", "published").replaceAll("__tags__", tags).replaceAll("__id__", id);
 
-        Path p = Files.createFile(Paths.get("jbake-blog/content/blog/2020/" + id + ".adoc"));
+
+        Path p = Files.createFile(contentPath.resolve(id + ".adoc"));
         Files.write(p, template.getBytes());
+
+        p = Files.createDirectory(assetsPath.resolve(id));
     }
 }
