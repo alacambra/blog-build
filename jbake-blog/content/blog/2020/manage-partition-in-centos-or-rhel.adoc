@@ -152,6 +152,22 @@ lvcreate -n lvdata -L 1G vgdata
 ....
 ----
 
+=== lvresize
+  *lvresize* resizes an _logical volume_ in the same way as lvextend and lvreduce. See lvextend(8) and lvreduce(8) for more information.
+
+=== lvremove
+*lvremove* removes one or more LVs. For standard LVs, this returns the logical extents that were used by the LV to the VG for use by other LVs.
+
+=== xfs_growfs
+ *xfs_growfs* expands an existing XFS filesystem (see xfs(5)). The mount-point argument is the pathname of the directory where the filesystem is mounted. The filesystem must be mounted to be grown (see mount(8)).  The existing contents of the filesystem are undisturbed, and the added space becomes available for additional file storage.
+
+=== xfsdump
+*xfsdump*  backs  up  files  and  their  attributes in a filesystem.  The files are dumped to storage media, a regular file, or standard output. Options allow the operator to have all files dumped, just files that have changed since a previous dump, or just files contained in a list  of pathnames.
+
+
+=== xfsrestore
+*xfsrestore* restores filesystems from dumps produced by xfsdump(8).
+
 === mkfs.XXX
 
 *mkfs* is used to build a Linux filesystem on a device, usually a hard disk partition. The device argument is either the device name (e.g. /dev/hda1, /dev/sdb2), or a regular file that shall contain the filesystem. The size argument is the number of blocks to be used for the filesystem.
@@ -174,6 +190,9 @@ lvcreate -n lvdata -L 1G vgdata
 mkfs.xfs /dev/vgdata/lvdata
 ----
 
+=== xfs_growfs
+ *xfs_growfs* expands an existing XFS filesystem (see xfs(5)).  The mount-point argument is the pathname of the directory where the filesystem is mounted. The filesystem must be mounted to be grown (see mount(8)).  The existing contents of the filesystem are undisturbed, and the added space becomes available for additional file storage.
+
 === df
 
 *df* displays the amount of disk space available on the file system containing each file name argument.  If no file name is given, the space available on all currently mounted file systems is shown.  Disk space is shown in 1K blocks by default, unless the environment variable POSIXLY_CORRECT is set, in which case 512-byte blocks are used.
@@ -192,7 +211,7 @@ tmpfs                    32707128        0  32707128   0% /sys/fs/cgroup
 overlay                  94346240 71135956  23210284  76% /var/lib/docker/overlay2/6a50cb93df20ae90c6443af765cf1e7e4f657f27b25aa37c442de7f435994c4c/merged
 ----
 
-== Device mapper
+== The Device mapper
 
 Is an interface to linux kernel that allows logical volums and other kind of volumes and software to communicate with the kernel.
 
@@ -226,3 +245,160 @@ lrwxrwxrwx. 1 root root       7 May 14 17:30 centos-root -> ../dm-0
 lrwxrwxrwx. 1 root root       7 May 14 17:30 centos-swap -> ../dm-1
 lrwxrwxrwx. 1 root root       7 May 14 22:14 centos-vm1 -> ../dm-3
 ----
+
+== Use cases
+=== Create new partition
+To creante new partition unallocated space need to be used.
+Otherwise we need to delte a partition and recreate it with less size
+
+=== Create new volum group
+To create a VG we need an unassigned Phisiscal partition
+
+Otherwise following error appears:
+[source, bash]
+----
+vgcreate vgtest /dev/sda2
+  Physical volume '/dev/sda2' is already in volume group 'currentVG'
+  Unable to add physical volume '/dev/sda2' to volume group 'currentVG'
+  /dev/sda2: physical volume not initialized.
+----
+
+=== Create new logical volume
+To create and LV we need o have free space in the belonging _logical group_
+
+[source, bash]
+----
+[XXX ~]#vgs
+  VG     #PV #LV #SN Attr   VSize    VFree
+  centos   1   5   0 wz--n- <930.51g <688.20g
+
+[XXX ~]#lvcreate -n lvtest -L 1G centos
+  Logical volume "lvtest" created.
+----
+
+An _lvtest_ LV has been created in the VG _centos_. Its device name is _dm-4_
+
+[source, bash]
+----
+[XXX ~]# ll /dev/centos/
+total 0
+lrwxrwxrwx. 1 root root 7 May 14 17:30 home -> ../dm-2
+lrwxrwxrwx. 1 root root 7 May 24 13:00 lvtest -> ../dm-4
+lrwxrwxrwx. 1 root root 7 May 14 17:30 root -> ../dm-0
+lrwxrwxrwx. 1 root root 7 May 14 17:30 swap -> ../dm-1
+lrwxrwxrwx. 1 root root 7 May 14 22:14 vm1 -> ../dm-3
+----
+
+Its allocated space is 1G:
+[source, bash]
+----
+[XXX ~]# lvs centos/lvtest
+  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  lvtest centos -wi-a----- 1.00g
+----
+
+=== Create filesystem
+I will create an xfs filesystem on the new _lvtest_:
+[source, bash]
+----
+[XXX ~]# mkfs.xfs /dev/centos/lvtest
+meta-data=/dev/centos/lvtest     isize=512    agcount=4, agsize=65536 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=262144, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+----
+
+now I mount it to see that it works:
+[source, bash]
+----
+[XXX ~]# mkdir /mnt/lvtest-mount-point
+[XXX ~]# mount /dev/centos/lvtest /mnt/lvtest-mount-point/
+[XXX ~]# touch /mnt/lvtest-mount-point/file-on-mounted-lvtest
+[XXX ~]# ls -l /mnt/lvtest-mount-point/
+  total 0
+  -rw-r--r--. 1 root root 0 May 24 13:11 file-on-mounted-lvtest
+[XXX ~]# umount /mnt/lvtest-mount-point
+[XXX ~]# ls -l /mnt/lvtest-mount-point/
+  total 0
+[XXX ~]# mount /dev/centos/lvtest /mnt/lvtest-mount-point/
+[XXX ~]# ls -l /mnt/lvtest-mount-point/
+  total 0
+  -rw-r--r--. 1 root root 0 May 24 13:11 file-on-mounted-lvtest
+[XXX ~]# df -h |grep lvtest
+/dev/mapper/centos-lvtest 1014M   33M  982M   4% /mnt/lvtest-mount-point
+----
+
+We see also the current fs allocated space.
+
+=== Extend filsesytem size
+
+To add more space to the file system we need to extend the logical partition:
+[source, bash]
+----
+[XXX ~]# lvresize -L +1g /dev/centos/lvtest
+  Size of logical volume centos/lvtest changed from 2.00 GiB (512 extents) to 3.00 GiB (768 extents).
+  Logical volume centos/lvtest successfully resized.
+----
+
+The filesystem has not yet taken the new size:
+[source, bash]
+----
+[XXX ~]# df -h |grep lvtest
+/dev/mapper/centos-lvtest  987K   29K  816K   4% /mnt/lvtest-mount-point
+----
+
+so we need to extend the filesystem:
+[source, bash]
+----
+[XXX ~]# xfs_growfs /mnt/lvtest-mount-point/
+meta-data=/dev/mapper/centos-lvtest isize=512    agcount=4, agsize=131072 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0 spinodes=0
+data     =                       bsize=4096   blocks=524288, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal               bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+[XXX ~]# df -h |grep lvtest
+/dev/mapper/centos-lvtest  3.0G   33M  3.0G   2% /mnt/lvtest-mount-point
+----
+
+Alternatively, it is also possible to resize the filesystem with the partition using the parameter *-r*
+
+[source, bash]
+----
+[root@angelet ~]# lvresize -r -L +1g /dev/centos/lvtest
+  Size of logical volume centos/lvtest changed from 3.00 GiB (768 extents) to 4.00 GiB (1024 extents).
+  Logical volume centos/lvtest successfully resized.
+meta-data=/dev/mapper/centos-lvtest isize=512    agcount=6, agsize=131072 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0 spinodes=0
+data     =                       bsize=4096   blocks=786432, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal               bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+data blocks changed from 786432 to 1048576
+
+
+[root@angelet ~]# df -h |grep lvtest
+/dev/mapper/centos-lvtest  4.0G   33M  4.0G   1% /mnt/lvtest-mount-point
+
+----
+
+=== Remove logical partition
+lvremove /dev/centos/home
+
+
+=== Backup and restore filesystem
+
+xfsdump -l 0 -f /home-image /dev/mapper/centos-home
+xfsrestore -f /home-image /home
