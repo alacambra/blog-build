@@ -398,7 +398,7 @@ Alternatively, it is also possible to resize the filesystem with the partition u
 
 [source, bash]
 ----
-[root@angelet ~]# lvresize -r -L +1g /dev/centos/lvtest
+[XXX ~]# lvresize -r -L +1g /dev/centos/lvtest
   Size of logical volume centos/lvtest changed from 3.00 GiB (768 extents) to 4.00 GiB (1024 extents).
   Logical volume centos/lvtest successfully resized.
 meta-data=/dev/mapper/centos-lvtest isize=512    agcount=6, agsize=131072 blks
@@ -413,7 +413,7 @@ realtime =none                   extsz=4096   blocks=0, rtextents=0
 data blocks changed from 786432 to 1048576
 
 
-[root@angelet ~]# df -h |grep lvtest
+[XXX ~]# df -h |grep lvtest
 /dev/mapper/centos-lvtest  4.0G   33M  4.0G   1% /mnt/lvtest-mount-point
 
 ----
