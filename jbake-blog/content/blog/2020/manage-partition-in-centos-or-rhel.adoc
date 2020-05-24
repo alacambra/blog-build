@@ -17,7 +17,7 @@ image::/blog/2020/manage-partition-and-volumes-in-centos-or-rhel/volumes-and-fil
 
 Devices like SDA, SDB, ... are partitioned creating _physical partition_.
 
-_physical partition_ can be added to a _volumes group_
+_physical partition_ can be added to a _volume group_
 
 [NOTE]
 --
