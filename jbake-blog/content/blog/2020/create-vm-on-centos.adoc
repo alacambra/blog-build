@@ -1,15 +1,75 @@
-= Create a vm on centos 
+= Create virtual machines on centos with KVM
 Albert Lacambra Basil 
-:jbake-title: Create a vm on centos
+:jbake-title: Create a virtual machines on centos with KVM
 :description:  
 :jbake-date: 2018-05-14 
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags: linux, commands-and-tools 
+:jbake-tags: linux, commands-and-tools
 :doc-id: create-vm-on-centos 
+
+== Commands
+
+systemctl status libvirtd
+cat /proc/cpuinfo
+
+virsh list (-all)
+virsh start ${SERVER_NAME}
+virt-manager (UI)
+ip a
+
+.cat /etc/libvirt/qemu/networks/default.xml
+[source, xml]
+----
+<!--
+WARNING: THIS IS AN AUTO-GENERATED FILE. CHANGES TO IT ARE LIKELY TO BE
+OVERWRITTEN AND LOST. Changes to this xml configuration should be made using:
+  virsh net-edit default
+or other application using the libvirt API.
+-->
+
+<network>
+  <name>default</name>
+  <uuid>9ade9ce6-4b18-4cac-bb1a-006d144b9123</uuid>
+  <forward mode='nat'/>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='XX:XX:XX:XX:XX:XX'/>
+  <ip address='192.168.10.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.10.2' end='192.168.10.254'/>
+    </dhcp>
+  </ip>
+</network>
+----
+
+virsh net-edit default
+
+[source, xml]
+----
+<network>
+  <name>default</name>
+  <uuid>9ade9ce6-4b18-4cac-bb1a-006d144b9123</uuid>
+  <forward mode='nat'/>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='XX:XX:XX:XX:XX:XX'/>
+  <ip address='192.168.10.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.10.2' end='192.168.10.254'/>
+    </dhcp>
+  </ip>
+</network>
+----
+
+virsh dumpxml
+virsh edit centos7.0
 
 wget https://mirrors.edge.kernel.org/centos/8.1.1911/isos/x86_64/CentOS-8.1.1911-x86_64-boot.iso
 
+== Connect to VM with VNC Viewer
+
+Connect to the XDisplay port using a an SSH tunnel
+ ssh -L 5900:127.0.0.1:5900 alacambra@angelet 
+df -h
 [source, bash]
 ----
 virt-install \
@@ -34,3 +94,30 @@ virsh list
 virsh list --all
 virsh start/reboot/shutdown... centos7.0
 fdsik (create partition) vs mkfs.* (create filesystem on a partition)
+
+== Connect ssh 
+
+[source, bash]
+----
+#!/bin/bash
+
+# IMPORTANT: Change the "VM NAME" string to match your actual VM Name.
+# In order to create rules to other VMs, just duplicate the below block and configure
+# it accordingly.
+if [ "${1}" = "VM NAME" ]; then
+
+   # Update the following variables to fit your setup
+   GUEST_IP=
+   GUEST_PORT=
+   HOST_PORT=
+
+   if [ "${2}" = "stopped" ] || [ "${2}" = "reconnect" ]; then
+	/sbin/iptables -D FORWARD -o virbr0 -d  $GUEST_IP --dport $GUEST_PORT -j ACCEPT
+	/sbin/iptables -t nat -D PREROUTING -p tcp --dport $HOST_PORT -j DNAT --to $GUEST_IP:$GUEST_PORT
+   fi
+   if [ "${2}" = "start" ] || [ "${2}" = "reconnect" ]; then
+	/sbin/iptables -I FORWARD -o virbr0 -d  $GUEST_IP --dport $GUEST_PORT -j ACCEPT
+	/sbin/iptables -t nat -I PREROUTING -p tcp --dport $HOST_PORT -j DNAT --to $GUEST_IP:$GUEST_PORT
+   fi
+fi
+----

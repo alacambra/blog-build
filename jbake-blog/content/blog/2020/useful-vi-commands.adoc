@@ -1,0 +1,18 @@
+= Useful Vi commands 
+Albert Lacambra Basil 
+:jbake-title: Useful Vi commands 
+:description:  
+:jbake-date: 2020-02-28 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: linus, commands-and-tools 
+:doc-id: useful-vi-commands 
+
+== Commands
+*:wq*: Save and exit
+*:set tabstop=2*: Set tab to two spaces
+*dd*: delete line
+*u*: undo last action
+*$*: go to end line
+*0*: go to start of the line
+*/${SEARCH_TERM}*: search term
