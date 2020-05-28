@@ -1,0 +1,15 @@
+= Useful git commands 
+Albert Lacambra Basil 
+:jbake-title: Useful git commands 
+:description: everyday git commands and utils 
+:jbake-date: 2019-05-28 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: git
+:doc-id: useful-git-commands 
+
+.rebase last ${NUM} commits. Wit that you can squash them to one commit 
+[source, bash]
+----
+git rebase -i HEAD~${NUM}
+----
