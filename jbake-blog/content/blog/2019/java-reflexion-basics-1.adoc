@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-10-28
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: java, reflexion
+:jbake-tags: java
 :doc-id: java-reflexion-basics-1-get-and-execute-methods
 
 == Example class MyClass
