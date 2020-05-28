@@ -6,7 +6,7 @@ Albert Lacambra Basil
 :toc:
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags: solr, openshift, jbake, jenkins 
+:jbake-tags: solr, openshift, devops, cloud
 :doc-id: create-a-jbake-blog-with-solr-search-in-openshift 
 
 toc::[]

@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-11-26
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: jenkins, openshift, pipelines
+:jbake-tags: cloud, devops 
 :doc-id: oc.jenkins.pipelines
 
 == Create yaml template for the pipeline

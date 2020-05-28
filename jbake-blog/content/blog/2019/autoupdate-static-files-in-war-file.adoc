@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-04-24
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: javaEE
+:jbake-tags: Jakarta EE
 :doc-id: autoupdate-static-files-in-war-file
 
 When creating web-applications in node.js a bunch of nice features is available. One of my favorites is that when a change has been performed, the change is immediately available on the browser.

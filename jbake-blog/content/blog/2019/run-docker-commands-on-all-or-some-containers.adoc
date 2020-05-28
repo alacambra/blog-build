@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-09-01
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: docker
+:jbake-tags: commands-and-tools, containers
 :doc-id: run-docker-commands-on-all-or-some-containers
 
 == Use the ps command with the q param to fetch the insance id and then apply the command:

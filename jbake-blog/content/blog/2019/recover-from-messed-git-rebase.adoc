@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-02-01
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: git
+:jbake-tags: git, commands-and-tools
 :doc-id: recover-from-messed-git-rebase
 
 Find the head commit as it was before the rebase started:

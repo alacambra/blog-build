@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-06-28
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: wildfly, java EE, thinwars
+:jbake-tags: Jakarta EE
 :doc-id: thinwars-with-wildfly
 
 I have heard the concept of ThinWars several years before in one of the airhacks workshop from Adam Bien.

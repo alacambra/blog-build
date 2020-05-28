@@ -6,6 +6,7 @@ Albert Lacambra Basil
 :jbake-type: post
 :jbake-status: published
 :doc-id: vcode-commands
+:jbake-tags: commands-and-tools
 
 == Canviar el tema entre light i dark
 

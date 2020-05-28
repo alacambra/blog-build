@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2020-04-21
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags: less, bash
+:jbake-tags: commands-and-tools, linux
 :doc-id: use-less-to-read-logs-efficiently
 
 == Move through the document

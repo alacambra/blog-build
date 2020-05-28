@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2020-05-06
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags:  junit, testing,jpa/jta
+:jbake-tags:  testing, Jakarta EE
 :doc-id: fast-it-testing-with-h2-and-junit5 
 
 == Creating an empty DB on memory:

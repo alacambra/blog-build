@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2020-05-08 
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags: webcomponets, javascript
+:jbake-tags: webcomponets, javascript/typescript
 :doc-id: loading-tempaltes-for-webcomponents 
 
 The idea of the webcomponets if to develop small Widgets or elements that fully contains their own html, css and js. 

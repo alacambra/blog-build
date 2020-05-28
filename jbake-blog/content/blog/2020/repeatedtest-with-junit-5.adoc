@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2020-01-21
 :jbake-type: post 
 :jbake-status: published
-:jbake-tags: junit, java 
+:jbake-tags: testing, java 
 :doc-id: @repeatedtest-with-junit-5
 
 == Basic usage

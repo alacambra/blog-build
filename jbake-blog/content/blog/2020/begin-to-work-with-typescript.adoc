@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2018-05-15 
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags: typescript
+:jbake-tags: javascript/typescript
 :doc-id: begin-to-work-with-typescript 
 
 == Documentatin

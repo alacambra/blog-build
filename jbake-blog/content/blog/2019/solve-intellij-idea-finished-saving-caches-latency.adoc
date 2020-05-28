@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2018-12-19
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: intellij
+:jbake-tags: commands-and-tools
 :doc-id: solve-intellij-idea-finished-saving-caches-latency
 
 Include the following line in your _/etc/hosts_ file:

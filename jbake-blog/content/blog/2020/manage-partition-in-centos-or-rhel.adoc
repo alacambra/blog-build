@@ -6,7 +6,7 @@ Albert Lacambra Basil
 :jbake-type: post 
 :jbake-status: published 
 :toc:
-:jbake-tags: xfs,linux 
+:jbake-tags: linux, commands-and-tools
 :doc-id: manage-partition-and-volumes-in-centos-or-rhel 
 
 toc::[]

@@ -4,7 +4,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-05-19
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: javaEE
+:jbake-tags: Jakarta EE
 :doc-id: json-pinter-made-easy
 
 	

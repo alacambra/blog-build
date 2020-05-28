@@ -1,8 +1,0 @@
-= Build and deploy static blog in Openshift
-
-Albert Lacambra Basil
-:jbake-type: post
-:jbake-status: draft
-:jbake-tags: openshift, jbake
-:description: Create your static blog with jbake and openshift
-:doc-id: static-blog-with-openshift

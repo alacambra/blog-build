@@ -2,7 +2,7 @@
 Albert Lacambra Basil
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: javaEE
+:jbake-tags: Jakarta EE
 :jbake-title: JMS Basics. Send and receive messages
 :description: Fast and easy way to send and receive JMS messages.
 :doc-id: jms-basics

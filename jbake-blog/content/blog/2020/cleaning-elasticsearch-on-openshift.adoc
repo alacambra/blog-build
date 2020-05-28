@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2020-05-07
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags: openshift, elk 
+:jbake-tags: openshift, eks, cloud
 :doc-id: cleaning-elasticsearch-on-openshift 
 
 

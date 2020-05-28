@@ -6,6 +6,7 @@ Albert Lacambra Basil
 :jbake-type: post
 :jbake-status: published
 :doc-id: state-machines-and-bean-validation
+:jbake-tags: java
 
 In the last times, I have been involved in several projects following the same pattern.
 

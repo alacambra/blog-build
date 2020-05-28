@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2020-01-22 
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags: junit 
+:jbake-tags: testing
 :doc-id: parametrizedtest-with-junit 
 
 == Provide parameters to a test

@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-10-27
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: java, cli
+:jbake-tags: java
 :doc-id: Java-11-as-CLI-tool
 
 Since JDK 11 It is possible to run Java code without any compilation. That gives us the possibility to use java files as CLI scripts.

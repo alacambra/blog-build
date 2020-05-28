@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2020-01-28 
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags:  jenkins, openshift
+:jbake-tags:  devops, openshift
 :doc-id: create-openshift-jenkins-slave-images 
 
 == Create an image file

@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2020-02-03 
 :jbake-type: post 
 :jbake-status: published
-:jbake-tags: java, jakarta ee, jpa/jta
+:jbake-tags: java, Jakarta EE
 :doc-id: cdi-event-with-jta-transactions 
 
 == CDI Events

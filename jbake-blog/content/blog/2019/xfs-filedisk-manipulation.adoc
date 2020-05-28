@@ -5,8 +5,8 @@ Albert Lacambra Basil
 :jbake-date: 2019-12-27 
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags: xfs
-:doc-id: xfs-filedisk-manipulation 
+:jbake-tags: commands-and-tools, linux
+:doc-id: xfs-filedisk-manipulation
 
 == Reduce XFS fylesystem
 

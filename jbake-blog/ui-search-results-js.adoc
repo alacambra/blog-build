@@ -4,7 +4,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-10-26
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: javascript
+:jbake-tags: javascript/typescript
 :doc-id:Render_UI_results_with_rendered_templates
 
 
