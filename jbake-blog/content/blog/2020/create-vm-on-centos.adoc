@@ -151,3 +151,8 @@ if [ ${ACTION}=="DEL" ]
 		/sbin/iptables -t nat -D PREROUTING -p tcp --dport $HOST_PORT -j DNAT --to $GUEST_IP:$GUEST_PORT
 fi
 ----
+
+== More info
+
+link:https://libvirt.org/index.html[libvirt.org, target=_blank]
+link:https://libvirt.org/formatnetwork.html[Network XML format, target=_blank]
