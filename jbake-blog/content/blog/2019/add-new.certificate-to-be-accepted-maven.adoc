@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2018-10-16
 :jbake-type: post
 :jbake-status: published
-:jbake-tags: cert, maven, mvn
+:jbake-tags: pki, maven
 :doc-id: add-new.certificate-to-be-accepted-maven
 
 Add the cert in the keystore:

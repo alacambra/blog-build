@@ -5,7 +5,7 @@ Albert Lacambra Basil
 :jbake-date: 2019-12-18 
 :jbake-type: post 
 :jbake-status: published 
-:jbake-tags: maven
+:jbake-tags: commands-and-tools, maven
 :doc-id: maven-useful-commands
 
 
