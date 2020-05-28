@@ -95,8 +95,11 @@ virsh list --all
 virsh start/reboot/shutdown... centos7.0
 fdsik (create partition) vs mkfs.* (create filesystem on a partition)
 
-== Connect ssh 
+== Connect ssh
 
+We need to direct packages to the VM host to the VM instance using _iptables_
+
+=== Using a hook script
 [source, bash]
 ----
 #!/bin/bash
@@ -119,5 +122,32 @@ if [ "${1}" = "VM NAME" ]; then
 	/sbin/iptables -I FORWARD -o virbr0 -d  $GUEST_IP --dport $GUEST_PORT -j ACCEPT
 	/sbin/iptables -t nat -I PREROUTING -p tcp --dport $HOST_PORT -j DNAT --to $GUEST_IP:$GUEST_PORT
    fi
+fi
+----
+
+
+=== Using a manual triggered script
+[source, bash]
+----
+#!/bin/bash
+ACTION=$1
+
+GUEST_IP=xxx.xxx.xxx.xxx
+GUEST_PORT=22
+HOST_PORT=xxxx
+
+#Add rules
+if [ ${ACTION}=="ADD" ]
+  then
+		#Add rules
+    /sbin/iptables -I FORWARD -o virbr0 -d  $GUEST_IP -p tcp --dport $GUEST_PORT -j ACCEPT
+    /sbin/iptables -t nat -I PREROUTING -p tcp --dport $HOST_PORT -j DNAT --to $GUEST_IP:$GUEST_PORT
+fi
+
+if [ ${ACTION}=="DEL" ]
+	then
+		#Delete rules
+		/sbin/iptables -D FORWARD -o virbr0 -d  $GUEST_IP -p tcp --dport $GUEST_PORT -j ACCEPT
+		/sbin/iptables -t nat -D PREROUTING -p tcp --dport $HOST_PORT -j DNAT --to $GUEST_IP:$GUEST_PORT
 fi
 ----

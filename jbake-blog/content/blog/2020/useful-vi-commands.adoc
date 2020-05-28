@@ -11,6 +11,8 @@ Albert Lacambra Basil
 == Commands
 *:wq*: Save and exit
 *:set tabstop=2*: Set tab to two spaces
+*:retab*: convert existing tab to spaces
+*:version*: shows version, build info and used _vimrc_ file
 *dd*: delete line
 *u*: undo last action
 *$*: go to end line
