@@ -229,3 +229,11 @@ virsh snapshot-list --domain ${VM_DOMAIN}
 
 virt-clone --original ${SOURCE_DOMAIN} --name ${NEW_VM_NAME} --auto-clone
 virt-clone --original centos7.0 --name ${NEW_VM_NAME} --file ${TARGET_FILE_NAME}
+
+== Increase memory
+
+# virsh edit ${VM_DOMAIN}
+[source, xml]
+----
+<memory unit='KiB'>4194304</memory>
+----
