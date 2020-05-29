@@ -96,4 +96,117 @@ aria2c -x4 {utl} to use 4 connections
 
 More info: https://aria2.github.io/
 
+== ps
 
+Shows process info
+
+.ps aux: Shows process and resources info
+[source, bash]
+----
+USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root          1  1.2  0.0 196748  9872 ?        Ss   May14 276:11 /usr/lib/systemd/systemd --switched-root --system --deserialize 22
+root          2  0.0  0.0      0     0 ?        S    May14   0:00 [kthreadd]
+root          4  0.0  0.0      0     0 ?        S<   May14   0:00 [kworker/0:0H]
+root          6  0.0  0.0      0     0 ?        S    May14   0:16 [ksoftirqd/0]
+root          7  0.0  0.0      0     0 ?        S    May14   0:01 [migration/0]
+root          8  0.0  0.0      0     0 ?        S    May14   0:00 [rcu_bh]
+root          9  0.2  0.0      0     0 ?        S    May14  49:53 [rcu_sched]
+root         10  0.0  0.0      0     0 ?        S<   May14   0:00 [lru-add-drain]
+root         11  0.0  0.0      0     0 ?        S    May14   0:03 [watchdog/0]
+----
+
+Where _VSZ_ is process' claimed memory and _RSS_ is actual process' used memory
+
+.ps fax: shows proecess relations through tree structure
+[source, bash]
+----
+ PID TTY      STAT   TIME COMMAND
+    2 ?        S      0:00 [kthreadd]
+    4 ?        S<     0:00  \_ [kworker/0:0H]
+    6 ?        S      0:16  \_ [ksoftirqd/0]
+    7 ?        S      0:01  \_ [migration/0]
+    8 ?        S      0:00  \_ [rcu_bh]
+    9 ?        S     49:53  \_ [rcu_sched]
+----
+
+.free -m: information about mmory usage. Shown in MB.
+[source, bash]
+----
+$ free -m
+              total        used        free      shared  buff/cache   available
+Mem:          63881       25985        3109          23       34786       37331
+Swap:             0           0           0
+----
+
+[NOTE]
+====
+*total*: total memory
+*used*: total used memory
+*free*: total not used _at all_ memory
+*buff*: files in ram in write mode that must be commited to disk
+*cache*: files used by a process that are keep in RAM as long as possible. If memory is needed cache is gonna be removed.
+*available*: _free_ memory plus _cached_ memory that can be released. Is the *real* memory available for new proceses
+====
+
+.cat /proc/meminfo: detailed information about how the kernel is using memory.
+[source, bash]
+----
+$ cat /proc/meminfo
+MemTotal:       65414256 kB
+MemFree:         3190512 kB
+MemAvailable:   38263776 kB
+Buffers:            4732 kB
+Cached:         28185504 kB
+SwapCached:            0 kB
+Active:         35894232 kB
+----
+
+[NOTE]
+====
+Interesting fields from *meminfo*:
+
+*Active*:         Memory being used
+
+*Inactive*:       Memory idle for a while
+
+*Active*(*anon*):   Memory allocated by processes phisically in RAM
+
+*Inactive*(*anon*): Memory idle in RAM. If the kernel needs more 
+memory, this one is gonna be moved to *swap*
+
+*Active*(file):   Active cached memory
+
+*Inactive*(file): Inactive cached memory
+====
+
+uptime: running time of the system plus *load avarage*.
+
+[NOTE]
+====
+*load average*: 0.93, 0.75, 1.15
+The numbers are the avarage amount of processes that have been running in a given time.
+
+E.g. Means that 1 code has been busy in avarge the las minute, 0.75 for the las 5 minutes and 1.15 the las 15 minutes
+====
+
+.lscpu: shows cpu ingo
+[source, bash]
+----
+$ lscpu |head
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                20
+On-line CPU(s) list:   0-19
+Thread(s) per core:    2
+Core(s) per socket:    10
+Socket(s):             1
+NUMA node(s):          1
+Vendor ID:             GenuineIntel
+....
+----
+
+[TIP]
+====
+*load avarage* should not be getting over the *number of CPUs*. That would means that the system is operating over its capacity
+====

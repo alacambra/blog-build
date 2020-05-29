@@ -201,3 +201,31 @@ fi
 
 link:https://libvirt.org/index.html[libvirt.org, target=_blank]
 link:https://libvirt.org/formatnetwork.html[Network XML format, target=_blank]
+
+
+== List vm ips
+
+.virsh net-dhcp-leases default
+[source, bash]
+----
+ # virsh net-dhcp-leases default
+ Expiry Time          MAC address        Protocol  IP address                Hostname        Client ID or DUID
+-------------------------------------------------------------------------------------------------------------------
+ 2020-05-29 21:34:43  52:54:00:a8:e7:49  ipv4      192.168.122.173/24        vm1             01:52:54:00:a8:e7:49
+ 2020-05-29 21:34:31  52:54:00:af:c3:c7  ipv4      192.168.122.32/24         vm1             01:52:54:00:af:c3:c7
+ 2020-05-29 21:34:38  52:54:00:dd:0e:28  ipv4      192.168.122.204/24        vm1             01:52:54:00:dd:0e:28
+
+----
+
+== create and restore snapshots
+
+Create:
+virsh snapshot-create-as --domain centos7.0} --name ${SNAPSHOT_NAME}
+
+List:
+virsh snapshot-list --domain ${VM_DOMAIN}
+
+== Clone vm
+
+virt-clone --original ${SOURCE_DOMAIN} --name ${NEW_VM_NAME} --auto-clone
+virt-clone --original centos7.0 --name ${NEW_VM_NAME} --file ${TARGET_FILE_NAME}
