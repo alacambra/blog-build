@@ -40,3 +40,41 @@ KeyMap:
 - Grouped within a file:  **@:**
 - Listed within a file:   **@**
 - Across files: **#**
+
+== Move to last position
+
+.move to last edit position
+[source, json]
+----
+{
+  "key": "shift+cmd+backspace",
+  "command": "workbench.action.navigateToLastEditLocation"
+}
+----
+
+.move to last cursor position
+[source, json]
+----
+{
+  "key": "alt+cmd+left",
+  "command": "workbench.action.navigateLast"
+}
+----
+
+.Cursor Go back
+[source, json]
+----
+{
+  "key": "ctrl+-",
+  "command": "workbench.action.navigateBack"
+}
+----
+
+.Cursor Go forward
+[source, json]
+----
+{
+  "key": "ctrl+shift+-",
+  "command": "workbench.action.navigateForward"
+}
+----

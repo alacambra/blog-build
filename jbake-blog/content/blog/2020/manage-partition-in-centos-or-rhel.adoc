@@ -183,7 +183,7 @@ lvcreate -n lvdata -L 1G vgdata
 *lvremove* removes one or more LVs. For standard LVs, this returns the logical extents that were used by the LV to the VG for use by other LVs.
 
 === xfs_growfs
- *xfs_growfs* expands an existing XFS filesystem (see xfs(5)). The mount-point argument is the pathname of the directory where the filesystem is mounted. The filesystem must be mounted to be grown (see mount(8)).  The existing contents of the filesystem are undisturbed, and the added space becomes available for additional file storage.
+*xfs_growfs* expands an existing XFS filesystem (see xfs(5)). The mount-point argument is the pathname of the directory where the filesystem is mounted. The filesystem must be mounted to be grown (see mount(8)).  The existing contents of the filesystem are undisturbed, and the added space becomes available for additional file storage.
 
 === xfsdump
 *xfsdump*  backs  up  files  and  their  attributes in a filesystem.  The files are dumped to storage media, a regular file, or standard output. Options allow the operator to have all files dumped, just files that have changed since a previous dump, or just files contained in a list  of pathnames.
@@ -213,9 +213,6 @@ lvcreate -n lvdata -L 1G vgdata
 ----
 mkfs.xfs /dev/vgdata/lvdata
 ----
-
-=== xfs_growfs
- *xfs_growfs* expands an existing XFS filesystem (see xfs(5)).  The mount-point argument is the pathname of the directory where the filesystem is mounted. The filesystem must be mounted to be grown (see mount(8)).  The existing contents of the filesystem are undisturbed, and the added space becomes available for additional file storage.
 
 === df
 

@@ -8,15 +8,66 @@ Albert Lacambra Basil
 :jbake-tags: linux, commands-and-tools
 :doc-id: create-vm-on-centos 
 
+== Architecture
+
+image:/blog/2020/create-vm-on-centos/host-vm-schema.png[VMs inside a host]
+
 == Commands
 
+=== Get basic information about virtualization
+.Show status of libvirtd
+[source, bash]
+----
 systemctl status libvirtd
-cat /proc/cpuinfo
+----
 
-virsh list (-all)
-virsh start ${SERVER_NAME}
-virt-manager (UI)
-ip a
+.Show full CPU info
+[source, bash]
+----
+cat /proc/cpuinfo
+----
+
+=== virsh
+
+*virsh*: The virsh program is the main interface for managing virsh guest domains. The program can be used to create, pause, and shutdown domains.
+       It can also be used to list current domains. Libvirt is a C toolkit to interact with the virtualization capabilities of recent versions of
+       Linux (and other OSes). It is free software available under the GNU Lesser General Public License. Virtualization of the Linux Operating
+       System means the ability to run multiple instances of Operating Systems concurrently on a single hardware system where the basic resources
+       are driven by a Linux instance. The library aims at providing a long term stable C API.  It currently supports Xen, QEMU, KVM, LXC,
+       OpenVZ, VirtualBox and VMware ESX.
+
+
+*virsh list (-all)*: Shows running vm or all vms
+[source, bash]
+----
+[XXX vm1]# virsh list
+ Id    Name                           State
+----------------------------------------------------
+ 2     centos7.0                      running
+----
+
+*virsh start ${VM_NAME}*: Starts a visual machine
+*virt-manager (UI)*: Visual manager for VM
+*virsh net-edit ${BRIDGE_NAME}*: Editor for the VM bridge. It opens a vim/default editor and it regenerates the _/etc/libvirt/qemu/networks/default.xml_ file
+[source, bash]
+----
+virsh net-edit default
+----
+[source, xml]
+----
+<network>
+  <name>default</name>
+  <uuid>9ade9ce6-4b18-4cac-bb1a-006d144b9123</uuid>
+  <forward mode='nat'/>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='XX:XX:XX:XX:XX:XX'/>
+  <ip address='192.168.4.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.4.2' end='192.168.4.254'/>
+    </dhcp>
+  </ip>
+</network>
+----
 
 .cat /etc/libvirt/qemu/networks/default.xml
 [source, xml]
@@ -30,7 +81,7 @@ or other application using the libvirt API.
 
 <network>
   <name>default</name>
-  <uuid>9ade9ce6-4b18-4cac-bb1a-006d144b9123</uuid>
+  <uuid>9ade9ce6-4b18-4cac-bb1a-006d144b9123</uuid>@
   <forward mode='nat'/>
   <bridge name='virbr0' stp='on' delay='0'/>
   <mac address='XX:XX:XX:XX:XX:XX'/>
@@ -42,23 +93,17 @@ or other application using the libvirt API.
 </network>
 ----
 
-virsh net-edit default
+[NOTE] 
+====
+sssss
+====
 
-[source, xml]
-----
-<network>
-  <name>default</name>
-  <uuid>9ade9ce6-4b18-4cac-bb1a-006d144b9123</uuid>
-  <forward mode='nat'/>
-  <bridge name='virbr0' stp='on' delay='0'/>
-  <mac address='XX:XX:XX:XX:XX:XX'/>
-  <ip address='192.168.10.1' netmask='255.255.255.0'>
-    <dhcp>
-      <range start='192.168.10.2' end='192.168.10.254'/>
-    </dhcp>
-  </ip>
-</network>
-----
+*virsh dumpxml ${DOMAIN}*: domain (vm name) information in XML
+*virsh edit centos7.0
+
+
+=== ip 
+*ip*: show / manipulate routing, devices, policy routing and tunnels
 
 virsh dumpxml
 virsh edit centos7.0
