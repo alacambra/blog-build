@@ -177,7 +177,7 @@ lvcreate -n lvdata -L 1G vgdata
 ----
 
 === lvresize
-  *lvresize* resizes an _logical volume_ in the same way as lvextend and lvreduce. See lvextend(8) and lvreduce(8) for more information.
+*lvresize* resizes an _logical volume_ in the same way as lvextend and lvreduce. See lvextend(8) and lvreduce(8) for more information.
 
 === lvremove
 *lvremove* removes one or more LVs. For standard LVs, this returns the logical extents that were used by the LV to the VG for use by other LVs.
