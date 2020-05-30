@@ -424,3 +424,21 @@ lvremove /dev/centos/home
 xfsdump -l 0 -f /home-image /dev/mapper/centos-home
 
 xfsrestore -f /home-image /home
+
+=== Add new device. Create partition, PV, VG, LV abd filesystem
+
+1. Create partition: *fdisk /dev/sda*
+
+ * option n: add a new partition
+ * option t: change a partition's system id and select type _8e  Linux LVM_
+ * option w: write table to disk and exit
+
+2. Create _volume group_: *vgcreate --clustered n ${VOLUME_GROUP_NAME} /dev/sda1*
+
+ * Non clustered since only local devices are being used
+
+3. Create a 50G _logical volume_: *lvcreate -n ${LOGICAL_VOLUME_NAME} -L 50G ${VOLUME_GROUP_NAME}*
+
+4. Create XFS _file system_: *mkfs.xfs  /dev/${VOLUME_GROUP_NAME}/${LOGICAL_VOLUME_NAME}*
+
+5. Give 50G to _file system_: *lvresize -r -L +50G /dev/${VOLUME_GROUP_NAME}/${LOGICAL_VOLUME_NAME}*
