@@ -425,7 +425,7 @@ xfsdump -l 0 -f /home-image /dev/mapper/centos-home
 
 xfsrestore -f /home-image /home
 
-=== Add new device. Create partition, PV, VG, LV abd filesystem
+=== Add new device. Create partition, PV, VG, LV and filesystem
 
 1. Create partition: *fdisk /dev/sda*
 
