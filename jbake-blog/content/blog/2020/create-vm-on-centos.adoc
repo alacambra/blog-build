@@ -115,6 +115,33 @@ wget https://mirrors.edge.kernel.org/centos/8.1.1911/isos/x86_64/CentOS-8.1.1911
 
 == Connect to VM with VNC Viewer
 
+* Add display config to VM using the command *virsh edit <DOMAIN>*:
+
+[source, xml]
+----
+<domain type='kvm'>
+....
+  </devices>
+  ....
+    <graphics type='vnc' port='-1' autoport='yes' keymap='de'/>
+ </devices>
+</domain>
+----
+
+* reload *libvirtd* service:
+[source, bash]
+----
+systemctl restart libvirtd
+----
+
+* Get used offset port (port = port + offset):
+[source, bash]
+----
+virsh vncdisplay ansible-master
+127.0.0.1:1
+----  
+
+
 Connect to the XDisplay port using a an SSH tunnel
  ssh -L 5900:127.0.0.1:5900 alacambra@angelet 
 df -h
@@ -140,7 +167,7 @@ virt-install \
 virt-install --virt-type=kvm \
 --name ansible-master \
 --ram 4096 --vcpus=1 \
---disk /opt/vms1/vm.centos8_0-base.qcow2,size=20,bus=virtio --import\
+--disk /opt/vms1/vm.centos8_0-base.qcow2,size=20,bus=virtio --import \
 --network=bridge=virbr0,model=virtio 
 
 ----
