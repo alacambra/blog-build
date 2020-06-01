@@ -1,0 +1,185 @@
+= Open SSH utils 
+Albert Lacambra Basil 
+:jbake-title: Open SSH utils 
+:description: Get and analyze certificate, calculate fingerprints, ... 
+:jbake-date: 2020-06-01 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: linux, commands-and-tools, pki 
+:doc-id: open-ssh-utils 
+
+
+== Download a certificate
+
+*openssl s_client*: The s_client command implements a generic SSL/TLS client which connects to a remote host using SSL/TLS.
+
+[source, bash]
+----
+$ openssl s_client -connect zonomi.com:443
+
+CONNECTED(00000005)
+depth=2 O = Digital Signature Trust Co., CN = DST Root CA X3
+verify return:1
+depth=1 C = US, O = Let's Encrypt, CN = Let's Encrypt Authority X3
+verify return:1
+depth=0 CN = zonomi.com
+verify return:1
+---
+Certificate chain
+ 0 s:/CN=zonomi.com
+   i:/C=US/O=Let's Encrypt/CN=Let's Encrypt Authority X3
+ 1 s:/C=US/O=Let's Encrypt/CN=Let's Encrypt Authority X3
+   i:/O=Digital Signature Trust Co./CN=DST Root CA X3
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIIFTTCCBDWgAwIBAgISBMxsedmLuJGmC6r32YoRNsc5MA0GCSqGSIb3DQEBCwUA
+MEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD
+......
+-----END CERTIFICATE-----
+subject=/CN=zonomi.com
+issuer=/C=US/O=Let's Encrypt/CN=Let's Encrypt Authority X3
+---
+No client certificate CA names sent
+Server Temp Key: ECDH, P-256, 256 bits
+---
+SSL handshake has read 3224 bytes and written 322 bytes
+---
+New, TLSv1/SSLv3, Cipher is ECDHE-RSA-AES256-GCM-SHA384
+Server public key is 2048 bit
+Secure Renegotiation IS supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+SSL-Session:
+    Protocol  : TLSv1.2
+    Cipher    : ECDHE-RSA-AES256-GCM-SHA384
+    Session-ID: EAB2B61BDA4F3748B093DAB46284F5C4529A90B1FDA640ABABC3161CB00E243E
+    Session-ID-ctx:
+    Master-Key: 5178B6BEBF72A691FB534540F54B016C9A28ED4FF5154047E414A445427EE05B78AA4A7C5C022CB13DB1FB009CF91723
+    TLS session ticket lifetime hint: 300 (seconds)
+    TLS session ticket:
+    0000 - 4c 9d b8 47 2d da 84 ed-63 53 c2 2d 3b 35 9a 82   L..G-...cS.-;5..
+    .....
+
+    Start Time: 1591009996
+    Timeout   : 7200 (sec)
+    Verify return code: 0 (ok)
+---
+----
+
+== Calculate fingerprint
+
+openssl x509 -noout -fingerprint -sha1 -inform pem -in ${cert_file.cert}
+
+To download a certificate and calculate the fingerprint without to save the certificate, pass the _stdin_ stream:
+
+[source, bash]
+----
+openssl s_client -connect zonomi.com:443 | openssl x509 -noout -fingerprint -sha1 -inform pem -in /dev/stdin
+
+depth=2 O = Digital Signature Trust Co., CN = DST Root CA X3
+verify return:1
+depth=1 C = US, O = Let's Encrypt, CN = Let's Encrypt Authority X3
+verify return:1
+depth=0 CN = zonomi.com
+verify return:1
+SHA1 Fingerprint=05:49:3F:8A:D1:B3:02:BF:B4:9C:8B:6E:F8:D7:97:A5:BB:86:FA:51
+----
+
+== Test the server response
+
+It can happens that a server is redirecting calls, enforcing different certitifcates. That is difficult to know, since openssl will not follow this redirtection. The effect on that is that a browser could show a different certificate than . It is possible to send a get request to the connected server, lookign for the error that is comming.
+
+It is possible to enfoce a _GET_ request writing at the very end: *GET / HTTP/1.0*
+
+[source, ]
+----
+openssl s_client  -connect my.domain.com:443
+CONNECTED(00000005)
+depth=2 O = Digital Signature Trust Co., CN = DST Root CA X3
+verify return:1
+depth=1 C = US, O = Let's Encrypt, CN = Let's Encrypt Authority X3
+verify return:1
+depth=0 CN = my.domain.com
+verify return:1
+---
+Certificate chain
+ 0 s:/CN=my.domain.com
+   i:/C=US/O=Let's Encrypt/CN=Let's Encrypt Authority X3
+ 1 s:/C=US/O=Let's Encrypt/CN=Let's Encrypt Authority X3
+   i:/O=Digital Signature Trust Co./CN=DST Root CA X3
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+WMIIFXTCCBEWgAwIBAgISBGsdasdadsadaqw2A0GCSqGSIb3DQEBCwUA
+...
+...
+m0L9jvAnYGo5Sk8TZs5lb7z0dU+Fa2ZMEGLDKxGN6J0W
+-----END CERTIFICATE-----
+subject=/CN=my.domain.com
+issuer=/C=US/O=Let's Encrypt/CN=Let's Encrypt Authority X3
+---
+No client certificate CA names sent
+Server Temp Key: ECDH, P-256, 256 bits
+---
+SSL handshake has read 3061 bytes and written 322 bytes
+---
+New, TLSv1/SSLv3, Cipher is ECDHE-RSA-AES128-GCM-SHA256
+Server public key is 2048 bit
+Secure Renegotiation IS supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+SSL-Session:
+    Protocol  : TLSv1.2
+    Cipher    : ECDHE-RSA-AES128-GCM-SHA256
+    Session-ID: 4BFD2987576ABEEDFC5C4E8DF930810D6B892AF6A05C456AE73E8F80D0EBCA11
+    Session-ID-ctx:
+    Master-Key: 7E950F35AC1B047B7FDBB4239227F54AB503111AB729C00831547ABD92CB81163B5A1E08E0E2D10B4D482E044F6519D4
+    Start Time: 1591010783
+    Timeout   : 7200 (sec)
+    Verify return code: 0 (ok)
+---
+GET / HTTP/1.0
+
+HTTP/1.1 302 Moved Temporarily
+Server: nginx
+Date: Mon, 01 Jun 2020 11:26:24 GMT
+Content-Type: text/html
+Content-Length: 138
+Connection: close
+Location: ${REDIRECT_URI}
+
+<html>
+<head><title>302 Found</title></head>
+<body>
+<center><h1>302 Found</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+closed
+----
+
+Now we can see that trhe server is returning a _302_ code and a _Location_ header.
+
+[NOTE]
+====
+
+From link:https://tools.ietf.org/html/rfc1945#page-35[RFC 1945, target=_blank].  
+302 Moved Temporarily: 
+
+   The requested resource resides temporarily under a different URL.
+   Since the redirection may be altered on occasion, the client should
+   continue to use the Request-URI for future requests.
+
+   The URL must be given by the Location field in the response. Unless
+   it was a HEAD request, the Entity-Body of the response should
+   contain a short note with a hyperlink to the new URI(s).
+
+   If the 302 status code is received in response to a request using
+   the POST method, the user agent must not automatically redirect the
+   request unless it can be confirmed by the user, since this might
+   change the conditions under which the request was issued.
+
+====
