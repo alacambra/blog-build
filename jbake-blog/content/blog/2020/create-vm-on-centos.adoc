@@ -118,6 +118,8 @@ wget https://mirrors.edge.kernel.org/centos/8.1.1911/isos/x86_64/CentOS-8.1.1911
 Connect to the XDisplay port using a an SSH tunnel
  ssh -L 5900:127.0.0.1:5900 alacambra@angelet 
 df -h
+
+.using a cdrom ISO CentOS-8.1.1911-x86_64-boot.iso
 [source, bash]
 ----
 virt-install \
@@ -130,6 +132,17 @@ virt-install \
 --network=bridge=virbr0,model=virtio \
 --graphics vnc \
 --disk path=/opt/vm1/images/centos8.qcow2,size=40,bus=virtio,format=qcow2
+----
+
+.using a qcow2 image called vm.centos8_0-base.qcow2
+[source, bash]
+----
+virt-install --virt-type=kvm \
+--name ansible-master \
+--ram 4096 --vcpus=1 \
+--disk /opt/vms1/vm.centos8_0-base.qcow2,size=20,bus=virtio --import\
+--network=bridge=virbr0,model=virtio 
+
 ----
 lvcreate -L 100G -n vm1 
 

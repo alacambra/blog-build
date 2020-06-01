@@ -433,6 +433,7 @@ xfsrestore -f /home-image /home
  * option t: change a partition's system id and select type _8e  Linux LVM_
  * option w: write table to disk and exit
 
+2. Create _phisical volume_: *vgcreate --clustered n ${VOLUME_GROUP_NAME} /dev/sda1*
 2. Create _volume group_: *vgcreate --clustered n ${VOLUME_GROUP_NAME} /dev/sda1*
 
  * Non clustered since only local devices are being used
