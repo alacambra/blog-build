@@ -21,7 +21,7 @@ pipeline{
                     print "bindings " + binding.variables
 
                     print env.ENV_DECLARED_VAR
-                    binding.variables["t"] = "test"
+                    binding.variables["t"] = 'test'
                 }
             }
         }
@@ -61,7 +61,7 @@ pipeline{
                     env.setProperty("ENV_DECLARED_VAR", "anotherValue")
                     print 'env.setProperty("ENV_DECLARED_VAR", "anotherValue"): ' + env.getProperty("ENV_DECLARED_VAR")
                     env.ENV_DECLARED_VAR = "overrriden";
-                    print 'env.ENV_DECLARED_VAR="overrriden": ' + env.ENV_DECLARED_VAR + " - " +  env.getProperty("ENV_DECLARED_VAR")
+                    print 'env.ENV_DECLARED_VAR="overrriden": ' + env.ENV_DECLARED_VAR + " - " +  env.getProperty('ENV_DECLARED_VAR')
                 }
             }
         }
