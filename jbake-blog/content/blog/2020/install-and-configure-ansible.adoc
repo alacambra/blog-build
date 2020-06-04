@@ -1,0 +1,14 @@
+= Install and configure Ansible 
+Albert Lacambra Basil 
+:jbake-title: Install and configure Ansible 
+:description:  
+:jbake-date: 2020-01-01 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: ansible
+:doc-id: install-and-configure-ansible 
+
+== Install Ansible in Centos 8
+
+sudo dnf install python3
+pip3 install ansible --user

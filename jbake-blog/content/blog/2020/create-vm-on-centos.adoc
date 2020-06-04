@@ -129,6 +129,7 @@ wget https://mirrors.edge.kernel.org/centos/8.1.1911/isos/x86_64/CentOS-8.1.1911
 ----
 
 * reload *libvirtd* service:
+
 [source, bash]
 ----
 systemctl restart libvirtd
@@ -139,11 +140,10 @@ systemctl restart libvirtd
 ----
 virsh vncdisplay ansible-master
 127.0.0.1:1
-----  
-
+----
 
 Connect to the XDisplay port using a an SSH tunnel
- ssh -L 5900:127.0.0.1:5900 alacambra@angelet 
+ssh -L 5900:127.0.0.1:5900 alacambra@angelet 
 df -h
 
 .using a cdrom ISO CentOS-8.1.1911-x86_64-boot.iso
@@ -167,7 +167,7 @@ virt-install \
 virt-install --virt-type=kvm \
 --name ansible-master \
 --ram 4096 --vcpus=1 \
---disk /opt/vms1/vm.centos8_0-base.qcow2,size=20,bus=virtio --import \
+--disk /opt/vms1/vm.centos8_ansible-manager.qcow2,size=20,bus=virtio --import \
 --network=bridge=virbr0,model=virtio 
 
 ----
@@ -327,3 +327,9 @@ Nested virtualization is enabled until the host is rebooted. To enable it perman
 
 options kvm_intel nested=1
 
+== Delete VM
+
+[source, bash]
+----
+virsh undefine VM_NAME
+----
