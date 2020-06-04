@@ -8,81 +8,8 @@ Albert Lacambra Basil
 :jbake-tags: devops 
 :doc-id: jenkinsfile-variables 
 
+== The basics
+Jenkins piepline uses groovy. In a first step groovy will replace their binded variables with those in the scripts. Variables begins with a _$_ symbol. 
+Looks like the pipeline will make a kind of replace with any char that begins with _$_. 
 
-
-[source, jenkinsfile]
-----
-def someVar="a global var"
-
-pipeline{
-    agent {
-        label 'maven-j13'
-    }
-  
-    environment {
-        ENV_DECLARED_VAR = "ENV_DECLARED_VAR-empty"
-    }
-
-    stages{
-        stage('phase1') {
-            steps{
-                script {
-                    echo "block 1"
-                    NOT_ENV_ON_STAGE="NOT_ENV_ON_STAGE-init_st1"
-                    ENV_ON_STAGE="ENV_ON_STAGE-init_st1"
-                    ENV_DECLARED_VAR="${ENV_DECLARED_VAR}-updated_st1"
-                    echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
-                    echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
-                    echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
-                    
-                    print params
-                    print getBinding().getVariables()
-                    //this.binding.variables.each {k,v -> println '$k = $v'}
-
-
-                }
-                script {
-                    echo "block 2"
-                    
-                    ENV_DECLARED_VAR="${ENV_DECLARED_VAR}-updated-st2"
-                    NOT_ENV_ON_STAGE="${NOT_ENV_ON_STAGE}-init-updated_st2"
-                    ENV_ON_STAGE="${ENV_ON_STAGE}-init-updated_st2"
-                    
-                    echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
-                    echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
-                    echo "ENV_ON_STAGE=${ENV_ON_STAGE}"
-                    
-                    print "using print now --> ENV_ON_STAGE=${ENV_ON_STAGE}"
-                
-                }
-                sh script: "echo ${ENV_DECLARED_VAR}"
-                sh script: "echo ${NOT_ENV_ON_STAGE}"
-                sh script: "echo ${ENV_ON_STAGE}"
-                sh script: " echo 'printing with groovy in sh: ${getBinding().getVariables()}'"
-                
-                sh script: "export ENV_DECLARED_VAR=${env.ENV_DECLARED_VAR}-shell_updated && echo \${ENV_DECLARED_VAR}" 
-                sh script: "echo \${ENV_DECLARED_VAR}"
-            }
-        }
-        stage('phase2') {
-            steps{
-                script {
-                    echo "block 1"
-                    echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
-                    echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
-                    echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
-                    
-                    print params
-                    print getBinding().getVariables()
-                }
-                
-                sh script: "echo 'printing with groovy in sh: ${getBinding().getVariables()}'"
-                sh script: "export ENV_DECLARED_VAR=${env.ENV_DECLARED_VAR}-shell_updated && echo \${ENV_DECLARED_VAR}" 
-                sh script: "echo 'print from shell env. \$ symbol is scaped so it is not interpreted by groovy but by shell '\${ENV_DECLARED_VAR}"
-                sh script: "echo ${ENV_DECLARED_VAR}"
-                sh script: "echo ${env.ENV_DECLARED_VAR}"
-            }
-        }
-    }
-}
-----
+So if we use shell script and we want that the var is used in shell and not replaced in the groovy phase we must scpae it _\$_

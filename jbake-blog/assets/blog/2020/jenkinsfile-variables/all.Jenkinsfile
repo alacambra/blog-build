@@ -22,7 +22,9 @@ pipeline{
                     echo "NOT_ENV_ON_STAGE=${NOT_ENV_ON_STAGE}"
                     echo "ENV_DECLARED_VAR=${ENV_DECLARED_VAR}"
                     print params;
-                    print "getBinding().getVariables(): " getBinding().getVariables();
+                    print "getBinding().getVariables(): " + binding.variables
+                    
+;
                     print someVar
                 }
                 script {
@@ -39,11 +41,10 @@ pipeline{
                     print "using print now --> ENV_ON_STAGE=${ENV_ON_STAGE}"
                 
                 }
+
                 sh script: "echo ${ENV_DECLARED_VAR}"
                 sh script: "echo ${NOT_ENV_ON_STAGE}"
-                sh script: "echo ${ENV_ON_STAGE}"
-                // sh script: " echo 'printing with groovy in sh: ${getBinding().getVariables()}'"
-                
+                sh script: "echo ${ENV_ON_STAGE}"                
                 sh script: "export ENV_DECLARED_VAR=${env.ENV_DECLARED_VAR}-shell_updated && echo \${ENV_DECLARED_VAR}" 
                 sh script: "echo \${ENV_DECLARED_VAR}"
             }
