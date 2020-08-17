@@ -35,7 +35,7 @@ KeyMap:
     * macOS $HOME/Library/Application Support/Code/User/settings.json
     * Linux $HOME/.config/Code/User/settings.json
 
-== Fins Symbols 
+== Find Symbols 
 
 - Grouped within a file:  **@:**
 - Listed within a file:   **@**
@@ -78,3 +78,9 @@ KeyMap:
   "command": "workbench.action.navigateForward"
 }
 ----
+
+== Tree indentation
+
+Go to Workbench › Tree: Indent and search for tree indentations.
+
+Controls tree indentation in pixels: "workbench.tree.indent": 10
