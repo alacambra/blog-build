@@ -1,0 +1,2 @@
+FROM alacambra/s2i-nginx:latest
+COPY files  /tmp/src/s2i-nginx/files

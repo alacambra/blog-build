@@ -43,7 +43,7 @@ RUN chown -R ${NGINX_USER}:${NGINX_USER} /etc/nginx
 RUN chmod -R 777 /var/log/nginx
 RUN chmod -R 777 /var/lib/nginx
 RUN  chmod -R 777 /run/nginx.pid
-
+RUN rm -f /usr/share/nginx/html/img
 
 USER 999
 
