@@ -1,0 +1,29 @@
+= Useful kubectl commands 
+Albert Lacambra Basil 
+:jbake-title: Useful kubectl commands 
+:description: Everyday useful kubectl commands
+:jbake-date: 2020-08-18 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: devops, kubectl
+:doc-id: useful-kubectl-commands 
+
+== Logs commands
+
+.See logs for a given label
+[source, sh]
+----
+kubectl logs -f -l {KEY=VALUE} --all-containers=true --since={TIME}{UNIT/m} -n {NAMESPACE} --max-log-requests={MAX-CONTAINERS}
+----
+
+.Show labels used in namespace
+[source, sh]
+----
+kubectl get pods --show-labels
+----
+
+.Port-Forwarding
+[source, sh]
+----
+kubectl port-forward -n {NAMESPACE} {POD-NAME} {LOCAL-PORT}:{CONTAINER-EXPOSED-PORT}
+----

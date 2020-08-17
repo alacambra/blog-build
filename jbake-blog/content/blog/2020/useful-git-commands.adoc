@@ -13,3 +13,15 @@ Albert Lacambra Basil
 ----
 git rebase -i HEAD~${NUM}
 ----
+
+.compare file with last commit
+[source, sh]
+----
+git diff  HEAD^ HEAD  -- {FILE}
+----
+
+.revert a single file
+[source, sh]
+----
+git checkout -- {FILE}
+----
