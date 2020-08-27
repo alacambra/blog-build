@@ -26,3 +26,5 @@ Albert Lacambra Basil
 *0*: go to start of the line
 
 */${SEARCH_TERM}*: search term
+
+*shift + d* (_D_):delte until the end of the line
