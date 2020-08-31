@@ -1,0 +1,70 @@
+= Validate ssh is being used 
+Albert Lacambra Basil 
+:jbake-title: Validate ssh is being used 
+:description: Check that correct ssh are actually send and debug ssh access denied errors 
+:jbake-date: 2020-08-31 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags: "ssh"
+:doc-id: validate-ssh-is-being-used 
+
+
+== Validate signature key
+.Show fingerprint
+[source, shell]
+----
+> ssh-keygen -lf /path/to/used/key.pub
+4096 SHA256:oLöUlDHoZw3th7TDeHmKPVI1dq1+pMsqWz5SVOHIfcq8 some-name (RSA)
+----
+
+.Show fingerprint with md5
+[source, shell]
+----
+> ssh-add -l -E md5
+4096 MD5:23:g5:2f:eb:sd:76:43:qw:35:ce:4w:05:23:71:8d:d4 /path/to/used/key (RSA)
+----
+
+== Load key
+[source, shell]
+----
+> eval $(ssh-agent -s)
+> ssh-add ~/.ssh/${PRIVATE_KEY}
+----
+
+== Validate key is accepted
+
+.test e.g. accepts the key
+[source, shell]
+----
+
+> ssh -vT git@github.com
+
+debug1: blablablabla
+debug1: blablablabla
+debug1: blablablabla
+debug1: blablablabla
+
+debug1: SSH2_MSG_SERVICE_ACCEPT received
+debug1: Authentications that can continue: publickey
+debug1: Next authentication method: publickey
+debug1: Offering public key: RSA ${THE_KEY_SIGNATURE}
+debug1: Server accepts key: pkalg ssh-rsa blen 535
+debug1: Authentication succeeded (publickey).
+Authenticated to github.com ([140.82.121.4]:22).
+debug1: channel 0: new [client-session]
+debug1: Entering interactive session.
+debug1: pledge: network
+debug1: Sending environment.
+debug1: Sending env LANG = C.UTF-8
+debug1: client_input_channel_req: channel 0 rtype exit-status reply 0
+Hi alacambra! You've successfully authenticated, but GitHub does not provide shell access.
+debug1: channel 0: free: client-session, nchannels 1
+Transferred: sent 3412, received 2484 bytes, in 0.2 seconds
+Bytes per second: sent 17988.4, received 13095.9
+debug1: Exit status 1
+
+----
+
+and look for something like *Hi alacambra! You've successfully authenticated, but GitHub does not provide shell access.*
+
+
