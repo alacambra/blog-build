@@ -25,3 +25,9 @@ git diff  HEAD^ HEAD  -- {FILE}
 ----
 git checkout -- {FILE}
 ----
+
+.show git graph
+[source, shell]
+----
+git log --graph --decorate --oneline --all
+----
