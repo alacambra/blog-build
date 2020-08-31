@@ -31,3 +31,8 @@ git checkout -- {FILE}
 ----
 git log --graph --decorate --oneline --all
 ----
+
+[source, shell]
+----
+gitk --all
+----
