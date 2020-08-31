@@ -1,0 +1,33 @@
+= Runing mocka 
+Albert Lacambra Basil 
+:jbake-title: Runing mocka 
+:description: Run mocha test from console and debug 
+:jbake-date: 2020-08-31 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags:  
+:doc-id: runing-mocka 
+
+
+== Run mocha
+
+Basically execute _mocha_ with _node_, indicate files to search for and use a pattern matcher to find test.
+
+.run all test under directory
+[source, shell]
+----
+> /path/to/.nvm/versions/node/v12.18.3/bin/node ./node_modules/mocha/bin/_mocha test/**/*.ts --timeout 5000 -r ts-node/register --grep ^.+$
+----
+
+.Run a single test
+[source, shell]
+----
+> /path/to/.nvm/versions/node/v12.18.3/bin/node ./node_modules/mocha/bin/_mocha test/**/*.ts --timeout 5000 -r ts-node/register --grep ^TestClass.TestName$
+----
+
+
+.Run a full test class
+[source, shell]
+----
+> /path/to/.nvm/versions/node/v12.18.3/bin/node ./node_modules/mocha/bin/_mocha test/**/*.ts --timeout 5000 -r ts-node/register --grep ^TestClass.+$
+----
