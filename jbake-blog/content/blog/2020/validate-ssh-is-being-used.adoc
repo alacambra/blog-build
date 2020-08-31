@@ -68,3 +68,5 @@ debug1: Exit status 1
 and look for something like *Hi alacambra! You've successfully authenticated, but GitHub does not provide shell access.*
 
 
+== Sources
+link:https://docs.github.com/en/github/authenticating-to-github/error-permission-denied-publickey[https://docs.github.com/en/github/authenticating-to-github/error-permission-denied-publickey]
