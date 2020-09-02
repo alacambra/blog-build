@@ -1,0 +1,9 @@
+= my blog entry 
+Albert Lacambra Basil 
+:jbake-title: my blog entry 
+:description:  
+:jbake-date: 2020-09-01 
+:jbake-type: post 
+:jbake-status: published 
+:jbake-tags:  
+:doc-id: my-blog-entry 

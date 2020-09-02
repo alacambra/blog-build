@@ -9,17 +9,53 @@ Albert Lacambra Basil
 :doc-id: useful-vi-commands 
 
 == Commands
-*:wq*: Save and exit
+
+=== modes
+
+*a*: append
+
+*i or Ins*: Change to insert / input mode
+
+*o*: insert line and change to insert mode
+
+*ESC*: back to command mode
+
+*:wq or ZZ*: Save and exit
+
+=== editing
 
 *:set tabstop=2*: Set tab to two spaces
 
 *:retab*: convert existing tab to spaces
 
-*:version*: shows version, build info and used _vimrc_ file
+*dd*: cut line
 
-*dd*: delete line
+*yy*: copy (yanked - "retirar")
+
+*p*: paste
+
+*shift + d* (_D_):delete until the end of the line
+
+
+=== visual mode
+
+on command mode *v+arrows* allows to mark a block of text.
+
+*d*: cut
+
+*y*: copy
+
+*p*: paste
+
+=== managing
 
 *u*: undo last action
+
+*ctrl+r*: redo
+
+
+=== surfing
+
 
 *$*: go to end line
 
@@ -27,4 +63,8 @@ Albert Lacambra Basil
 
 */${SEARCH_TERM}*: search term
 
-*shift + d* (_D_):delte until the end of the line
+=== utils
+
+*:%s/old/new/g* : (s)ubstitute (g)lobally "old" per "new"
+
+*:version*: shows version, build info and used _vimrc_ file
